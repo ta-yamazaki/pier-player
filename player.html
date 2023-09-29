@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+<!--  &lt;!&ndash; https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP &ndash;&gt;-->
+<!--  <meta http-equiv="Content-Security-Policy" content="default-src file://; script-src 'self'">-->
+</head>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background-color: black;
+        opacity: 1;
+        animation-name: fadeIn;
+        animation-duration: 1s;
+    }
+    @keyframes fadeIn {
+        from {opacity: 0;}
+        to {opacity: 1;}
+    }
+
+    video {
+        width: 100%;
+    }
+
+    .end {
+        opacity: 0;
+        animation-name: blackOut;
+        animation-duration: 1s;
+    }
+    @keyframes blackOut {
+        from {opacity: 1;}
+        to {opacity: 0;}
+    }
+</style>
+<body id="body">
+<video id="player" >
+  <source id="source" src="" type="" />
+</video>
+
+<script>
+    const searchParams = new URLSearchParams(window.location.search);
+
+    const player = document.getElementById('player')
+    const source = document.getElementById('source')
+
+    source.src = searchParams.get("path")
+    source.type = searchParams.get("type")
+
+    window.onload = (event) => {
+        player.play()
+        player.addEventListener("ended", () => {
+            document.getElementById('body').classList.add("end")
+            // window.api.playerEnded();
+        })
+    };
+</script>
+
+</body>
+</html>
