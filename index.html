@@ -32,18 +32,10 @@
         font-weight: bold;
     }
 
-    table, th, td {
-
-    }
-    .dragging {
-        background-color: #eee;
-    }
-    .is-draggable{
-        cursor: grab;
-    }
-    .is-draggable:active {
-        cursor: grabbing;
-    }
+    table, th, td {}
+    .dragging {background-color: #eee;}
+    .is-draggable{cursor: grab;}
+    .is-draggable:active {cursor: grabbing;}
 
     .delete {
         vertical-align: middle;
@@ -58,7 +50,7 @@
   <h3 class="title is-3 mx-2 mt-2 mb-0"
       style="white-space: nowrap; overflow-x: hidden; height: 2.5rem">
     <img id="logo" src="static/favicon.ico">
-    {{ title }}
+    Pier Player
     <span class="is-size-6" style="font-weight: normal;">映像ファイルをサブモニタで再生します</span>
   </h3>
 
@@ -76,10 +68,22 @@
     <table class="table my-2" style="width: 100%;">
       <tbody id="fileSelectBody">
       <tr>
-        <td colspan="4">
+        <td>
           <button class="button is-small is-fullwidth"
                   @click="storeFileInfo()">保存する</button>
         </td>
+        <td></td>
+        <td>
+          <button class="button is-small is-danger"
+                  v-if="isPlaying"
+                  @click="close()">
+              <span class="icon mr-2">
+                <i class="mdi mdi-24px mdi-pause-circle-outline"></i>
+              </span>
+            <span>停止</span>
+          </button>
+        </td>
+        <td></td>
       </tr>
       <tr
           v-for="(file, i) in files"
@@ -105,21 +109,17 @@
         <td style="font-size: 0.9rem; max-width: 30rem; vertical-align: middle; overflow-x: auto"
         ><a @click="preview(file)">{{ file.name }}</a></td>
         <td>
-          <template v-if="isExists(file.path)">
-            <button v-if="!file.showCloseButton"
-                    class="button is-small is-success"
-                    @click="play(i)"
-            >▶再生</button>
-            <button v-if="file.showCloseButton"
-                    class="button is-small is-danger is-outlined"
-                    style=": none"
-                    @click="close(i)"
-            >閉じる</button>
-          </template>
+          <button v-if="isExists(file.path)"
+                  class="button is-small is-success"
+                  @click="play(i)">
+              <span class="icon mr-2">
+                <i class="mdi mdi-24px mdi-play-circle-outline"></i>
+              </span>
+            <span>再生</span>
+          </button>
         </td>
         <td style="width: 1rem">
-          <button class="delete"
-                  @click="removeRow(i)"></button>
+          <button class="delete" @click="removeRow(i)"></button>
         </td>
       </tr>
       </tbody>
@@ -130,7 +130,7 @@
       <h6 class="title is-6 mt-4 mb-1">プレビュー</h6>
       <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
         <template v-if="previewFile.src">
-          <video controls autoplay muted>
+          <video controls autoplay muted :key="videoReload">
             <source :src="previewFile.src" :type="previewFile.type" />
           </video><br>
           <small>※サブモニターでは再生バーは表示されません。</small>
@@ -147,26 +147,17 @@
     new Vue({
         el: "#app",
         data: {
-            title: "Pier Player",
             files: [],
-            sundayFiles: [{
-                path: "", name: "", type: "",
-                showCloseButton: false,
-            }],
-            wednesdayFiles: [{
-                path: "", name: "", type: "",
-                showCloseButton: false,
-            }],
-            otherFiles: [{
-                path: "", name: "", type: "",
-                showCloseButton: false,
-            }],
+            sundayFiles: [{path: "", name: "", type: ""}],
+            wednesdayFiles: [{path: "", name: "", type: ""}],
+            otherFiles: [{path: "", name: "", type: ""}],
+            isPlaying: false,
             selectedTab: "sunday",
             previewFile: { src: "", type: "" },
             dragIndex: null,
+            videoReload: 0,
         },
         async created() {
-            console.log(await window.api.getFiles("sunday"))
             this.sundayFiles = await window.api.getFiles("sunday");
             this.wednesdayFiles = await window.api.getFiles("wednesday");
             this.otherFiles = await window.api.getFiles("other");
@@ -181,9 +172,9 @@
             //表示後にやりたいことはここに書ける
         },
         watch: {
-            previewFile: function (newVal) {
-                this.preview();
-            }
+            // previewFile: function (newVal) {
+            //     this.preview();
+            // }
         },
         methods: {
             selectFile(i, event) {
@@ -192,14 +183,13 @@
                 this.files[i].type = event.target.files[0].type
             },
             play(i) {
+                this.isPlaying = true;
                 const fileMeta = this.files[i]
                 window.api.openSubWindow(fileMeta);
-                this.files[i].showCloseButton = true
             },
-            close(i) {
-                const fileName = this.files[i].name
-                window.api.closeSubWindow(fileName);
-                this.files[i].showCloseButton = false
+            close() {
+                window.api.closeSubWindow();
+                this.isPlaying = false
             },
             addRow() {
                 // if (!Array.isArray(this.files))
@@ -208,10 +198,7 @@
                 //         showCloseButton: false,
                 //     }]
 
-                this.files.push({
-                    path: "", name: "", type: "",
-                    showCloseButton: false,
-                })
+                this.files.push({path: "", name: "", type: ""})
             },
             removeRow(i) {
                 this.files.splice(i, 1);
@@ -219,8 +206,9 @@
             preview(file) {
                 this.previewFile.src = file.path
                 this.previewFile.type = file.type
+                this.videoReload++
             },
-            storeFileInfo() {
+            async storeFileInfo() {
                 window.api.storeFiles(this.selectedTab, this.files);
             },
             selectSundayTab() {

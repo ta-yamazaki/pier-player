@@ -5,15 +5,40 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "build": "electron-builder --win --x64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@electron-forge/cli": "^6.4.2",
+    "electron-builder": "^24.6.4",
     "electron": "^26.2.2"
   },
   "dependencies": {
     "electron-store": "^8.1.0"
+  },
+  "build": {
+    "productName": "PierPlayer",
+    "appId": "pier-player",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "static",
+      "main.js",
+      "preload.js",
+      "index.html",
+      "player.html",
+      "package.json",
+      "package-lock.json"
+    ],
+    "win": {
+      "icon": "static/favicon.ico",
+      "target": "nsis"
+    },
+    "nsis":{
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

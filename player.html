@@ -6,10 +6,17 @@
 <!--  <meta http-equiv="Content-Security-Policy" content="default-src file://; script-src 'self'">-->
 </head>
 <style>
+    html {
+        background-color: black;
+    }
+
     body {
         margin: 0;
         overflow: hidden;
-        background-color: black;
+        opacity: 0;
+    }
+
+    body.start {
         opacity: 1;
         animation-name: fadeIn;
         animation-duration: 1s;
@@ -19,11 +26,7 @@
         to {opacity: 1;}
     }
 
-    video {
-        width: 100%;
-    }
-
-    .end {
+    body.start.end {
         opacity: 0;
         animation-name: blackOut;
         animation-duration: 1s;
@@ -32,26 +35,50 @@
         from {opacity: 1;}
         to {opacity: 0;}
     }
+
+    video {
+        width: 100%;
+    }
 </style>
-<body id="body">
-<video id="player" >
-  <source id="source" src="" type="" />
-</video>
-
+<body>
+<!--<video id="player">-->
+<!--  <source id="source" src="" type="" />-->
+<!--</video>-->
+<!--<div id="blackScreen"></div>-->
 <script>
-    const searchParams = new URLSearchParams(window.location.search);
-
+    const body = document.getElementsByTagName('body')[0]
     const player = document.getElementById('player')
     const source = document.getElementById('source')
 
-    source.src = searchParams.get("path")
-    source.type = searchParams.get("type")
-
     window.onload = (event) => {
-        player.play()
-        player.addEventListener("ended", () => {
-            document.getElementById('body').classList.add("end")
-            // window.api.playerEnded();
+        window.api.subWindowShow((event, param) => {
+            body.innerHTML = ""
+
+            const source = document.createElement('source');
+            source.src = param.path
+            source.type = param.type
+
+            const video = document.createElement('video');
+            video.appendChild(source);
+
+            body.appendChild(video);
+
+            event.sender.send('subContentsCreated')
+
+            video.play().then(() => {
+                body.classList.add("start")
+            }).catch((e) => console.error(e))
+
+            video.addEventListener("ended", () => {
+                body.classList.add("end")
+                // window.api.playerEnded();
+            })
+        })
+
+        window.api.subWindowHide((event) => {
+            body.innerHTML = ""
+            body.classList.remove("start")
+            body.classList.remove("end")
         })
     };
 </script>

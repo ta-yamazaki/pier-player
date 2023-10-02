@@ -21,34 +21,69 @@ const createWindow = () => {
     })
     mainWindow.setMenuBarVisibility(false);
     mainWindow.loadFile('index.html').then();
-    mainWindow.webContents.openDevTools() // デベロッパーツール
+    // mainWindow.webContents.openDevTools() // デベロッパーツール
 
     mainWindow.on('close', () => {
         BrowserWindow.getAllWindows().forEach(window => window.close())
     })
 }
 
-const createSubWindow = (display, fileMeta) => {
-    let subWindow = new BrowserWindow({
+let subWindow;
+const createSubWindow = () => {
+    subWindow = new BrowserWindow({
         show: false,
-        x: display.bounds.x,
-        y: display.bounds.y,
-        fullscreen: true,
-        title: fileMeta.name,
         icon: icon,
         frame: false,
+        title: 'サブモニタ',
         titleBarStyle: 'hidden',
+        backgroundColor: 'black',
+        opacity: 0,
+        alwaysOnTop: true,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
+        },
+    });
+    subWindow.on('close', () => { hideSubWindow(subWindow) })
+    subWindow.loadFile('player.html').then(() => {
+        subWindow.showInactive();
+        // subWindow.hide();
     });
 
-    subWindow.once('ready-to-show', () => { subWindow.show(); });
-    subWindow.on('close', () => { subWindow = null })
-    subWindow.loadFile('player.html', {
-        query: {
-            path: fileMeta.path,
-            type: fileMeta.type,
-        }
-    }).then();
+    const displays = screen.getAllDisplays();
+    for (const display of displays) {
+        if (display.bounds.x === 0 && display.bounds.y === 0) continue;
+        subWindow.setBounds({ x: display.bounds.x, y: display.bounds.y })
+        subWindow.setFullScreen(true)
+        break;
+    }
     // subWindow.webContents.openDevTools()
+}
+
+const loadSubWindow = (display, fileMeta) => {
+    hideSubWindow();
+
+    subWindow.setTitle(fileMeta.name)
+
+    subWindow.webContents.send("subWindowShow",{
+        path: fileMeta.path,
+        type: fileMeta.type,
+    });
+
+    ipcMain.on('subContentsCreated', (_event, value) => {
+        subWindow.setOpacity(1)
+        // subWindow.show()
+    })
+
+    // subWindow.webContents.openDevTools() // デベロッパーツール
+}
+const hideSubWindow = () => {
+    subWindow.setTitle("サブモニタ")
+    subWindow.setOpacity(0)
+    subWindow.webContents.send("subWindowHide");
+    // window.hide()
+    // subWindow.loadFile('player.html').then();
 }
 
 // このメソッドは、Electron の初期化が完了し、
@@ -56,6 +91,8 @@ const createSubWindow = (display, fileMeta) => {
 // 一部のAPIはこのイベントが発生した後にのみ利用できます。
 app.whenReady().then(() => {
     createWindow()
+    createSubWindow()
+
     app.on('activate', () => {
         // macOS では、Dock アイコンのクリック時に他に開いているウインドウがない場合、アプリのウインドウを再作成するのが一般的です。
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -63,19 +100,15 @@ app.whenReady().then(() => {
 
     // レンダラープロセスからpreload.js経由で 'open-window' チャンネルへ着信
     ipcMain.handle('open-window', (event, fileMeta) => { // 子ウィンドウを作成
-        console.log(fileMeta)
         const displays = screen.getAllDisplays();
         for (const display of displays) {
             if (display.bounds.x === 0 && display.bounds.y === 0) continue;
-            createSubWindow(display, fileMeta)
+            loadSubWindow(display, fileMeta)
             break;
         }
     });
-    ipcMain.handle('close-window', (event, fileName) => { // 子ウィンドウを作成
-        const windows = BrowserWindow.getAllWindows();
-        windows.forEach((window) => {
-            if (window.title === fileName) window.close()
-        })
+    ipcMain.handle('close-window', (event) => { // 子ウィンドウを作成
+        hideSubWindow()
     });
 
     ipcMain.handle('getFiles', (event, target) => {
