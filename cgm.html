@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <!--  &lt;!&ndash; https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP &ndash;&gt;-->
+  <!--  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
+  <title>Pier Player</title>
+  <link rel="stylesheet" href="static/bulma.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+</head>
+<style>
+    body {
+        -ms-overflow-style: none; /*スクロールバー非表示（IE・Edge）*/
+        scrollbar-width: none; /*スクロールバー非表示（Firefox）*/
+        /*background-color: #f1f5f7;*/
+    }
+    body::-webkit-scrollbar {
+        display:none; /*スクロールバー非表示（Chrome・Safari）*/
+    }
+
+    img#logo {
+        height: 2rem;
+        max-width: 100%;
+        vertical-align: bottom;
+    }
+
+    /*.tabs.is-boxed li.is-active a {*/
+    /*    background-color: transparent;*/
+    /*}*/
+    .tabs li.is-active a {
+        color: dimgray;
+        font-weight: bold;
+    }
+
+    table, th, td {}
+    .dragging {background-color: #eee;}
+    .is-draggable{cursor: grab;}
+    .is-draggable:active {cursor: grabbing;}
+
+    .delete {
+        vertical-align: middle;
+        background-color: #f1466863;
+    }
+    .delete:hover {
+        background-color: #f14668bb !important;
+    }
+</style>
+<body>
+<div id="app">
+  <h3 class="title is-3 mx-2 mt-2 mb-0"
+      style="white-space: nowrap; overflow-x: hidden; height: 2.5rem">
+    <img id="logo" src="static/icon.png">
+    Pier Player
+    <span class="is-size-6" style="font-weight: normal;">CGM映像をサブモニタで再生します</span>
+    <a href="index.html"
+       style="vertical-align: bottom"
+       class="button is-small is-link is-light is-pulled-right mt-1"
+    >通常モードへ</a>
+  </h3>
+
+  <div class="tabs is-boxed is-centered is-fullwidth">
+    <ul class="m-1" style="background-color: #f1f5f7">
+      <li><a>CGMモード (β)</a></li>
+    </ul>
+  </div>
+
+  <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 90%;">
+    <small>※表示に少し時間がかかる場合があります。繰り返し再生はされません。</small>
+
+    <table class="table my-2 is-striped" style="width: 100%;">
+      <tbody id="fileSelectBody">
+      <tr class="is-size-7" style="white-space: nowrap">
+        <td></td>
+        <td>映像タイトル（任意）</td>
+        <td>CGM映像URL</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr
+          v-for="(cgm, i) in cgmList"
+          :key="i"
+          :class="i === dragIndex ? 'dragging' : ''"
+      >
+        <td
+            :draggable="true"
+            @dragstart="dragStart(i)"
+            @dragenter="dragEnter(i)"
+            @dragover.prevent
+            @dragend="dragEnd()"
+            style="width: min-content; white-space: nowrap;">
+            <span class="icon ml-0 mr-0 is-draggable">
+              <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
+            </span>
+        </td>
+        <td style="max-width: 10rem;">
+          <input type="text" v-model="cgm.title" class="input is-small" placeholder="映像タイトル（任意）">
+        </td>
+        <td style="width: 20rem;">
+          <div class="field has-addons">
+              <input type="url" v-model="cgm.path" class="input is-small" placeholder="CGM映像URL">
+              <a class="button is-small" @click="preview(cgm)">プレビュー</a>
+          </div>
+        </td>
+        <td style="white-space: nowrap">
+          <button v-if="isExists(cgm.path) && !cgm.isViewed"
+                  class="button is-small is-info is-light"
+                  @click="view(i)"
+                  :class="isLoading ? 'is-loading' : ''"
+          >表示</button>
+          <template v-if="cgm.isViewed && !cgm.isPlaying">
+            <small class="mr-1">表示中</small>
+            <button class="button is-small is-success"
+                    @click="play(i)"
+                    :class="{'is-loading': isLoading}"
+            >再生</button>
+          </template>
+          <template v-if="cgm.isPlaying">
+            <small class="mr-1">再生中</small>
+            <button class="button is-small is-danger"
+                    @click="close(i)"
+            >閉じる</button>
+          </template>
+        </td>
+        <td style="width: 1rem">
+          <button class="delete" @click="removeRow(i)"></button>
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
+    <button class="button is-small is-link" @click="addRow()">追加</button>
+
+    <br><br>
+    <div class="m-4" style="width: 100%; max-width: 480px;">
+      <h6 class="title is-6 mt-4 mb-1">映像プレビュー ※再生すると音が出ます</h6>
+      <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
+          <iframe :src="previewCgm.path" :key="videoReload"
+                  width="100%" height="100%"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="static/jquery.js"></script>
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            isLoading: false,
+            previewCgm: { path: "" },
+            cgmList: [{
+                title: "1",
+                path: "https://id.cgmj.org/GvW08JeOQzW5Ga1a9z0EXn11KnH7ps7BGja7fh194MUan1i1Bd0S55kOD2I3ZetU?k2=e4ogxnGtaIrzwIji",
+                isViewed: false,
+                isPlaying: false
+            }, {
+                title: "2",
+                path: "https://id.cgmj.org/GvW08JeOQzW5Ga1a9z0EXn11KnH7ps7BGja7fh194MUan1i1Bd0S55kOD2I3ZetU?k2=e4ogxnGtaIrzwIji",
+                isViewed: false,
+                isPlaying: false
+            }, {
+                title: "3",
+                path: "https://id.cgmj.org/GvW08JeOQzW5Ga1a9z0EXn11KnH7ps7BGja7fh194MUan1i1Bd0S55kOD2I3ZetU?k2=e4ogxnGtaIrzwIji",
+                isViewed: false,
+                isPlaying: false
+            },
+            ],
+            dragIndex: null,
+            videoReload: 0,
+        },
+        async created() {
+            this.cgmList = await window.api.getCgmList();
+        },
+        mounted() {
+            //表示後にやりたいことはここに書ける
+            window.api.cgmLoaded((event) => {
+                this.isLoading = false;
+            })
+        },
+        watch: {
+            cgmList: {
+                handler: function (newVal, oldVal) {
+                    window.api.storeCgmList(newVal)
+                },
+                deep: true
+            }
+        },
+        methods: {
+            view(i) {
+                this.cgmList.forEach((cgm) => {
+                    cgm.isViewed = false
+                    cgm.isPlaying = false
+                })
+
+                const cgm = this.cgmList[i]
+                this.isLoading = true;
+                window.api.openCgm(cgm).then(() => {
+                    cgm.isViewed = true;
+                });
+            },
+            play(i) {
+                const cgm = this.cgmList[i]
+                window.api.playCgm();
+                cgm.isPlaying = true
+            },
+            close(i) {
+                const cgm = this.cgmList[i]
+                window.api.closeCgm();
+                cgm.isViewed = false
+                cgm.isPlaying = false
+            },
+            addRow() {
+                this.cgmList.push({path: "", title: ""})
+            },
+            removeRow(i) {
+                this.cgmList.splice(i, 1);
+            },
+            preview(cgm) {
+                this.previewCgm.path = cgm.path
+                this.videoReload++
+            },
+            storeFileInfo() {
+                window.api.storeCgmList(this.cgmList);
+            },
+            dragStart(index) {
+                this.dragIndex = index;
+            },
+            dragEnter (index) {
+                if (index === this.dragIndex) return;
+                const deleteElement = this.cgmList.splice(this.dragIndex, 1)[0];
+                this.cgmList.splice(index, 0, deleteElement);
+                this.dragIndex = index;
+            },
+            dragEnd () {
+                this.dragIndex = null;
+            },
+            isExists(v) {
+                return typeof v !== 'undefined' && v !== null && v !== "" && v !== {};
+            },
+        },
+    })
+</script>
+</body>
+</html>

@@ -8,7 +8,14 @@ contextBridge.exposeInMainWorld('api', {
     getFiles: (target) => ipcRenderer.invoke("getFiles", target),
     storeFiles: (target, files) => ipcRenderer.invoke("storeFiles", target, files),
     subWindowShow: (callback) => ipcRenderer.on('subWindowShow', callback),
-    subWindowHide: (callback) => ipcRenderer.on('subWindowHide', callback)
+    subWindowHide: (callback) => ipcRenderer.on('subWindowHide', callback),
+    openCgm: (cgm) => ipcRenderer.invoke('openCgm', cgm),
+    cgmLoadedFromCgmWindow: () => ipcRenderer.invoke('cgmLoadedFromCgmWindow'),
+    cgmLoaded: (callback) => ipcRenderer.on('cgmLoaded', callback),
+    playCgm: () => ipcRenderer.invoke('playCgm'),
+    closeCgm: () => ipcRenderer.invoke('closeCgm'),
+    getCgmList: () => ipcRenderer.invoke("getCgmList"),
+    storeCgmList: (cgmList) => ipcRenderer.invoke("storeCgmList", cgmList),
 });
 
 // プリロードプロセスでは Node.js の全 API が利用可能です。

@@ -7,10 +7,14 @@ const path = require('node:path')
 const Store = require('electron-store');
 const store = new Store();
 
-const icon = "static/favicon.ico";
+// const icon = "static/favicon.ico";
+const icon = "static/icon.png";
 
+const devToolsEnabled = false;
+
+let mainWindow;
 const createWindow = () => {
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 900, height: 700,
         icon: icon,
         webPreferences: {
@@ -21,7 +25,9 @@ const createWindow = () => {
     })
     mainWindow.setMenuBarVisibility(false);
     mainWindow.loadFile('index.html').then();
-    // mainWindow.webContents.openDevTools() // デベロッパーツール
+
+    if (devToolsEnabled)
+        mainWindow.webContents.openDevTools() // デベロッパーツール
 
     mainWindow.on('close', () => {
         BrowserWindow.getAllWindows().forEach(window => window.close())
@@ -38,7 +44,7 @@ const createSubWindow = () => {
         titleBarStyle: 'hidden',
         backgroundColor: 'black',
         opacity: 0,
-        alwaysOnTop: true,
+        alwaysOnTop: false,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
@@ -73,10 +79,12 @@ const loadSubWindow = (display, fileMeta) => {
 
     ipcMain.on('subContentsCreated', (_event, value) => {
         subWindow.setOpacity(1)
+        subWindow.moveTop()
         // subWindow.show()
     })
 
-    // subWindow.webContents.openDevTools() // デベロッパーツール
+    if (devToolsEnabled)
+        subWindow.webContents.openDevTools() // デベロッパーツール
 }
 const hideSubWindow = () => {
     subWindow.setTitle("サブモニタ")
@@ -86,12 +94,78 @@ const hideSubWindow = () => {
     // subWindow.loadFile('player.html').then();
 }
 
+let cgmWindow;
+const createCgmWindow = () => {
+    cgmWindow = new BrowserWindow({
+        show: false,
+        icon: icon,
+        frame: false,
+        title: 'CGMモニタ',
+        titleBarStyle: 'hidden',
+        backgroundColor: 'black',
+        // opacity: 0,
+        alwaysOnTop: false,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
+        },
+    });
+    cgmWindow.on('close', () => { cgmWindow.hide(); })
+
+    const displays = screen.getAllDisplays();
+    for (const display of displays) {
+        if (display.bounds.x === 0 && display.bounds.y === 0) continue;
+        cgmWindow.setBounds({ x: display.bounds.x, y: display.bounds.y })
+        cgmWindow.setFullScreen(true)
+        break;
+    }
+
+    cgmWindow.webContents.insertCSS(`
+            body {
+                overflow: hidden;
+                /* IE, Edge 対応 */
+                -ms-overflow-style: none;
+                /* Firefox 対応 */
+                scrollbar-width: none;
+            }
+            /* Chrome, Safari 対応 */
+            body::-webkit-scrollbar {
+                    display:none;
+            }
+        `)
+
+    cgmWindow.webContents.executeJavaScript(`
+            $(function(){
+              $('body').hide()
+              setTimeout(function() {
+                $('#player1')[0].player.remove()
+                $('#player1').mediaelementplayer({
+                  success: function(media, node, player) {
+                   window.api.cgmLoadedFromCgmWindow();
+                   $('body').show()
+                   $('.mejs-controls').hide()
+                   media.addEventListener("ended", () => {
+                      console.log("ended")
+                       player.setMuted(true)
+                    })
+                  }
+                });
+              }, 1500)
+            });
+        `, true)
+
+    if (devToolsEnabled)
+        cgmWindow.webContents.openDevTools() // デベロッパーツール
+}
+
 // このメソッドは、Electron の初期化が完了し、
 // ブラウザウインドウの作成準備ができたときに呼ばれます。
 // 一部のAPIはこのイベントが発生した後にのみ利用できます。
 app.whenReady().then(() => {
     createWindow()
     createSubWindow()
+    createCgmWindow()
 
     app.on('activate', () => {
         // macOS では、Dock アイコンのクリック時に他に開いているウインドウがない場合、アプリのウインドウを再作成するのが一般的です。
@@ -119,6 +193,43 @@ app.whenReady().then(() => {
     });
     ipcMain.handle("storeFiles", (event, target, files) => {
         store.set(target, files);
+    });
+
+    ipcMain.handle("openCgm", (event, cgm) => {
+        cgmWindow.close();
+        createCgmWindow()
+        cgmWindow.setTitle(cgm.title)
+        cgmWindow.loadURL(cgm.path).then(() => {
+            cgmWindow.showInactive();
+        });
+    });
+    ipcMain.handle("cgmLoadedFromCgmWindow", (event) => {
+        mainWindow.webContents.send("cgmLoaded");
+    });
+    ipcMain.handle("playCgm", (event, cgmPath) => {
+        // cgmWindow.setTitle(fileMeta.name)
+
+        // cgmWindow.webContents.insertCSS(".mejs-controls {}")
+        cgmWindow.webContents.executeJavaScript(`
+         $('#player1')[0].player.play()
+        `, true)
+    });
+    ipcMain.handle("closeCgm", (event) => {
+        cgmWindow.webContents.executeJavaScript(`
+         $('#player1')[0].player.pause()
+        `, true)
+        cgmWindow.hide();
+    });
+
+    ipcMain.handle("getCgmList", (event) => {
+        const cgmList = store.get("cgmList");
+        return cgmList ? cgmList : [{
+            path: "", title: "",
+            isViewed: false, isPlaying: false
+        }]
+    });
+    ipcMain.handle("storeCgmList", (event, cgmList) => {
+        store.set("cgmList", cgmList);
     });
 })
 

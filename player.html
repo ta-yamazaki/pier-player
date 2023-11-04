@@ -53,14 +53,17 @@
     window.onload = (event) => {
         window.api.subWindowShow((event, param) => {
             body.innerHTML = ""
+            if (param.type.match(/video\/.*/)) playVideo(event, param)
+            if (param.type.match(/audio\/.*/)) playAudio(event, param)
+        })
 
+        function playVideo(event, param) {
             const source = document.createElement('source');
             source.src = param.path
             source.type = param.type
 
             const video = document.createElement('video');
             video.appendChild(source);
-
             body.appendChild(video);
 
             event.sender.send('subContentsCreated')
@@ -69,11 +72,16 @@
                 body.classList.add("start")
             }).catch((e) => console.error(e))
 
-            video.addEventListener("ended", () => {
-                body.classList.add("end")
-                // window.api.playerEnded();
-            })
-        })
+            video.addEventListener("ended", () => { body.classList.add("end") })
+        }
+
+        function playAudio(event, param) {
+            const audio = document.createElement('audio');
+            audio.src = param.path
+            audio.type = param.type
+            body.appendChild(audio);
+            audio.play()
+        }
 
         window.api.subWindowHide((event) => {
             body.innerHTML = ""

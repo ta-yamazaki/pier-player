@@ -49,11 +49,14 @@
 <div id="app">
   <h3 class="title is-3 mx-2 mt-2 mb-0"
       style="white-space: nowrap; overflow-x: hidden; height: 2.5rem">
-    <img id="logo" src="static/favicon.ico">
+    <img id="logo" src="static/icon.png">
     Pier Player
     <span class="is-size-6" style="font-weight: normal;">映像ファイルをサブモニタで再生します</span>
+    <a href="cgm.html"
+       style="vertical-align: bottom"
+       class="button is-small is-link is-light is-pulled-right mt-1"
+    >CGMモードへ</a>
   </h3>
-
 
   <div class="tabs is-boxed is-centered is-fullwidth">
     <ul class="m-1" style="background-color: #f1f5f7">
@@ -64,24 +67,19 @@
     </ul>
   </div>
 
-  <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 80%;">
-    <table class="table my-2" style="width: 100%;">
+  <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 90%;">
+    <table class="table my-2 is-striped" style="width: 100%;">
       <tbody id="fileSelectBody">
       <tr>
-        <td>
-          <button class="button is-small is-fullwidth"
+        <td colspan="2">
+          <button class="button is-small"
                   @click="storeFileInfo()">保存する</button>
         </td>
-        <td></td>
         <td>
           <button class="button is-small is-danger"
                   v-if="isPlaying"
-                  @click="close()">
-              <span class="icon mr-2">
-                <i class="mdi mdi-24px mdi-pause-circle-outline"></i>
-              </span>
-            <span>停止</span>
-          </button>
+                  @click="close()"
+          >停止</button>
         </td>
         <td></td>
       </tr>
@@ -95,28 +93,27 @@
           @dragend="dragEnd()"
           :class="i === dragIndex ? 'dragging' : ''"
       >
-        <td>
-          <span class="icon is-pulled-left ml-0 mr-1 is-draggable"><i class="mdi mdi-24px mdi-drag-vertical mt-1"></i></span>
-          <div class="file is-small is-info">
-            <label class="file-label">
-              <input class="file-input" type="file" accept="video/mp4" @change="selectFile(i, $event)">
-              <span class="file-cta">
-              <span class="file-label">ファイル選択</span>
-            </span>
-            </label>
-          </div>
+        <td style="width: min-content; white-space: nowrap;">
+          <span class="icon ml-0 mr-0 is-draggable">
+            <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
+          </span>
+          <span v-if="isVideo(file.type)" class="icon has-text-link">
+            <i class="mdi mdi-24px mdi-video"></i>
+          </span>
+          <span v-if="isAudio(file.type)" class="icon"
+                style="color:#eebe3a!important">
+            <i class="mdi mdi-24px mdi-music-note"></i>
+          </span>
         </td>
-        <td style="font-size: 0.9rem; max-width: 30rem; vertical-align: middle; overflow-x: auto"
-        ><a @click="preview(file)">{{ file.name }}</a></td>
+        <td style="font-size: 0.9rem; max-width: 30rem; vertical-align: middle; overflow-x: auto">
+          <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
+          <span v-if="isAudio(file.type)">{{ file.name }}</span>
+        </td>
         <td>
           <button v-if="isExists(file.path)"
                   class="button is-small is-success"
-                  @click="play(i)">
-              <span class="icon mr-2">
-                <i class="mdi mdi-24px mdi-play-circle-outline"></i>
-              </span>
-            <span>再生</span>
-          </button>
+                  @click="play(i)"
+          >再生</button>
         </td>
         <td style="width: 1rem">
           <button class="delete" @click="removeRow(i)"></button>
@@ -124,10 +121,28 @@
       </tr>
       </tbody>
     </table>
-    <a class="is-size-7 is-info ml-4" @click="addRow()">行を追加する</a>
+    <div class="field is-grouped">
+      <div class="file is-small is-link is-light">
+        <label class="file-label">
+          <input class="file-input" type="file" accept="video/*" @change="selectVideoFile($event)">
+          <span class="file-cta">
+          <span class="file-label">映像追加</span>
+        </span>
+        </label>
+      </div>
+      <div class="file is-small is-warning is-light ml-2">
+        <label class="file-label">
+          <input class="file-input" type="file" accept="audio/*" @change="selectAudioFile($event)">
+          <span class="file-cta">
+          <span class="file-label">音源追加</span>
+        </span>
+        </label>
+      </div>
+    </div>
+<!--    <a class="is-size-7 is-info ml-4" @click="addRow()">行を追加する</a>-->
     <br><br>
     <div class="m-4" style="width: 100%; max-width: 480px;">
-      <h6 class="title is-6 mt-4 mb-1">プレビュー</h6>
+      <h6 class="title is-6 mt-4 mb-1">映像プレビュー</h6>
       <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
         <template v-if="previewFile.src">
           <video controls autoplay muted :key="videoReload">
@@ -182,6 +197,26 @@
                 this.files[i].name = event.target.files[0].name
                 this.files[i].type = event.target.files[0].type
             },
+            selectVideoFile(event) {
+                this.files.push({
+                    path: event.target.files[0].path,
+                    name: event.target.files[0].name,
+                    type: event.target.files[0].type
+                })
+            },
+            selectAudioFile(event) {
+                this.files.push({
+                    path: event.target.files[0].path,
+                    name: event.target.files[0].name,
+                    type: event.target.files[0].type
+                })
+            },
+            isVideo(type) {
+                return type.match(/video\/.*/)
+            },
+            isAudio(type) {
+                return type.match(/audio\/.*/)
+            },
             play(i) {
                 this.isPlaying = true;
                 const fileMeta = this.files[i]
@@ -192,12 +227,6 @@
                 this.isPlaying = false
             },
             addRow() {
-                // if (!Array.isArray(this.files))
-                //     return this.files = [{
-                //         path: "", name: "", type: "",
-                //         showCloseButton: false,
-                //     }]
-
                 this.files.push({path: "", name: "", type: ""})
             },
             removeRow(i) {

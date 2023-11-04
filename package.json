@@ -1,6 +1,6 @@
 {
   "name": "pier-player",
-  "version": "1.0.0",
+  "version": "2.1.1",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -29,11 +29,12 @@
       "preload.js",
       "index.html",
       "player.html",
+      "cgm.html",
       "package.json",
       "package-lock.json"
     ],
     "win": {
-      "icon": "static/favicon.ico",
+      "icon": "static/icon.png",
       "target": "nsis"
     },
     "nsis":{
