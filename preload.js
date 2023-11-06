@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('api', {
     openCgm: (cgm) => ipcRenderer.invoke('openCgm', cgm),
     cgmLoadedFromCgmWindow: () => ipcRenderer.invoke('cgmLoadedFromCgmWindow'),
     cgmLoaded: (callback) => ipcRenderer.on('cgmLoaded', callback),
+    errorCgmOpen: (callback) => ipcRenderer.on('errorCgmOpen', callback),
     playCgm: () => ipcRenderer.invoke('playCgm'),
     closeCgm: () => ipcRenderer.invoke('closeCgm'),
     getCgmList: () => ipcRenderer.invoke("getCgmList"),

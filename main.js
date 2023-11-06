@@ -15,7 +15,7 @@ const devToolsEnabled = false;
 let mainWindow;
 const createWindow = () => {
     mainWindow = new BrowserWindow({
-        width: 900, height: 700,
+        width: 600, height: 700,
         icon: icon,
         webPreferences: {
             nodeIntegration: true,
@@ -198,9 +198,13 @@ app.whenReady().then(() => {
     ipcMain.handle("openCgm", (event, cgm) => {
         cgmWindow.close();
         createCgmWindow()
-        cgmWindow.setTitle(cgm.title)
         cgmWindow.loadURL(cgm.path).then(() => {
+            cgmWindow.setTitle(cgm.title)
             cgmWindow.showInactive();
+        }).catch((e) => {
+            console.error(e)
+            cgmWindow.close();
+            mainWindow.webContents.send("errorCgmOpen");
         });
     });
     ipcMain.handle("cgmLoadedFromCgmWindow", (event) => {
