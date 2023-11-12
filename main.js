@@ -10,7 +10,7 @@ const store = new Store();
 // const icon = "static/favicon.ico";
 const icon = "static/icon.png";
 
-const devToolsEnabled = true;
+const devToolsEnabled = false;
 
 let mainWindow;
 const createWindow = () => {
@@ -234,6 +234,10 @@ app.whenReady().then(() => {
     });
     ipcMain.handle("storeCgmList", (event, cgmList) => {
         store.set("cgmList", cgmList);
+    });
+
+    ipcMain.handle('getVersion', (event) => {
+        return app.getVersion()
     });
 })
 

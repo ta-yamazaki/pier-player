@@ -168,7 +168,7 @@
     <p class="help is-danger">{{disallowedFileTypeMessage}}</p>
 <!--    <a class="is-size-7 is-info ml-4" @click="addRow()">行を追加する</a>-->
     <br><br>
-    <div class="" style="width: 100%; max-width: 480px;">
+    <div style="width: 100%; max-width: 480px;">
       <h6 class="title is-6 mt-4 mb-1">映像プレビュー</h6>
       <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
         <template v-if="previewFile.src">
@@ -180,8 +180,12 @@
       </div>
     </div>
   </div>
-<!--  <br>-->
-<!--  <button onclick="window.close()">終了</button>-->
+  <br>
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>Pier Player - v{{version}}</p>
+    </div>
+  </footer>
 </div>
 
 <script src="static/jquery.js"></script>
@@ -200,8 +204,11 @@
             isEnter: null,
             disallowedFileTypeMessage: "",
             videoReload: 0,
+            version: "",
         },
         async created() {
+            this.version = await window.api.getVersion()
+
             this.sundayFiles = await window.api.getFiles("sunday");
             this.wednesdayFiles = await window.api.getFiles("wednesday");
             this.otherFiles = await window.api.getFiles("other");

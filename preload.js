@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer} = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
     // メインプロセスの 'open-window' チャンネルへ送信
@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('api', {
     closeCgm: () => ipcRenderer.invoke('closeCgm'),
     getCgmList: () => ipcRenderer.invoke("getCgmList"),
     storeCgmList: (cgmList) => ipcRenderer.invoke("storeCgmList", cgmList),
+    getVersion: () => ipcRenderer.invoke('getVersion'),
 });
 
 // プリロードプロセスでは Node.js の全 API が利用可能です。

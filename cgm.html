@@ -163,7 +163,7 @@
     <button class="button is-small is-link" @click="addRow()">追加</button>
 
     <br><br>
-    <div class="m-4" style="width: 100%; max-width: 480px;">
+    <div style="width: 100%; max-width: 480px;">
       <h6 class="title is-6 mt-4 mb-1">映像プレビュー ※再生すると音が出ます</h6>
       <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
         <iframe :src="previewCgm.path" :key="videoReload"
@@ -171,6 +171,12 @@
       </div>
     </div>
   </div>
+  <br>
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>Pier Player - v{{version}}</p>
+    </div>
+  </footer>
 </div>
 
 <script src="static/jquery.js"></script>
@@ -183,8 +189,10 @@
             cgmList: [],
             dragIndex: null,
             videoReload: 0,
+            version: "",
         },
         async created() {
+            this.version = await window.api.getVersion()
             this.cgmList = await window.api.getCgmList();
         },
         mounted() {
