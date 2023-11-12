@@ -10,7 +10,7 @@ const store = new Store();
 // const icon = "static/favicon.ico";
 const icon = "static/icon.png";
 
-const devToolsEnabled = false;
+const devToolsEnabled = true;
 
 let mainWindow;
 const createWindow = () => {

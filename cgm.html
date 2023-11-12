@@ -20,7 +20,7 @@
     }
 
     img#logo {
-        height: 2rem;
+        height: 1.5rem;
         max-width: 100%;
         vertical-align: bottom;
     }
@@ -59,8 +59,8 @@
 </style>
 <body>
 <div id="app">
-  <h3 class="title is-3 mx-2 mt-2 mb-0"
-      style="white-space: nowrap; overflow-x: hidden; height: 2.5rem">
+  <h3 class="title is-4 mx-2 mt-2 mb-0"
+      style="white-space: nowrap; overflow-x: hidden;">
     <img id="logo" src="static/icon.png">
     Pier Player
     <span class="is-size-7" style="font-weight: normal;">CGM映像をサブモニタで再生します</span>
@@ -70,7 +70,7 @@
     >通常モードへ</a>
   </h3>
 
-  <div class="tabs is-boxed is-centered is-fullwidth">
+  <div class="tabs is-boxed is-centered is-fullwidth mb-2">
     <ul class="m-1" style="background-color: #f1f5f7">
       <li><a>CGMモード (β)</a></li>
     </ul>
@@ -95,8 +95,8 @@
           :key="i"
           :class="{
               'dragging': i === dragIndex,
-              'has-background-info-light': isViewedBeforePlay(cgm),
-              'has-background-success-light': isPlaying(cgm)
+              'has-background-success-light': isViewedBeforePlay(cgm),
+              'has-background-danger-light': isPlaying(cgm)
             }"
       >
         <td
@@ -113,47 +113,43 @@
             </span>
         </td>
         <td style="width: 30rem;">
-          <div class="field has-addons" style="white-space: nowrap;">
+          <div class="field has-addons mb-1" style="white-space: nowrap;">
             <p class="control">
               <a class="button is-small label"
-                 :class="{'is-info': isViewedBeforePlay(cgm), 'is-success': isPlaying(cgm)}"
+                 :class="{'is-success': isViewedBeforePlay(cgm), 'is-danger': isPlaying(cgm)}"
               >タイトル</a>
             </p>
             <p class="control is-expanded">
               <input type="text" v-model="cgm.title" class="input is-small" placeholder="映像タイトル（任意）">
             </p>
-            <p class="ml-2">
+            <p>
               <button v-if="isExists(cgm.path) && !cgm.isViewed"
-                      class="button is-small is-info"
+                      class="button is-small is-info ml-2"
                       @click="view(i)"
                       :class="isLoading ? 'is-loading' : ''"
-              >表示</button>
-              <template v-if="isViewedBeforePlay(cgm)">
-<!--                <b class="tag is-info is-light">表示中</b>-->
-                <button class="button is-small is-success"
-                        @click="play(i)"
-                        :class="{'is-loading': isLoading}"
-                >再生</button>
-              </template>
-              <template v-if="isPlaying(cgm)">
-<!--                <b class="tag is-success is-light">再生中</b>-->
-                <button class="button is-small is-danger"
-                        @click="close(i)"
-                >閉じる</button>
-              </template>
+              ><b>表示</b></button>
+              <button  v-if="isViewedBeforePlay(cgm)"
+                       class="button is-small is-success ml-2"
+                       @click="play(i)"
+                       :class="{'is-loading': isLoading}"
+              ><b>再生</b></button>
+              <button v-if="isPlaying(cgm)"
+                      class="button is-small is-danger ml-2"
+                      @click="close(i)"
+              ><b>閉じる</b></button>
             </p>
           </div>
           <div class="field has-addons">
             <p class="control">
               <a class="button is-small label"
-                 :class="{'is-info': isViewedBeforePlay(cgm), 'is-success': isPlaying(cgm)}"
+                 :class="{'is-success': isViewedBeforePlay(cgm), 'is-danger': isPlaying(cgm)}"
               >URL</a>
             </p>
             <p class="control is-expanded">
               <input type="url" v-model="cgm.path" class="input is-small" placeholder="CGM映像URL">
             </p>
-            <p class="ml-2">
-              <button class="button is-small" @click="preview(cgm)">プレビュー</button>
+            <p>
+              <button class="button is-small ml-2" @click="preview(cgm)">プレビュー</button>
             </p>
           </div>
         </td>
@@ -246,7 +242,10 @@
                 this.closeStatusAll()
             },
             addRow() {
-                this.cgmList.push({path: "", title: ""})
+                this.cgmList.push({
+                    path: "", title: "",
+                    isViewed: false, isPlaying: false
+                })
             },
             removeRow(i) {
                 this.close(i);
