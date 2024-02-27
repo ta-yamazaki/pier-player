@@ -19,7 +19,7 @@
     }
 
     img#logo {
-        height: 1.5rem;
+        height: 1.25rem;
         max-width: 100%;
         vertical-align: bottom;
     }
@@ -33,6 +33,12 @@
     }
 
     table, th, td {}
+    table.table tr td {
+        width: min-content;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
     .dragging {background-color: #eee;}
     .is-draggable{cursor: grab;}
     .is-draggable:active {cursor: grabbing;}
@@ -52,9 +58,11 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 100%;
+        width: 95%;
+        margin: auto;
         height: 5rem;
         border: 3px solid powderblue;
+        background-color: #f2fdff;
         border-radius: 7px;
     }
     .enter {
@@ -64,11 +72,11 @@
 </style>
 <body>
 <div id="app">
-  <h3 class="title is-4 mx-2 mt-2 mb-0"
+  <h3 class="title is-5 mx-2 mt-1 mb-0"
       style="white-space: nowrap; overflow-x: hidden;">
     <img id="logo" src="static/icon.png">
     Pier Player
-    <span class="is-size-7" style="font-weight: normal;">映像ファイルをサブモニタで再生します</span>
+<!--    <span class="is-size-7" style="font-weight: normal;">映像ファイルをサブモニタで再生します</span>-->
     <a href="cgm.html"
        style="vertical-align: bottom"
        class="button is-small is-link is-light is-pulled-right mt-1"
@@ -76,7 +84,7 @@
   </h3>
 
   <div class="tabs is-boxed is-centered is-fullwidth mb-2">
-    <ul class="m-1" style="background-color: #f1f5f7">
+    <ul class="my-1" style="background-color: #f1f5f7">
       <li @click="selectSundayTab()" class="is-active"><a>主日礼拝</a></li>
       <li @click="selectWednesdayTab()"><a>水曜礼拝</a></li>
 <!--      <li @click="selectDawnTab()"><a>明け方</a></li>-->
@@ -84,14 +92,21 @@
     </ul>
   </div>
 
-  <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 100%;">
-    <table class="table my-2 is-striped" style="width: 100%;">
+  <div class="mx-3">
+    <div
+        class="dropArea"
+        @dragenter="dragDropEnter()"
+        @dragleave="dragDropLeave()"
+        @dragover.prevent
+        @drop.prevent="droppedFile($event)"
+        :class="{'enter': isEnter}"
+    >ドラッグ＆ドロップしてファイルを追加</div>
+    <p class="help is-danger">{{disallowedFileTypeMessage}}</p>
+
+    <table class="table my-2 is-striped is-fullwidth">
       <tbody>
       <tr>
-        <td colspan="2">
-<!--          <button class="button is-small"-->
-<!--                  @click="storeFileInfo()">保存する</button>-->
-        </td>
+        <td colspan="2"></td>
         <td>
           <button class="button is-small is-danger"
                   v-if="isPlaying"
@@ -108,9 +123,9 @@
           @dragenter="dragEnter(i)"
           @dragover.prevent
           @dragend="dragEnd()"
-          :class="i === dragIndex ? 'dragging' : ''"
+          :class="[i === dragIndex ? 'dragging' : '', file.exists ? '' : 'has-background-danger-light']"
       >
-        <td style="width: min-content; white-space: nowrap;">
+        <td class="p-0">
           <span class="icon ml-0 mr-0 is-draggable">
             <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
           </span>
@@ -122,53 +137,45 @@
             <i class="mdi mdi-24px mdi-music-note"></i>
           </span>
         </td>
-        <td style="font-size: 0.9rem; max-width: 30rem; vertical-align: middle; overflow-x: auto">
+        <td style="font-size: 0.9rem; max-width: 20rem; overflow-x: auto;">
           <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
           <span v-if="isAudio(file.type)">{{ file.name }}</span>
+          <p class="has-text-danger" v-if="!file.exists"
+          >ファイルが存在しません。追加し直してください。</p>
         </td>
-        <td>
+        <td style="width: 4rem;">
           <button v-if="isExists(file.path)"
                   class="button is-small is-success"
                   @click="play(i)"
+                  :disabled="!file.exists"
           >再生</button>
         </td>
-        <td style="width: 1rem">
+        <td style="width: 1rem;" class="mx-2">
           <button class="delete" @click="removeRow(i)"></button>
         </td>
       </tr>
       </tbody>
     </table>
-    <div class="field is-grouped">
-      <div class="file is-small is-link is-light">
-        <label class="file-label">
-          <input class="file-input" type="file" accept="video/*" @change="selectVideoFile($event)">
-          <span class="file-cta">
-          <span class="file-label"><b>映像追加</b></span>
-        </span>
-        </label>
-      </div>
-      <div class="file is-small is-warning is-light ml-2">
-        <label class="file-label">
-          <input class="file-input" type="file" accept="audio/*" @change="selectAudioFile($event)">
-          <span class="file-cta">
-          <span class="file-label"><b>音源追加</b></span>
-        </span>
-        </label>
-      </div>
-    </div>
-
-    <div
-        class="dropArea"
-        @dragenter="dragDropEnter()"
-        @dragleave="dragDropLeave()"
-        @dragover.prevent
-        @drop.prevent="droppedFile($event)"
-        :class="{'enter': isEnter}"
-    >ドラッグ＆ドロップしてファイルを追加</div>
-    <p class="help is-danger">{{disallowedFileTypeMessage}}</p>
-<!--    <a class="is-size-7 is-info ml-4" @click="addRow()">行を追加する</a>-->
+<!--    <div class="field is-grouped">-->
+<!--      <div class="file is-small is-link is-light">-->
+<!--        <label class="file-label">-->
+<!--          <input class="file-input" type="file" accept="video/*" @change="selectVideoFile($event)">-->
+<!--          <span class="file-cta">-->
+<!--          <span class="file-label"><b>映像追加</b></span>-->
+<!--        </span>-->
+<!--        </label>-->
+<!--      </div>-->
+<!--      <div class="file is-small is-warning is-light ml-2">-->
+<!--        <label class="file-label">-->
+<!--          <input class="file-input" type="file" accept="audio/*" @change="selectAudioFile($event)">-->
+<!--          <span class="file-cta">-->
+<!--          <span class="file-label"><b>音源追加</b></span>-->
+<!--        </span>-->
+<!--        </label>-->
+<!--      </div>-->
+<!--    </div>-->
     <br><br>
-    <div style="width: 100%; max-width: 480px;">
+    <div style="width: 100%; max-width: 480px; margin: auto">
       <h6 class="title is-6 mt-4 mb-1">映像プレビュー</h6>
       <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
         <template v-if="previewFile.src">
@@ -194,9 +201,9 @@
         el: "#app",
         data: {
             files: [],
-            sundayFiles: [{path: "", name: "", type: ""}],
-            wednesdayFiles: [{path: "", name: "", type: ""}],
-            otherFiles: [{path: "", name: "", type: ""}],
+            sundayFiles: [{path: "", name: "", type: "", exists: true}],
+            wednesdayFiles: [{path: "", name: "", type: "", exists: true}],
+            otherFiles: [{path: "", name: "", type: "", exists: true}],
             isPlaying: false,
             selectedTab: "sunday",
             previewFile: { src: "", type: "" },
@@ -212,6 +219,8 @@
             this.sundayFiles = await window.api.getFiles("sunday");
             this.wednesdayFiles = await window.api.getFiles("wednesday");
             this.otherFiles = await window.api.getFiles("other");
+            await this.checkFilePaths();
+
             this.files = this.sundayFiles
 
             $(document).on("click", ".tabs li", function () {
@@ -238,7 +247,8 @@
                 this.files.push({
                     path: file.path,
                     name: file.name,
-                    type: file.type
+                    type: file.type,
+                    exists: true
                 })
             },
             selectVideoFile(event) {
@@ -246,6 +256,8 @@
             },
             selectAudioFile(event) {
                 this.selectFile(event.target.files[0])
+            },
+            isValidFilePath(path) {
             },
             isVideo(type) {
                 return type.match(/video\/.*/)
@@ -256,10 +268,20 @@
             allowedFileType(type) {
                 return this.isVideo(type) || this.isAudio(type)
             },
-            play(i) {
+            async checkFilePaths() {
+                this.sundayFiles = await window.api.checkFilePaths(this.sundayFiles);
+                this.wednesdayFiles = await window.api.checkFilePaths(this.wednesdayFiles);
+                this.otherFiles = await window.api.checkFilePaths(this.otherFiles);
+            },
+            async play(i) {
                 this.isPlaying = true;
                 const fileMeta = this.files[i]
-                window.api.openSubWindow(fileMeta);
+                const isExists = await window.api.openSubWindow(fileMeta);
+                console.log(isExists)
+                if (!isExists) {
+                    this.isPlaying = false;
+                    alert(`ファイルが存在しません。\n「${fileMeta.name}」`)
+                }
             },
             close() {
                 window.api.closeSubWindow();

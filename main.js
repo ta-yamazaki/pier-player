@@ -1,8 +1,11 @@
 // main.js
 
 // このモジュールはアプリケーションの生き死にを制御し、ネイティブブラウザウインドウを作成します
-const { app, BrowserWindow, screen, ipcMain } = require('electron')
+const { app, BrowserWindow, screen, ipcMain, shell } = require('electron')
 const path = require('node:path')
+
+const fs = require('fs');
+const fsPromises = fs.promises;
 
 const Store = require('electron-store');
 const store = new Store();
@@ -11,6 +14,7 @@ const store = new Store();
 const icon = "static/icon.png";
 
 const devToolsEnabled = false;
+// const devToolsEnabled = true;
 
 let mainWindow;
 const createWindow = () => {
@@ -174,15 +178,48 @@ app.whenReady().then(() => {
 
     // レンダラープロセスからpreload.js経由で 'open-window' チャンネルへ着信
     ipcMain.handle('open-window', (event, fileMeta) => { // 子ウィンドウを作成
+
+        // 存在チェック
+        const filePath = fileMeta.path;
+        const fileExists = fs.existsSync(filePath);
+
+        if (!fileExists) {
+            console.error("ファイルが存在しません。");
+            return false;
+        }
+
+        console.log("file exists")
+
         const displays = screen.getAllDisplays();
         for (const display of displays) {
             if (display.bounds.x === 0 && display.bounds.y === 0) continue;
             loadSubWindow(display, fileMeta)
             break;
         }
+        return true;
     });
     ipcMain.handle('close-window', (event) => { // 子ウィンドウを作成
         hideSubWindow()
+    });
+
+    ipcMain.handle('checkFilePaths', async (event, files) => { // 子ウィンドウを作成
+        const result = [];
+
+        for (const file of files) {
+            const fileExists = file.path === ""
+                ? true : fs.existsSync(file.path);
+
+            result.push({
+                path: file.path,
+                name: file.name,
+                type: file.type,
+                exists: fileExists
+            })
+        }
+
+        console.log("#### result")
+        console.log(result)
+        return result;
     });
 
     ipcMain.handle('getFiles', (event, target) => {

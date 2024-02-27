@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('api', {
     // メインプロセスの 'open-window' チャンネルへ送信
     openSubWindow: (fileMeta) => ipcRenderer.invoke('open-window', fileMeta),
     closeSubWindow: () => ipcRenderer.invoke('close-window'),
+    checkFilePaths: (files) => ipcRenderer.invoke('checkFilePaths', files),
     // playerEnded: () => ipcRenderer.invoke('player-ended'),
     getFiles: (target) => ipcRenderer.invoke("getFiles", target),
     storeFiles: (target, files) => ipcRenderer.invoke("storeFiles", target, files),
