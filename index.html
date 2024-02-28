@@ -141,7 +141,7 @@
           <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
           <span v-if="isAudio(file.type)">{{ file.name }}</span>
           <p class="has-text-danger" v-if="!file.exists"
-          >ファイルが存在しません。追加し直してください。</p>
+          >ファイルが開けませんでした。追加し直してください。</p>
         </td>
         <td style="width: 4rem;">
           <button v-if="isExists(file.path)"
