@@ -104,28 +104,30 @@
     <p class="help is-danger">{{disallowedFileTypeMessage}}</p>
 
     <table class="table my-2 is-striped is-fullwidth">
-      <tbody>
+      <tbody :key="reDraw">
       <tr>
-        <td colspan="2"></td>
-        <td>
-          <button class="button is-small is-danger"
-                  v-if="isPlaying"
-                  @click="close()"
-          >停止</button>
+        <td colspan="4">
+          <button class="button is-small is-pulled-right"
+                  @click="reset()"
+          >リセット</button>
         </td>
-        <td></td>
       </tr>
       <tr
           v-for="(file, i) in files"
           :key="i"
-          :draggable="true"
-          @dragstart="dragStart(i)"
-          @dragenter="dragEnter(i)"
-          @dragover.prevent
-          @dragend="dragEnd()"
-          :class="[i === dragIndex ? 'dragging' : '', file.exists ? '' : 'has-background-danger-light']"
+          :class="{
+              'dragging': i === dragIndex,
+              'has-background-danger-light': !file.exists,
+              'has-background-success-light has-text-weight-bold': file.isPlaying
+            }"
       >
-        <td class="p-0">
+        <td
+            :draggable="true"
+            @dragstart="dragStart(i)"
+            @dragenter="dragEnter(i)"
+            @dragover.prevent
+            @dragend="dragEnd()"
+            class="p-0">
           <span class="icon ml-0 mr-0 is-draggable">
             <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
           </span>
@@ -144,11 +146,15 @@
           >ファイルが開けませんでした。追加し直してください。</p>
         </td>
         <td style="width: 4rem;">
-          <button v-if="isExists(file.path)"
+          <button v-if="isExists(file.path) && !file.isPlaying"
                   class="button is-small is-success"
                   @click="play(i)"
                   :disabled="!file.exists"
-          >再生</button>
+          ><b>再生</b></button>
+          <button v-if="file.isPlaying"
+                  class="button is-small is-danger"
+                  @click="close(i)"
+          ><b>停止</b></button>
         </td>
         <td style="width: 1rem;" class="mx-2">
           <button class="delete" @click="removeRow(i)"></button>
@@ -204,13 +210,14 @@
             sundayFiles: [{path: "", name: "", type: "", exists: true}],
             wednesdayFiles: [{path: "", name: "", type: "", exists: true}],
             otherFiles: [{path: "", name: "", type: "", exists: true}],
-            isPlaying: false,
+            // isPlaying: false,
             selectedTab: "sunday",
             previewFile: { src: "", type: "" },
             dragIndex: null,
             isEnter: null,
             disallowedFileTypeMessage: "",
             videoReload: 0,
+            reDraw: 0,
             version: "",
         },
         async created() {
@@ -227,6 +234,11 @@
                 $(".tabs li").removeClass("is-active");
                 $(this).addClass("is-active");
             })
+        },
+        computed: {
+            isPlaying(file) {
+                return file.isPlaying
+            },
         },
         mounted() {
             //表示後にやりたいことはここに書ける
@@ -273,25 +285,51 @@
                 this.wednesdayFiles = await window.api.checkFilePaths(this.wednesdayFiles);
                 this.otherFiles = await window.api.checkFilePaths(this.otherFiles);
             },
-            async play(i) {
-                this.isPlaying = true;
-                const fileMeta = this.files[i]
-                const isExists = await window.api.openSubWindow(fileMeta);
-                console.log(isExists)
-                if (!isExists) {
-                    this.isPlaying = false;
-                    alert(`ファイルが存在しません。\n「${fileMeta.name}」`)
-                }
+            play(i) {
+                this.closeStatusAll()
+
+                // this.isPlaying = true;
+                const file = this.files[i]
+                file.isPlaying = true;
+
+                window.api.openSubWindow(file)
+                    .then((isExists) => {
+                        if (!isExists) {
+                            // this.isPlaying = false;
+                            alert(`ファイルが開けませんでした。\n「${file.name}」`)
+                            file.isPlaying = false;
+                        }
+                        this.reDraw++
+                    })
             },
-            close() {
+            close(i) {
+                const file = this.files[i]
                 window.api.closeSubWindow();
-                this.isPlaying = false
+                file.isPlaying = false
+                this.reDraw++
+            },
+            // close() {
+            //     window.api.closeSubWindow();
+            //     // this.isPlaying = false
+            // },
+            closeStatusAll() {
+                window.api.closeSubWindow();
+                this.files.forEach((file) => {
+                    file.isPlaying = false
+                })
+                this.reDraw++
+            },
+            reset() {
+                this.closeStatusAll()
             },
             addRow() {
                 this.files.push({path: "", name: "", type: ""})
             },
             removeRow(i) {
                 this.files.splice(i, 1);
+            },
+            isPlaying(file) {
+                return file.isPlaying
             },
             preview(file) {
                 this.previewFile.src = file.path

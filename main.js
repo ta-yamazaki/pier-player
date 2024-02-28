@@ -5,7 +5,6 @@ const { app, BrowserWindow, screen, ipcMain, shell } = require('electron')
 const path = require('node:path')
 
 const fs = require('fs');
-const fsPromises = fs.promises;
 
 const Store = require('electron-store');
 const store = new Store();
@@ -13,9 +12,12 @@ const store = new Store();
 // const icon = "static/favicon.ico";
 const icon = "static/icon.png";
 
-const devToolsEnabled = false;
-// const devToolsEnabled = true;
+// const devToolsEnabled = false;
+const devToolsEnabled = true;
 
+/**
+ * メインウィンドウ
+ */
 let mainWindow;
 const createWindow = () => {
     mainWindow = new BrowserWindow({
@@ -38,13 +40,18 @@ const createWindow = () => {
     })
 }
 
+/**
+ * サブウィンドウ
+ */
 let subWindow;
 const createSubWindow = () => {
+    if (subWindow != null && !subWindow.isDestroyed()) return Promise.prototype;
+
     subWindow = new BrowserWindow({
         show: false,
         icon: icon,
         frame: false,
-        title: 'サブモニタ',
+        // title: 'サブモニタ',
         titleBarStyle: 'hidden',
         backgroundColor: 'black',
         opacity: 0,
@@ -55,11 +62,11 @@ const createSubWindow = () => {
             preload: path.join(__dirname, 'preload.js')
         },
     });
-    subWindow.on('close', () => { hideSubWindow(subWindow) })
-    subWindow.loadFile('player.html').then(() => {
-        subWindow.showInactive();
-        // subWindow.hide();
-    });
+    subWindow.on('close', () => { subWindow.close() })
+    // subWindow.loadFile('player.html').then(() => {
+    //     subWindow.showInactive();
+    //     // subWindow.hide();
+    // });
 
     const displays = screen.getAllDisplays();
     for (const display of displays) {
@@ -72,9 +79,10 @@ const createSubWindow = () => {
 }
 
 const loadSubWindow = (display, fileMeta) => {
-    hideSubWindow();
+    // hideSubWindow();
 
     subWindow.setTitle(fileMeta.name)
+    subWindow.setOpacity(1)
 
     subWindow.webContents.send("subWindowShow",{
         path: fileMeta.path,
@@ -82,8 +90,8 @@ const loadSubWindow = (display, fileMeta) => {
     });
 
     ipcMain.on('subContentsCreated', (_event, value) => {
-        subWindow.setOpacity(1)
-        subWindow.moveTop()
+        // subWindow.setOpacity(1)
+        // subWindow.moveTop()
         // subWindow.show()
     })
 
@@ -91,20 +99,23 @@ const loadSubWindow = (display, fileMeta) => {
         subWindow.webContents.openDevTools() // デベロッパーツール
 }
 const hideSubWindow = () => {
-    subWindow.setTitle("サブモニタ")
+    // subWindow.setTitle("サブモニタ")
     subWindow.setOpacity(0)
     subWindow.webContents.send("subWindowHide");
-    // window.hide()
+    subWindow.hide()
     // subWindow.loadFile('player.html').then();
 }
 
+/**
+ * CGMウィンドウ
+ */
 let cgmWindow;
 const createCgmWindow = () => {
     cgmWindow = new BrowserWindow({
         show: false,
         icon: icon,
         frame: false,
-        title: 'CGMモニタ',
+        // title: 'CGMモニタ',
         titleBarStyle: 'hidden',
         backgroundColor: 'black',
         // opacity: 0,
@@ -115,7 +126,7 @@ const createCgmWindow = () => {
             preload: path.join(__dirname, 'preload.js')
         },
     });
-    cgmWindow.on('close', () => { cgmWindow.hide(); })
+    cgmWindow.on('close', () => { cgmWindow.close(); })
 
     const displays = screen.getAllDisplays();
     for (const display of displays) {
@@ -128,10 +139,8 @@ const createCgmWindow = () => {
     cgmWindow.webContents.insertCSS(`
             body {
                 overflow: hidden;
-                /* IE, Edge 対応 */
-                -ms-overflow-style: none;
-                /* Firefox 対応 */
-                scrollbar-width: none;
+                -ms-overflow-style: none; /* IE, Edge 対応 */
+                scrollbar-width: none; /* Firefox 対応 */
             }
             /* Chrome, Safari 対応 */
             body::-webkit-scrollbar {
@@ -152,6 +161,7 @@ const createCgmWindow = () => {
                    media.addEventListener("ended", () => {
                       console.log("ended")
                        player.setMuted(true)
+                       player.pause()
                     })
                   }
                 });
@@ -178,6 +188,7 @@ app.whenReady().then(() => {
 
     // レンダラープロセスからpreload.js経由で 'open-window' チャンネルへ着信
     ipcMain.handle('open-window', (event, fileMeta) => { // 子ウィンドウを作成
+        createSubWindow()
 
         // 存在チェック
         const filePath = fileMeta.path;
@@ -189,17 +200,25 @@ app.whenReady().then(() => {
         }
 
         console.log("file exists")
+        return subWindow.loadFile('player.html').then(() => {
+            if (fileMeta.type.match(/video\/.*/)) {
+                subWindow.showInactive();
+                subWindow.moveTop()
+            }
 
-        const displays = screen.getAllDisplays();
-        for (const display of displays) {
-            if (display.bounds.x === 0 && display.bounds.y === 0) continue;
-            loadSubWindow(display, fileMeta)
-            break;
-        }
-        return true;
+            const displays = screen.getAllDisplays();
+            for (const display of displays) {
+                if (display.bounds.x === 0 && display.bounds.y === 0) continue;
+                loadSubWindow(display, fileMeta)
+                break;
+            }
+            return true;
+        }).catch(() => {
+            return false;
+        });
     });
     ipcMain.handle('close-window', (event) => { // 子ウィンドウを作成
-        hideSubWindow()
+        subWindow.destroy()
     });
 
     ipcMain.handle('checkFilePaths', async (event, files) => { // 子ウィンドウを作成
@@ -233,7 +252,6 @@ app.whenReady().then(() => {
     });
 
     ipcMain.handle("openCgm", (event, cgm) => {
-        cgmWindow.close();
         createCgmWindow()
         cgmWindow.loadURL(cgm.path).then(() => {
             cgmWindow.setTitle(cgm.title)
@@ -256,10 +274,10 @@ app.whenReady().then(() => {
         `, true)
     });
     ipcMain.handle("closeCgm", (event) => {
-        cgmWindow.webContents.executeJavaScript(`
-         $('#player1')[0].player.pause()
-        `, true)
-        cgmWindow.hide();
+        // cgmWindow.webContents.executeJavaScript(`
+        //  $('#player1')[0].player.pause()
+        // `, true)
+        cgmWindow.close();
     });
 
     ipcMain.handle("getCgmList", (event) => {

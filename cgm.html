@@ -58,7 +58,7 @@
     }
 </style>
 <body>
-<div id="app">
+<div id="appCgm">
   <h3 class="title is-4 mx-2 mt-2 mb-0"
       style="white-space: nowrap; overflow-x: hidden;">
     <img id="logo" src="static/icon.png">
@@ -128,10 +128,10 @@
                       @click="view(i)"
                       :class="isLoading ? 'is-loading' : ''"
               ><b>表示</b></button>
-              <button  v-if="isViewedBeforePlay(cgm)"
-                       class="button is-small is-success ml-2"
-                       @click="play(i)"
-                       :class="{'is-loading': isLoading}"
+              <button v-if="isViewedBeforePlay(cgm)"
+                      class="button is-small is-success ml-2"
+                      @click="play(i)"
+                      :class="{'is-loading': isLoading}"
               ><b>再生</b></button>
               <button v-if="isPlaying(cgm)"
                       class="button is-small is-danger ml-2"
@@ -182,7 +182,7 @@
 <script src="static/jquery.js"></script>
 <script>
     new Vue({
-        el: "#app",
+        el: "#appCgm",
         data: {
             isLoading: false,
             previewCgm: { path: "" },
