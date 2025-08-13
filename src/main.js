@@ -1,19 +1,22 @@
 // main.js
 
 // このモジュールはアプリケーションの生き死にを制御し、ネイティブブラウザウインドウを作成します
-const { app, BrowserWindow, screen, ipcMain, shell } = require('electron')
-const path = require('node:path')
+import {app, BrowserWindow, ipcMain, screen} from 'electron';
+import path from 'node:path';
+import fs from 'fs';
+import {fileURLToPath} from 'url';
+import Store from 'electron-store';
 
-const fs = require('fs');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const Store = require('electron-store');
 const store = new Store();
 
 // const icon = "static/favicon.ico";
 const icon = "static/icon.png";
 
-const devToolsEnabled = false;
-// const devToolsEnabled = true;
+// const devToolsEnabled = false;
+const devToolsEnabled = true;
 
 /**
  * メインウィンドウ
@@ -30,7 +33,7 @@ const createWindow = () => {
         }
     })
     mainWindow.setMenuBarVisibility(false);
-    mainWindow.loadFile('index.html').then();
+    mainWindow.loadFile('src/index.html').then();
 
     if (devToolsEnabled)
         mainWindow.webContents.openDevTools() // デベロッパーツール
@@ -89,11 +92,11 @@ const loadSubWindow = (display, fileMeta) => {
         type: fileMeta.type,
     });
 
-    ipcMain.on('subContentsCreated', (_event, value) => {
-        // subWindow.setOpacity(1)
-        // subWindow.moveTop()
-        // subWindow.show()
-    })
+    // ipcMain.on('subContentsCreated', (_event, value) => {
+    //     // subWindow.setOpacity(1)
+    //     // subWindow.moveTop()
+    //     // subWindow.show()
+    // })
 
     if (devToolsEnabled)
         subWindow.webContents.openDevTools() // デベロッパーツール
@@ -200,7 +203,7 @@ app.whenReady().then(() => {
         }
 
         console.log("file exists")
-        return subWindow.loadFile('player.html').then(() => {
+        return subWindow.loadFile('src/player.html').then(() => {
             if (fileMeta.type.match(/video\/.*/)) {
                 subWindow.showInactive();
                 subWindow.moveTop()
@@ -222,23 +225,26 @@ app.whenReady().then(() => {
     });
 
     ipcMain.handle('checkFilePaths', async (event, files) => { // 子ウィンドウを作成
-        const result = [];
+        try {
+            const result = [];
 
-        for (const file of files) {
-            const fileExists = file.path === ""
-                ? true : fs.existsSync(file.path);
+            for (const file of files) {
+                const fileExists = file.path === ""
+                    ? true : fs.existsSync(file.path);
 
-            result.push({
-                path: file.path,
-                name: file.name,
-                type: file.type,
-                exists: fileExists
-            })
+                result.push({
+                    path: file.path,
+                    name: file.name,
+                    type: file.type,
+                    exists: fileExists
+                })
+            }
+
+            return result;
+        } catch (e) {
+            console.error(e)
+            return files;
         }
-
-        console.log("#### result")
-        console.log(result)
-        return result;
     });
 
     ipcMain.handle('getFiles', (event, target) => {

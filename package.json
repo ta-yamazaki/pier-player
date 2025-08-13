@@ -1,8 +1,9 @@
 {
   "name": "pier-player",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "src/main.js",
+  "type": "module",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder --win --x64",
@@ -11,11 +12,11 @@
   "author": "zakky",
   "license": "MIT",
   "devDependencies": {
-    "electron-builder": "^24.6.4",
-    "electron": "^26.2.2"
+    "electron": "^37.2.6",
+    "electron-builder": "^26.0.12"
   },
   "dependencies": {
-    "electron-store": "^8.1.0"
+    "electron-store": "^10.1.0"
   },
   "build": {
     "productName": "PierPlayer",
@@ -24,15 +25,10 @@
       "output": "dist"
     },
     "files": [
-      "static",
-      "main.js",
-      "preload.js",
-      "index.html",
-      "player.html",
-      "cgm.html"
+      "src"
     ],
     "win": {
-      "icon": "static/icon.png",
+      "icon": "src/static/icon.png",
       "target": "nsis"
     },
     "nsis":{
