@@ -28,7 +28,7 @@
       "src"
     ],
     "win": {
-      "icon": "src/static/icon.png",
+      "icon": "src/static/img/icon.png",
       "target": "nsis"
     },
     "nsis":{

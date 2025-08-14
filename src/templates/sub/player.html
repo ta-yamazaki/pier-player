@@ -51,7 +51,7 @@
     const source = document.getElementById('source')
 
     window.onload = (event) => {
-        window.api.subWindowShow((event, param) => {
+        window.sub.subWindowShow((event, param) => {
             body.innerHTML = ""
             if (param.type.match(/video\/.*/)) playVideo(event, param)
             if (param.type.match(/audio\/.*/)) playAudio(event, param)
@@ -83,7 +83,7 @@
             audio.play()
         }
 
-        // window.api.subWindowHide((event) => {
+        // window.sub.subWindowHide((event) => {
         //     body.innerHTML = ""
         //     body.classList.remove("start")
         //     body.classList.remove("end")

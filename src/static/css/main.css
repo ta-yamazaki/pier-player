@@ -1,0 +1,46 @@
+
+[v-cloak] {
+    display: none;
+}
+
+body {
+    -ms-overflow-style: none; /*スクロールバー非表示（IE・Edge）*/
+    scrollbar-width: none; /*スクロールバー非表示（Firefox）*/
+    /*background-color: #f1f5f7;*/
+}
+body::-webkit-scrollbar {
+    display:none; /*スクロールバー非表示（Chrome・Safari）*/
+}
+
+img#logo {
+    height: 1.5rem;
+    max-width: 100%;
+    vertical-align: bottom;
+}
+
+/*.tabs.is-boxed li.is-active a {*/
+/*    background-color: transparent;*/
+/*}*/
+.tabs li.is-active a {
+    color: dimgray;
+    font-weight: bold;
+}
+
+table, th, td {
+    vertical-align: middle;
+}
+.dragging {background-color: #eee;}
+.is-draggable{cursor: grab;}
+.is-draggable:active {cursor: grabbing;}
+
+.delete {
+    vertical-align: middle;
+    background-color: rgba(255, 69, 0, 0.4);
+}
+.delete:hover {
+    background-color: rgba(255, 69, 0, 0.7) !important;
+}
+
+.required {
+    color: orangered;
+}

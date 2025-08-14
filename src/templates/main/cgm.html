@@ -5,80 +5,44 @@
   <!--  &lt;!&ndash; https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP &ndash;&gt;-->
   <!--  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
   <title>Pier Player</title>
-  <link rel="stylesheet" href="static/bulma.css">
+  <link rel="stylesheet" href="../../static/css/bulma.css">
+  <link rel="stylesheet" href="../../static/css/main.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 </head>
 <style>
-    body {
-        -ms-overflow-style: none; /*スクロールバー非表示（IE・Edge）*/
-        scrollbar-width: none; /*スクロールバー非表示（Firefox）*/
-        /*background-color: #f1f5f7;*/
-    }
-    body::-webkit-scrollbar {
-        display:none; /*スクロールバー非表示（Chrome・Safari）*/
-    }
-
-    img#logo {
-        height: 1.5rem;
-        max-width: 100%;
-        vertical-align: bottom;
-    }
-
-    /*.tabs.is-boxed li.is-active a {*/
-    /*    background-color: transparent;*/
-    /*}*/
-    .tabs li.is-active a {
-        color: dimgray;
-        font-weight: bold;
-    }
-
-    table, th, td {}
-    .dragging {background-color: #eee;}
-    .is-draggable{cursor: grab;}
-    .is-draggable:active {cursor: grabbing;}
-
-    .delete {
-        vertical-align: middle;
-        background-color: #f1466863;
-    }
-    .delete:hover {
-        background-color: #f14668bb !important;
-    }
-
     .control a.label {
         width: 5rem;
         cursor: unset;
     }
+
     .control input {
         min-width: 15rem
     }
+
     .field button {
         width: 5rem !important;
     }
 </style>
 <body>
-<div id="appCgm">
-  <h3 class="title is-4 mx-2 mt-2 mb-0"
-      style="white-space: nowrap; overflow-x: hidden;">
-    <img id="logo" src="static/icon.png">
-    Pier Player
-    <span class="is-size-7" style="font-weight: normal;">CGM映像をサブモニタで再生します</span>
-    <a href="index.html"
-       style="vertical-align: bottom"
-       class="button is-small is-link is-light is-pulled-right mt-1"
-    >通常モードへ</a>
-  </h3>
-
-  <div class="tabs is-boxed is-centered is-fullwidth mb-2">
-    <ul class="m-1" style="background-color: #f1f5f7">
-      <li><a>CGMモード (β)</a></li>
-    </ul>
-  </div>
+<div id="appCgm" v-cloak>
+<!--  <div class="tabs is-boxed is-centered is-fullwidth mb-2">-->
+<!--    <ul class="m-1" style="background-color: #f1f5f7">-->
+<!--      <li><a>CGMモード (β)</a></li>-->
+<!--    </ul>-->
+<!--  </div>-->
+  <nav class="navbar has-shadow">
+    <div class="navbar-brand">
+      <a class="navbar-item">
+        <img src="../../static/img/CGM.webp" height="24" width="24" class="mr-2">
+        CGMモード
+      </a>
+    </div>
+  </nav>
 
   <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 95%;">
-    <table class="table my-2 is-striped" style="width: 100%;">
-      <tbody id="fileSelectBody">
+    <table class="table my-2 is-striped is-fullwidth">
+      <tbody :key="reDraw">
       <tr class="is-size-7" style="white-space: nowrap;">
         <!--        <td></td>-->
         <!--        <td>映像タイトル（任意）</td>-->
@@ -87,18 +51,17 @@
           <small>※表示に少し時間がかかる場合があります。</small>
           <button class="button is-small is-pulled-right"
                   @click="reset()"
-          >表示リセット</button>
+          >表示リセット
+          </button>
         </td>
       </tr>
-      <tr
-          v-for="(cgm, i) in cgmList"
+      <tr v-for="(cgm, i) in cgmList"
           :key="i"
           :class="{
               'dragging': i === dragIndex,
               'has-background-success-light': isViewedBeforePlay(cgm),
               'has-background-danger-light': isPlaying(cgm)
-            }"
-      >
+            }">
         <td
             :draggable="true"
             @dragstart="dragStart(i)"
@@ -112,7 +75,7 @@
               <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
             </span>
         </td>
-        <td style="width: 30rem;">
+        <td>
           <div class="field has-addons mb-1" style="white-space: nowrap;">
             <p class="control">
               <a class="button is-small label"
@@ -153,17 +116,19 @@
             </p>
           </div>
         </td>
-        <td style="width: 1rem; vertical-align: middle">
+        <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
           <button class="delete" @click="removeRow(i)"></button>
         </td>
       </tr>
 
       </tbody>
     </table>
-    <button class="button is-small is-link" @click="addRow()">追加</button>
+    <button class="button is-info is-outlined is-fullwidth mt-3" @click="addRow()">
+      ＋追加
+    </button>
 
     <br><br>
-    <div style="width: 100%; max-width: 480px;">
+    <div style="width: 100%; max-width: 480px; margin: auto">
       <h6 class="title is-6 mt-4 mb-1">映像プレビュー ※再生すると音が出ます</h6>
       <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
         <iframe :src="previewCgm.path" :key="videoReload"
@@ -179,35 +144,42 @@
   </footer>
 </div>
 
-<script src="static/jquery.js"></script>
+<script src="../../static/jquery.js"></script>
+<script>
+    fetch('../components/bottom-nav.html')
+        .then(res => res.text())
+        .then(html => {
+            $('#appCgm').append(html);
+            $('#is-cgm').addClass("is-active");
+        });
+</script>
 <script>
     new Vue({
         el: "#appCgm",
         data: {
             isLoading: false,
-            previewCgm: { path: "" },
+            previewCgm: {path: ""},
             cgmList: [],
             dragIndex: null,
             videoReload: 0,
+            reDraw: 0,
             version: "",
+            mainApi: window.api,
+            cgmApi: window.cgm,
         },
         async created() {
-            this.version = await window.api.getVersion()
-            this.cgmList = await window.api.getCgmList();
+            this.cgmList = await this.cgmApi.getCgmList();
+            this.version = await this.mainApi.getVersion()
         },
         mounted() {
-            //表示後にやりたいことはここに書ける
-            window.api.cgmLoaded((event) => {
-                this.isLoading = false;
-            })
-            window.api.errorCgmOpen((event) => {
+            this.cgmApi.errorCgmOpen((event) => {
                 alert("CGM映像の表示に失敗しました。")
             })
         },
         watch: {
             cgmList: {
                 handler: function (newVal, oldVal) {
-                    window.api.storeCgmList(newVal)
+                    this.cgmApi.storeCgmList(newVal)
                 },
                 deep: true
             }
@@ -218,18 +190,19 @@
 
                 const cgm = this.cgmList[i]
                 this.isLoading = true;
-                window.api.openCgm(cgm).then(() => {
+                this.cgmApi.openCgm(cgm).then(() => {
                     cgm.isViewed = true;
+                    this.isLoading = false;
                 });
             },
             play(i) {
                 const cgm = this.cgmList[i]
-                window.api.playCgm();
+                this.cgmApi.playCgm();
                 cgm.isPlaying = true
             },
             close(i) {
                 const cgm = this.cgmList[i]
-                window.api.closeCgm();
+                this.cgmApi.closeCgm();
                 cgm.isViewed = false
                 cgm.isPlaying = false
             },
@@ -240,11 +213,12 @@
                 return cgm.isPlaying
             },
             closeStatusAll() {
-                window.api.closeCgm();
+                this.cgmApi.closeCgm();
                 this.cgmList.forEach((cgm) => {
                     cgm.isViewed = false
                     cgm.isPlaying = false
                 })
+                this.reDraw++
             },
             reset() {
                 this.closeStatusAll()
@@ -264,18 +238,18 @@
                 this.videoReload++
             },
             storeFileInfo() {
-                window.api.storeCgmList(this.cgmList);
+                this.cgmApi.storeCgmList(this.cgmList);
             },
             dragStart(index) {
                 this.dragIndex = index;
             },
-            dragEnter (index) {
+            dragEnter(index) {
                 if (index === this.dragIndex) return;
                 const deleteElement = this.cgmList.splice(this.dragIndex, 1)[0];
                 this.cgmList.splice(index, 0, deleteElement);
                 this.dragIndex = index;
             },
-            dragEnd () {
+            dragEnd() {
                 this.dragIndex = null;
             },
             isExists(v) {
