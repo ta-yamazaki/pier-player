@@ -31,7 +31,14 @@
 
   <main>
     <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 95%;">
-      <table class="table my-2 is-striped is-fullwidth">
+      <h5 class="title is-5 mb-1 mt-3">
+        CGM映像
+        <button class="button is-small is-pulled-right"
+                @click="reset()"
+        >表示リセット
+        </button>
+      </h5>
+      <table class="table mb-2 is-striped is-fullwidth">
         <tbody :key="reDraw">
         <tr class="is-size-7" style="white-space: nowrap;">
           <!--        <td></td>-->
@@ -39,10 +46,6 @@
           <!--        <td>CGM映像URL</td>-->
           <td colspan="3">
             <small>※表示に少し時間がかかる場合があります。</small>
-            <button class="button is-small is-pulled-right"
-                    @click="reset()"
-            >表示リセット
-            </button>
           </td>
         </tr>
         <tr v-for="(cgm, i) in cgmList"
@@ -113,7 +116,7 @@
 
         </tbody>
       </table>
-      <button class="button is-info is-outlined is-fullwidth mt-3" @click="addRow()">
+      <button class="button is-info is-outlined is-fullwidth mt-5" @click="addRow()">
         ＋追加
       </button>
 

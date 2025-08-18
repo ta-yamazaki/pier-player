@@ -19,12 +19,12 @@
     <div class="tabs is-boxed is-centered is-fullwidth mb-4">
       <ul style="background-color: #f1f5f7">
         <li class="is-active"><a>ショーケース</a></li>
-        <li><a href="vimeo.html">個別動画</a></li>
+        <li><a href="vimeo.html">個別映像</a></li>
       </ul>
     </div>
 
     <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 95%;">
-      <h4 class="title is-4 mb-1">ショーケースの設定</h4>
+      <h5 class="title is-5 mb-1">設定</h5>
       <div class="box has-background-info-light">
         <div class="field">
           <label class="label is-size-7">ショーケースURL</label>
@@ -44,24 +44,25 @@
 
         <div v-if="canGetTitles">
           <button class="button is-info is-outlined is-fullwidth mt-4"
+                  :class="{'is-loading': isGettingShowcaseVideos}"
                   @click="getShowcaseVideoTitles()">
-            ショーケースの動画一覧を取得
+            ショーケースの映像一覧を取得
           </button>
           <label class="checkbox">
             <input type="checkbox" v-model="overrideVideoList"/>
-            <small>動画一覧を上書きする</small>
+            <small>映像一覧を上書きする</small>
           </label>
         </div>
       </div>
 
       <br>
 
-      <h4 class="title is-4 mb-1">
-        ショーケースの動画一覧
+      <h5 class="title is-5 mb-1">
+        映像一覧
         <button class="button is-small is-pulled-right" @click="reset()">
           表示リセット
         </button>
-      </h4>
+      </h5>
       <table class="table my-2 is-narrow is-striped" style="width: 100%;">
         <thead>
         <tr class="is-size-7" style="white-space: nowrap;">
@@ -128,7 +129,7 @@
 
         </tbody>
       </table>
-      <button class="button is-info is-outlined is-fullwidth mt-3" @click="addRow()">
+      <button class="button is-info is-outlined is-fullwidth mt-5" @click="addRow()">
         ＋追加
       </button>
     </div>
@@ -155,6 +156,7 @@
         el: "#appVimeoShowcase",
         data: {
             isLoading: false,
+            isGettingShowcaseVideos: false,
             previewVimeo: {title: ""},
             showcase: {
                 rawUrl: "",
@@ -276,11 +278,17 @@
                 return typeof v !== 'undefined' && v !== null && v !== "" && v !== {};
             },
             getShowcaseVideoTitles() {
+                if (this.overrideVideoList) {
+                    const ok = confirm("映像一覧を取得し、上書きしてもよいですか？");
+                    if (!ok) return
+                }
+
+                this.isGettingShowcaseVideos = true;
                 fetch(this.showcaseUrlWithPassword).then(async res => {
                     const html = await res.text()
                     // 正規表現で "clips": [ ... ] を抜き出す
                     const match = html.match(/"clips"\s*:\s*(\[[\s\S]*?])/);
-                    if (!match) return alert("動画一覧を取得できませんでした。URLとパスワードを確認してください。\n\n何度試しても取得できない場合は手動で追加してください。");
+                    if (!match) return alert("映像一覧を取得できませんでした。URLとパスワードを確認してください。\n\n何度試しても取得できない場合は手動で追加してください。");
 
                     try {
                         const clips = JSON.parse(match[1]);
@@ -293,9 +301,14 @@
                         })
                         if (this.overrideVideoList) this.vimeoList = titles
                         else this.vimeoList = this.vimeoList.concat(titles)
+                        alert("映像一覧を取得しました。");
                     } catch (e) {
-                        alert("動画一覧の取得に失敗しました。手動で追加してください。");
+                        alert("映像一覧の取得に失敗しました。手動で追加してください。");
                     }
+                }).catch((e) => {
+                    alert("映像一覧の取得に失敗しました。手動で追加してください。");
+                }).finally(() => {
+                    this.isGettingShowcaseVideos = false;
                 })
             },
         },

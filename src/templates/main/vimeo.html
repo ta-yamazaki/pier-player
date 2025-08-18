@@ -27,7 +27,7 @@
     <div class="tabs is-boxed is-centered is-fullwidth mb-4">
       <ul style="background-color: #f1f5f7">
         <li><a href="./showcase.html">ショーケース</a></li>
-        <li class="is-active"><a>個別動画</a></li>
+        <li class="is-active"><a>個別映像</a></li>
       </ul>
     </div>
 
@@ -39,7 +39,7 @@
         <thead>
         <tr class="is-size-7" style="white-space: nowrap;">
           <th></th>
-          <th>動画一覧</th>
+          <th>映像一覧</th>
           <th></th>
         </tr>
         </thead>
@@ -129,7 +129,7 @@
 
         </tbody>
       </table>
-      <button class="button is-info is-outlined is-fullwidth mt-3" @click="addRow()">
+      <button class="button is-info is-outlined is-fullwidth mt-5" @click="addRow()">
         ＋追加
       </button>
     </div>
@@ -263,7 +263,7 @@
             //         const html = await res.text()
             //         // 正規表現で "clips": [ ... ] を抜き出す
             //         const match = html.match(/"clips"\s*:\s*(\[[\s\S]*?])/);
-            //         if (!match) return alert("動画一覧を取得できませんでした。URLとパスワードを確認してください。\n\n何度試しても取得できない場合は手動で追加してください。");
+            //         if (!match) return alert("映像一覧を取得できませんでした。URLとパスワードを確認してください。\n\n何度試しても取得できない場合は手動で追加してください。");
             //
             //         try {
             //             const clips = JSON.parse(match[1]);
@@ -277,7 +277,7 @@
             //             if (this.overrideVideoList) this.vimeoList = titles
             //             else this.vimeoList = this.vimeoList.concat(titles)
             //         } catch (e) {
-            //             alert("動画一覧の取得に失敗しました。手動で追加してください。");
+            //             alert("映像一覧の取得に失敗しました。手動で追加してください。");
             //         }
             //     })
             // },
