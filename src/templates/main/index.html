@@ -7,6 +7,7 @@
   <title>Pier Player</title>
   <link rel="stylesheet" href="../../static/css/bulma.css">
   <link rel="stylesheet" href="../../static/css/main.css">
+  <link rel="stylesheet" href="../../static/css/side-menu.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 </head>
@@ -33,141 +34,117 @@
 </style>
 <body>
 <div id="app" v-cloak>
-  <nav class="navbar">
-    <div class="navbar-brand">
-      <div class="navbar-item">
-        <img src="../../static/img/Files.webp" height="24" width="24" class="mr-2">
-        ファイル再生モード
+  <aside id="sideMenu"></aside>
+
+  <main>
+    <div class="tabs is-boxed is-centered is-fullwidth mb-2">
+      <ul style="background-color: #f1f5f7">
+        <li @click="selectSundayTab()" class="is-active"><a>主日礼拝</a></li>
+        <li @click="selectWednesdayTab()"><a>水曜礼拝</a></li>
+        <!--      <li @click="selectDawnTab()"><a>明け方</a></li>-->
+        <li @click="selectOtherTab()"><a>その他</a></li>
+      </ul>
+    </div>
+
+    <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 95%;">
+      <div
+          class="dropArea"
+          @dragenter="dragDropEnter()"
+          @dragleave="dragDropLeave()"
+          @dragover.prevent
+          @drop.prevent="droppedFile($event)"
+          :class="{'enter': isEnter}"
+      >ドラッグ＆ドロップしてファイルを追加
       </div>
-    </div>
-  </nav>
+      <p class="help is-danger">{{disallowedFileTypeMessage}}</p>
 
-  <div class="tabs is-boxed is-centered is-fullwidth mb-2">
-    <ul style="background-color: #f1f5f7">
-      <li @click="selectSundayTab()" class="is-active"><a>主日礼拝</a></li>
-      <li @click="selectWednesdayTab()"><a>水曜礼拝</a></li>
-      <!--      <li @click="selectDawnTab()"><a>明け方</a></li>-->
-      <li @click="selectOtherTab()"><a>その他</a></li>
-    </ul>
-  </div>
-
-  <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 95%;">
-    <div
-        class="dropArea"
-        @dragenter="dragDropEnter()"
-        @dragleave="dragDropLeave()"
-        @dragover.prevent
-        @drop.prevent="droppedFile($event)"
-        :class="{'enter': isEnter}"
-    >ドラッグ＆ドロップしてファイルを追加
-    </div>
-    <p class="help is-danger">{{disallowedFileTypeMessage}}</p>
-
-    <table class="table my-2 is-striped is-fullwidth">
-      <tbody :key="reDraw">
-      <tr>
-        <td colspan="4">
-          <button class="button is-small is-pulled-right"
-                  @click="reset()"
-          >表示リセット
-          </button>
-        </td>
-      </tr>
-      <tr
-          v-for="(file, i) in files"
-          :key="i"
-          :class="{
+      <table class="table my-2 is-striped is-fullwidth">
+        <tbody :key="reDraw">
+        <tr>
+          <td colspan="4">
+            <button class="button is-small is-pulled-right"
+                    @click="reset()"
+            >表示リセット
+            </button>
+          </td>
+        </tr>
+        <tr v-for="(file, i) in files"
+            :key="i"
+            :class="{
               'dragging': i === dragIndex,
               'has-background-danger-light': !file.exists,
               'has-background-success-light has-text-weight-bold': file.isPlaying
-            }"
-      >
-        <td :draggable="true"
-            @dragstart="dragStart(i)"
-            @dragenter="dragEnter(i)"
-            @dragover.prevent
-            @dragend="dragEnd()"
-            style="white-space: nowrap">
+            }">
+          <td :draggable="true"
+              @dragstart="dragStart(i)"
+              @dragenter="dragEnter(i)"
+              @dragover.prevent
+              @dragend="dragEnd()"
+              style="white-space: nowrap">
           <span class="icon ml-0 mr-0 is-draggable">
             <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
           </span>
-          <span v-if="isVideo(file.type)" class="icon has-text-link">
+            <span v-if="isVideo(file.type)" class="icon has-text-link">
             <i class="mdi mdi-24px mdi-video"></i>
           </span>
-          <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
+            <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
             <i class="mdi mdi-24px mdi-music-note"></i>
           </span>
-        </td>
-        <td style="font-size: 0.9rem; max-width: 20rem; overflow-x: auto; vertical-align: middle">
-          <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
-          <span v-if="isAudio(file.type)">{{ file.name }}</span>
-          <p class="has-text-danger" v-if="!file.exists"
-          >ファイルが開けませんでした。追加し直してください。</p>
-        </td>
-        <td style="width: 4rem;">
-          <button v-if="isExists(file.path) && !file.isPlaying"
-                  class="button is-small is-success"
-                  @click="play(i)"
-                  :disabled="!file.exists"
-          ><b>再生</b></button>
-          <button v-if="file.isPlaying"
-                  class="button is-small is-danger"
-                  @click="close(i)"
-          ><b>停止</b></button>
-        </td>
-        <td style="width: 1rem;" class="mx-2">
-          <button class="delete" @click="removeRow(i)"></button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    <!--    <div class="field is-grouped">-->
-    <!--      <div class="file is-small is-link is-light">-->
-    <!--        <label class="file-label">-->
-    <!--          <input class="file-input" type="file" accept="video/*" @change="selectVideoFile($event)">-->
-    <!--          <span class="file-cta">-->
-    <!--          <span class="file-label"><b>映像追加</b></span>-->
-    <!--        </span>-->
-    <!--        </label>-->
-    <!--      </div>-->
-    <!--      <div class="file is-small is-warning is-light ml-2">-->
-    <!--        <label class="file-label">-->
-    <!--          <input class="file-input" type="file" accept="audio/*" @change="selectAudioFile($event)">-->
-    <!--          <span class="file-cta">-->
-    <!--          <span class="file-label"><b>音源追加</b></span>-->
-    <!--        </span>-->
-    <!--        </label>-->
-    <!--      </div>-->
-    <!--    </div>-->
-    <br><br>
-    <div style="width: 100%; max-width: 480px; margin: auto">
-      <h6 class="title is-6 mt-4 mb-1">映像プレビュー</h6>
-      <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
-        <template v-if="previewFile.src">
-          <video controls autoplay muted :key="videoReload">
-            <source :src="previewFile.src" :type="previewFile.type"/>
-          </video>
-          <br>
-          <small>※サブモニターでは再生バーは表示されません。</small>
-        </template>
+          </td>
+          <td style="font-size: 0.9rem; max-width: 20rem; overflow-x: auto; vertical-align: middle">
+            <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
+            <span v-if="isAudio(file.type)">{{ file.name }}</span>
+            <p class="has-text-danger" v-if="!file.exists"
+            >ファイルが開けませんでした。追加し直してください。</p>
+          </td>
+          <td style="width: 4rem;">
+            <button v-if="isExists(file.path) && !file.isPlaying"
+                    class="button is-small is-success"
+                    @click="play(i)"
+                    :disabled="!file.exists"
+            ><b>再生</b></button>
+            <button v-if="file.isPlaying"
+                    class="button is-small is-danger"
+                    @click="close(i)"
+            ><b>停止</b></button>
+          </td>
+          <td style="width: 1rem;" class="mx-2">
+            <button class="delete" @click="removeRow(i)"></button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <br><br>
+      <div style="width: 100%; max-width: 480px; margin: auto">
+        <h6 class="title is-6 mt-4 mb-1">映像プレビュー</h6>
+        <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
+          <template v-if="previewFile.src">
+            <video controls autoplay muted :key="videoReload">
+              <source :src="previewFile.src" :type="previewFile.type"/>
+            </video>
+            <br>
+            <small>※サブモニターでは再生バーは表示されません。</small>
+          </template>
+        </div>
       </div>
     </div>
-  </div>
-  <br>
-  <footer class="footer">
-    <div class="content has-text-centered">
-      <p>Pier Player - v{{version}}</p>
-    </div>
-  </footer>
+
+    <br>
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>Pier Player - v{{version}}</p>
+      </div>
+    </footer>
+  </main>
 </div>
 
 
 <script src="../../static/jquery.js"></script>
 <script>
-    fetch('../components/bottom-nav.html')
+    fetch('../components/side-nav.html')
         .then(res => res.text())
         .then(html => {
-            $('#app').append(html);
+            $('#sideMenu').replaceWith(html);
             $('#is-file').addClass("is-active");
         });
 </script>

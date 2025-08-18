@@ -7,6 +7,7 @@
   <title>Pier Player</title>
   <link rel="stylesheet" href="../../static/css/bulma.css">
   <link rel="stylesheet" href="../../static/css/main.css">
+  <link rel="stylesheet" href="../../static/css/side-menu.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 </head>
@@ -26,130 +27,120 @@
 </style>
 <body>
 <div id="appCgm" v-cloak>
-<!--  <div class="tabs is-boxed is-centered is-fullwidth mb-2">-->
-<!--    <ul class="m-1" style="background-color: #f1f5f7">-->
-<!--      <li><a>CGMモード (β)</a></li>-->
-<!--    </ul>-->
-<!--  </div>-->
-  <nav class="navbar has-shadow">
-    <div class="navbar-brand">
-      <a class="navbar-item">
-        <img src="../../static/img/CGM.webp" height="24" width="24" class="mr-2">
-        CGMモード
-      </a>
-    </div>
-  </nav>
+  <aside id="sideMenu"></aside>
 
-  <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 95%;">
-    <table class="table my-2 is-striped is-fullwidth">
-      <tbody :key="reDraw">
-      <tr class="is-size-7" style="white-space: nowrap;">
-        <!--        <td></td>-->
-        <!--        <td>映像タイトル（任意）</td>-->
-        <!--        <td>CGM映像URL</td>-->
-        <td colspan="3">
-          <small>※表示に少し時間がかかる場合があります。</small>
-          <button class="button is-small is-pulled-right"
-                  @click="reset()"
-          >表示リセット
-          </button>
-        </td>
-      </tr>
-      <tr v-for="(cgm, i) in cgmList"
-          :key="i"
-          :class="{
+  <main>
+    <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 95%;">
+      <table class="table my-2 is-striped is-fullwidth">
+        <tbody :key="reDraw">
+        <tr class="is-size-7" style="white-space: nowrap;">
+          <!--        <td></td>-->
+          <!--        <td>映像タイトル（任意）</td>-->
+          <!--        <td>CGM映像URL</td>-->
+          <td colspan="3">
+            <small>※表示に少し時間がかかる場合があります。</small>
+            <button class="button is-small is-pulled-right"
+                    @click="reset()"
+            >表示リセット
+            </button>
+          </td>
+        </tr>
+        <tr v-for="(cgm, i) in cgmList"
+            :key="i"
+            :class="{
               'dragging': i === dragIndex,
               'has-background-success-light': isViewedBeforePlay(cgm),
               'has-background-danger-light': isPlaying(cgm)
             }">
-        <td
-            :draggable="true"
-            @dragstart="dragStart(i)"
-            @dragenter="dragEnter(i)"
-            @dragover.prevent
-            @dragend="dragEnd()"
-            style="width: min-content; white-space: nowrap; vertical-align: middle"
-            class="px-0"
-        >
+          <td
+              :draggable="true"
+              @dragstart="dragStart(i)"
+              @dragenter="dragEnter(i)"
+              @dragover.prevent
+              @dragend="dragEnd()"
+              style="width: min-content; white-space: nowrap; vertical-align: middle"
+              class="px-0"
+          >
             <span class="icon mx-0 is-draggable">
               <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
             </span>
-        </td>
-        <td>
-          <div class="field has-addons mb-1" style="white-space: nowrap;">
-            <p class="control">
-              <a class="button is-small label"
-                 :class="{'is-success': isViewedBeforePlay(cgm), 'is-danger': isPlaying(cgm)}"
-              >タイトル</a>
-            </p>
-            <p class="control is-expanded">
-              <input type="text" v-model="cgm.title" class="input is-small" placeholder="映像タイトル（任意）">
-            </p>
-            <p>
-              <button v-if="isExists(cgm.path) && !cgm.isViewed"
-                      class="button is-small is-info ml-2"
-                      @click="view(i)"
-                      :class="isLoading ? 'is-loading' : ''"
-              ><b>表示</b></button>
-              <button v-if="isViewedBeforePlay(cgm)"
-                      class="button is-small is-success ml-2"
-                      @click="play(i)"
-                      :class="{'is-loading': isLoading}"
-              ><b>再生</b></button>
-              <button v-if="isPlaying(cgm)"
-                      class="button is-small is-danger ml-2"
-                      @click="close(i)"
-              ><b>閉じる</b></button>
-            </p>
-          </div>
-          <div class="field has-addons">
-            <p class="control">
-              <a class="button is-small label"
-                 :class="{'is-success': isViewedBeforePlay(cgm), 'is-danger': isPlaying(cgm)}"
-              >URL</a>
-            </p>
-            <p class="control is-expanded">
-              <input type="url" v-model="cgm.path" class="input is-small" placeholder="CGM映像URL">
-            </p>
-            <p>
-              <button class="button is-small ml-2" @click="preview(cgm)">プレビュー</button>
-            </p>
-          </div>
-        </td>
-        <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
-          <button class="delete" @click="removeRow(i)"></button>
-        </td>
-      </tr>
+          </td>
+          <td>
+            <div class="field has-addons mb-1" style="white-space: nowrap;">
+              <p class="control">
+                <a class="button is-small label"
+                   :class="{'is-success': isViewedBeforePlay(cgm), 'is-danger': isPlaying(cgm)}"
+                >タイトル</a>
+              </p>
+              <p class="control is-expanded">
+                <input type="text" v-model="cgm.title" class="input is-small" placeholder="映像タイトル（任意）">
+              </p>
+              <p>
+                <button v-if="isExists(cgm.path) && !cgm.isViewed"
+                        class="button is-small is-info ml-2"
+                        @click="view(i)"
+                        :class="isLoading ? 'is-loading' : ''"
+                ><b>表示</b></button>
+                <button v-if="isViewedBeforePlay(cgm)"
+                        class="button is-small is-success ml-2"
+                        @click="play(i)"
+                        :class="{'is-loading': isLoading}"
+                ><b>再生</b></button>
+                <button v-if="isPlaying(cgm)"
+                        class="button is-small is-danger ml-2"
+                        @click="close(i)"
+                ><b>閉じる</b></button>
+              </p>
+            </div>
+            <div class="field has-addons">
+              <p class="control">
+                <a class="button is-small label"
+                   :class="{'is-success': isViewedBeforePlay(cgm), 'is-danger': isPlaying(cgm)}"
+                >URL</a>
+              </p>
+              <p class="control is-expanded">
+                <input type="url" v-model="cgm.path" class="input is-small" placeholder="CGM映像URL">
+              </p>
+              <p>
+                <button class="button is-small ml-2" @click="preview(cgm)">プレビュー</button>
+              </p>
+            </div>
+          </td>
+          <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
+            <button class="delete" @click="removeRow(i)"></button>
+          </td>
+        </tr>
 
-      </tbody>
-    </table>
-    <button class="button is-info is-outlined is-fullwidth mt-3" @click="addRow()">
-      ＋追加
-    </button>
+        </tbody>
+      </table>
+      <button class="button is-info is-outlined is-fullwidth mt-3" @click="addRow()">
+        ＋追加
+      </button>
 
-    <br><br>
-    <div style="width: 100%; max-width: 480px; margin: auto">
-      <h6 class="title is-6 mt-4 mb-1">映像プレビュー ※再生すると音が出ます</h6>
-      <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
-        <iframe :src="previewCgm.path" :key="videoReload"
-                width="100%" height="100%"></iframe>
+      <br><br>
+      <div style="width: 100%; max-width: 480px; margin: auto">
+        <h6 class="title is-6 mt-4 mb-1">映像プレビュー ※再生すると音が出ます</h6>
+        <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
+          <iframe :src="previewCgm.path" :key="videoReload"
+                  width="100%" height="100%"></iframe>
+        </div>
       </div>
     </div>
-  </div>
-  <br>
-  <footer class="footer">
-    <div class="content has-text-centered">
-      <p>Pier Player - v{{version}}</p>
-    </div>
-  </footer>
+    <br>
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>Pier Player - v{{version}}</p>
+      </div>
+    </footer>
+  </main>
 </div>
 
 <script src="../../static/jquery.js"></script>
 <script>
-    fetch('../components/bottom-nav.html')
+    fetch('../components/side-nav.html')
         .then(res => res.text())
         .then(html => {
-            $('#appCgm').append(html);
+            $('#sideMenu').replaceWith(html);
             $('#is-cgm').addClass("is-active");
         });
 </script>

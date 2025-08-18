@@ -1,4 +1,4 @@
-import {BrowserWindow, ipcMain, screen} from 'electron';
+import {BrowserWindow, screen} from 'electron';
 import path from 'node:path';
 import {iconPath, preloadPath} from "../utils/path.js";
 

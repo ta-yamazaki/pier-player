@@ -5,6 +5,7 @@
   <title>Pier Vimeo</title>
   <link rel="stylesheet" href="../../static/css/bulma.css">
   <link rel="stylesheet" href="../../static/css/main.css">
+  <link rel="stylesheet" href="../../static/css/side-menu.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 </head>
@@ -20,140 +21,133 @@
 </style>
 <body>
 <div id="appVimeo" v-cloak>
-  <nav class="navbar">
-    <div class="navbar-brand">
-      <div class="navbar-item">
-        <img src="../../static/img/Vimeo.webp" height="24" width="24" class="mr-2">
-        Vimeoモード
-      </div>
+  <aside id="sideMenu"></aside>
+
+  <main>
+    <div class="tabs is-boxed is-centered is-fullwidth mb-4">
+      <ul style="background-color: #f1f5f7">
+        <li><a href="./showcase.html">ショーケース</a></li>
+        <li class="is-active"><a>個別動画</a></li>
+      </ul>
     </div>
-  </nav>
 
-  <div class="tabs is-boxed is-centered is-fullwidth mb-4">
-    <ul style="background-color: #f1f5f7">
-      <li><a href="./showcase.html">ショーケース</a></li>
-      <li class="is-active"><a>個別動画</a></li>
-    </ul>
-  </div>
-
-  <div style="margin: auto; width: fit-content; min-width: 480px; max-width: 95%;">
-    <button class="button is-small is-pulled-right" @click="reset()">
-      表示リセット
-    </button>
-    <table class="table my-2 is-striped is-fullwidth" style="width: 100%;">
-      <thead>
-      <tr class="is-size-7" style="white-space: nowrap;">
-        <th></th>
-        <th>動画一覧</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody :key="reDraw">
-      <tr
-          v-for="(vimeo, i) in vimeoList"
-          :key="i"
-          :class="{
+    <div style="margin: auto; width: fit-content; min-width: 480px; max-width: 95%;">
+      <button class="button is-small is-pulled-right" @click="reset()">
+        表示リセット
+      </button>
+      <table class="table my-2 is-striped is-fullwidth" style="width: 100%;">
+        <thead>
+        <tr class="is-size-7" style="white-space: nowrap;">
+          <th></th>
+          <th>動画一覧</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody :key="reDraw">
+        <tr v-for="(vimeo, i) in vimeoList"
+            :key="i"
+            :class="{
               'dragging': i === dragIndex,
               'has-background-success-light': isViewedBeforePlay(vimeo),
               'has-background-danger-light': isPlaying(vimeo)
-            }"
-      >
-        <td
-            :draggable="true"
-            @dragstart="dragStart(i)"
-            @dragenter="dragEnter(i)"
-            @dragover.prevent
-            @dragend="dragEnd()"
-            style="width: 24px; white-space: nowrap; vertical-align: middle"
-            class="px-0"
-        >
+            }">
+          <td
+              :draggable="true"
+              @dragstart="dragStart(i)"
+              @dragenter="dragEnter(i)"
+              @dragover.prevent
+              @dragend="dragEnd()"
+              style="width: 24px; white-space: nowrap; vertical-align: middle"
+              class="px-0"
+          >
             <span class="icon mx-0 is-draggable">
               <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
             </span>
-        </td>
-        <td>
-          <div class="field has-addons mb-1" style="white-space: nowrap;">
-            <p class="control">
-              <a class="button is-small label"
-                 :class="{'is-success': isViewedBeforePlay(vimeo), 'is-danger': isPlaying(vimeo)}"
-              >タイトル</a>
-            </p>
-            <p class="control is-expanded">
-              <input type="text" v-model="vimeo.title" class="input is-small" placeholder="映像タイトル（任意）"
-                     :readonly="!isBeforeViewing(vimeo)">
-            </p>
-            <p>
-              <button v-if="isBeforeViewing(vimeo)"
-                      class="button is-small is-info ml-2"
-                      @click="view(i)"
-                      :class="{'is-loading': isLoading}"
-                      :disabled="!isExists(vimeo.playerUrl)"
-              ><b>表示</b></button>
-              <button v-if="isViewedBeforePlay(vimeo)"
-                      class="button is-small is-success ml-2"
-                      @click="play(i)"
-                      :class="{'is-loading': isLoading}"
-              ><b>再生</b></button>
-              <button v-if="isPlaying(vimeo)"
-                      class="button is-small is-danger ml-2"
-                      @click="close(i)"
-              ><b>閉じる</b></button>
-            </p>
-          </div>
-          {{vimeo.titleFromUrl}}
-          <div class="field has-addons mb-1">
-            <p class="control">
-              <a class="button is-small label"
-                 :class="{'is-success': isViewedBeforePlay(vimeo), 'is-danger': isPlaying(vimeo)}"
-              >URL<small class="required">*</small></a>
-            </p>
-            <p class="control is-expanded">
-              <input type="url"
-                     v-model="vimeo.url"
-                     class="input is-small"
-                     :class="{'is-danger': isExists(vimeo.url) && !isExists(vimeo.playerUrl)}"
-                     :readonly="!isBeforeViewing(vimeo)"
-                     @keyup="generatePlayerUrl(vimeo)"
-                     @change="generatePlayerUrl(vimeo)">
-            </p>
-          </div>
-          <small v-if="isExists(vimeo.url) && !isExists(vimeo.playerUrl)"
-                 class="has-text-danger">URLの形式が正しくありません</small>
-          <div class="field has-addons has-addons-right">
-            <p class="control label is-small my-auto mr-2">
-              パスワード
-            </p>
-            <p class="control" style="width: 6rem">
-              <input type="text" v-model="vimeo.password" class="input is-small"
-                     :readonly="!isBeforeViewing(vimeo)">
-            </p>
-          </div>
-        </td>
-        <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
-          <button class="delete" @click="removeRow(i)"></button>
-        </td>
-      </tr>
+          </td>
+          <td>
+            <div class="field has-addons mb-1" style="white-space: nowrap;">
+              <p class="control">
+                <a class="button is-small label"
+                   :class="{'is-success': isViewedBeforePlay(vimeo), 'is-danger': isPlaying(vimeo)}"
+                >タイトル</a>
+              </p>
+              <p class="control is-expanded">
+                <input type="text" v-model="vimeo.title" class="input is-small" placeholder="映像タイトル（任意）"
+                       :readonly="!isBeforeViewing(vimeo)">
+              </p>
+              <p>
+                <button v-if="isBeforeViewing(vimeo)"
+                        class="button is-small is-info ml-2"
+                        @click="view(i)"
+                        :class="{'is-loading': isLoading}"
+                        :disabled="!isExists(vimeo.playerUrl)"
+                ><b>表示</b></button>
+                <button v-if="isViewedBeforePlay(vimeo)"
+                        class="button is-small is-success ml-2"
+                        @click="play(i)"
+                        :class="{'is-loading': isLoading}"
+                ><b>再生</b></button>
+                <button v-if="isPlaying(vimeo)"
+                        class="button is-small is-danger ml-2"
+                        @click="close(i)"
+                ><b>閉じる</b></button>
+              </p>
+            </div>
+            {{vimeo.titleFromUrl}}
+            <div class="field has-addons mb-1">
+              <p class="control">
+                <a class="button is-small label"
+                   :class="{'is-success': isViewedBeforePlay(vimeo), 'is-danger': isPlaying(vimeo)}"
+                >URL<small class="required">*</small></a>
+              </p>
+              <p class="control is-expanded">
+                <input type="url"
+                       v-model="vimeo.url"
+                       class="input is-small"
+                       :class="{'is-danger': isExists(vimeo.url) && !isExists(vimeo.playerUrl)}"
+                       :readonly="!isBeforeViewing(vimeo)"
+                       @keyup="generatePlayerUrl(vimeo)"
+                       @change="generatePlayerUrl(vimeo)">
+              </p>
+            </div>
+            <small v-if="isExists(vimeo.url) && !isExists(vimeo.playerUrl)"
+                   class="has-text-danger">URLの形式が正しくありません</small>
+            <div class="field has-addons has-addons-right">
+              <p class="control label is-small my-auto mr-2">
+                パスワード
+              </p>
+              <p class="control" style="width: 6rem">
+                <input type="text" v-model="vimeo.password" class="input is-small"
+                       :readonly="!isBeforeViewing(vimeo)">
+              </p>
+            </div>
+          </td>
+          <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
+            <button class="delete" @click="removeRow(i)"></button>
+          </td>
+        </tr>
 
-      </tbody>
-    </table>
-    <button class="button is-info is-outlined is-fullwidth mt-3" @click="addRow()">
-      ＋追加
-    </button>
-  </div>
-  <br>
-  <footer class="footer">
-    <div class="content has-text-centered">
-      <p>Pier Player - v{{version}}</p>
+        </tbody>
+      </table>
+      <button class="button is-info is-outlined is-fullwidth mt-3" @click="addRow()">
+        ＋追加
+      </button>
     </div>
-  </footer>
+    <br>
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>Pier Player - v{{version}}</p>
+      </div>
+    </footer>
+  </main>
 </div>
 
 <script src="../../static/jquery.js"></script>
 <script>
-    fetch('../components/bottom-nav.html')
+    fetch('../components/side-nav.html')
         .then(res => res.text())
         .then(html => {
-            $('#appVimeo').append(html);
+            $('#sideMenu').replaceWith(html);
             $('#is-vimeo').addClass("is-active");
         });
 </script>

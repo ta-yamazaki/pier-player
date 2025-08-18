@@ -1,0 +1,42 @@
+
+#app,
+#appCgm,
+#appVimeo,
+#appVimeoShowcase {
+    display: flex;
+}
+
+aside.menu {
+    position: fixed; /* サイドメニューを固定 */
+    top: 0;
+    left: 0;
+    width: 120px;
+    height: 100vh; /* 画面の高さいっぱい */
+    overflow-y: auto; /* メニューが長ければスクロール */
+    /*border-right: 1px solid #ddd;*/
+    background: linear-gradient(
+            125deg,
+            rgba(9, 109, 175, 0.5),
+            rgba(140, 18, 189, 0.5),
+            rgba(115, 7, 93, 0.4)
+    );
+    /*background: #dc7504;*/
+}
+
+aside.menu .menu-list a {
+    border-radius: 0;
+}
+
+aside.menu .menu-list a.is-active {
+    color: black;
+    background-color: #fff;
+}
+
+aside.menu p, aside.menu a {
+    color: #f2fcff;
+}
+
+main {
+    margin-left: calc(120px); /* サイドバーの分だけ右寄せ */
+    flex: 1;
+}

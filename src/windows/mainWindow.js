@@ -7,13 +7,15 @@ let mainWindow;
 
 export const createMainWindow = () => {
     mainWindow = new BrowserWindow({
-        width: 600, height: 700,
+        width: 700,
+        height: 700,
         icon: iconPath,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
             preload: path.join(preloadPath, '/mainPreload.js')
-        }
+        },
+        titleBarStyle: 'customButtonsOnHover',
     });
     mainWindow.setMenuBarVisibility(false);
     mainWindow.loadFile('src/templates/main/index.html');
