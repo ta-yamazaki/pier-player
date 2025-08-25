@@ -31,6 +31,10 @@
         color: white;
         background-color: powderblue;
     }
+
+    td {
+        vertical-align: middle !important;
+    }
 </style>
 <body>
 <div id="app" v-cloak>
@@ -58,7 +62,7 @@
       </div>
       <p class="help is-danger">{{disallowedFileTypeMessage}}</p>
 
-      <table class="table my-2 is-striped is-fullwidth">
+      <table class="table my-2 is-fullwidth">
         <tbody :key="reDraw">
         <tr>
           <td colspan="4">
@@ -72,7 +76,6 @@
             :key="i"
             :class="{
               'dragging': i === dragIndex,
-              'has-background-danger-light': !file.exists,
               'has-background-success-light has-text-weight-bold': file.isPlaying
             }">
           <td :draggable="true"
@@ -80,24 +83,29 @@
               @dragenter="dragEnter(i)"
               @dragover.prevent
               @dragend="dragEnd()"
-              style="white-space: nowrap">
-          <span class="icon ml-0 mr-0 is-draggable">
-            <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
-          </span>
+              style="white-space: nowrap;">
+            <span class="icon ml-0 mr-0 is-draggable">
+              <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
+            </span>
             <span v-if="isVideo(file.type)" class="icon has-text-link">
-            <i class="mdi mdi-24px mdi-video"></i>
-          </span>
+              <i class="mdi mdi-24px mdi-video"></i>
+            </span>
             <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
-            <i class="mdi mdi-24px mdi-music-note"></i>
-          </span>
+              <i class="mdi mdi-24px mdi-music-note"></i>
+            </span>
           </td>
-          <td style="font-size: 0.9rem; max-width: 20rem; overflow-x: auto; vertical-align: middle">
+          <td style="font-size: 0.9rem; max-width: 20rem; overflow-x: auto;">
             <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
             <span v-if="isAudio(file.type)">{{ file.name }}</span>
+            <span v-if="file.exists"
+                  class="icon is-small has-text-grey is-clickable"
+                  @click="openFolder(file.path)">
+              <i class="mdi mdi-folder-open"></i>
+            </span>
             <p class="has-text-danger" v-if="!file.exists"
-            >ファイルが開けませんでした。追加し直してください。</p>
+            >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
           </td>
-          <td style="width: 4rem;">
+          <td class="px-1">
             <button v-if="isExists(file.path) && !file.isPlaying"
                     class="button is-small is-success"
                     @click="play(i)"
@@ -201,13 +209,16 @@
             // }
         },
         methods: {
-            selectFile(file) {
-                this.files.push({
-                    path: file.path,
+            async selectFile(file) {
+                const path = window.webUtils.getPathForFile(file)
+                const checkedFile = await window.api.checkFilePath({
+                    path: path,
                     name: file.name,
                     type: file.type,
                     exists: true
-                })
+                });
+
+                this.files.push(checkedFile)
             },
             selectVideoFile(event) {
                 this.selectFile(event.target.files[0])
@@ -230,6 +241,11 @@
                 this.sundayFiles = await window.api.checkFilePaths(this.sundayFiles);
                 this.wednesdayFiles = await window.api.checkFilePaths(this.wednesdayFiles);
                 this.otherFiles = await window.api.checkFilePaths(this.otherFiles);
+            },
+            openFolder(filePath) {
+                // 正規表現で最後の「\ファイル名」を削除
+                const folderPath = filePath.replace(/[\\/][^\\/]+$/, "");
+                window.api.openFolder(folderPath);
             },
             play(i) {
                 this.closeStatusAll()

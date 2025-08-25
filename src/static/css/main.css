@@ -44,3 +44,8 @@ table, th, td {
 .required {
     color: orangered;
 }
+
+.fitContent {
+    width: 0;
+    white-space: nowrap;
+}

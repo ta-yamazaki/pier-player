@@ -1,6 +1,6 @@
 import fs from 'fs';
-import { ipcMain, screen, app } from 'electron';
-import { createSubWindow, loadSubWindow, getSubWindow } from '../windows/subWindow.js';
+import {ipcMain, screen, shell} from 'electron';
+import {createSubWindow, getSubWindow, loadSubWindow} from '../windows/subWindow.js';
 
 export const registerMainHandlers = () => {
     ipcMain.handle('openSubWindow', async (_event, fileMeta) => {
@@ -27,10 +27,24 @@ export const registerMainHandlers = () => {
         getSubWindow()?.destroy();
     });
 
+    ipcMain.handle('checkFilePath', async (_event, file) => {
+        return {
+            ...file,
+            exists: file.path === "" ? true : fs.existsSync(file.path)
+        }
+    });
+
     ipcMain.handle('checkFilePaths', async (_event, files) => {
         return files.map(file => ({
             ...file,
             exists: file.path === "" ? true : fs.existsSync(file.path)
         }));
+    });
+
+
+    // フォルダを開く処理
+    ipcMain.on("open-folder", (event, folderPath) => {
+        // フォルダをエクスプローラーで開く
+        shell.openPath(folderPath);
     });
 };

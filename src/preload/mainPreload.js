@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer} = require('electron');
+const {contextBridge, webUtils, ipcRenderer} = require('electron');
 
 /**
  * ファイル再生モード
@@ -7,12 +7,18 @@ contextBridge.exposeInMainWorld('api', {
     // mainHandlers.jsの 'openSubWindow' チャンネルへ送信
     openSubWindow: (fileMeta) => ipcRenderer.invoke('openSubWindow', fileMeta),
     closeSubWindow: () => ipcRenderer.invoke('close-window'),
+    checkFilePath: (file) => ipcRenderer.invoke('checkFilePath', file),
     checkFilePaths: (files) => ipcRenderer.invoke('checkFilePaths', files),
+
+    openFolder: (folderPath) => ipcRenderer.send("open-folder", folderPath),
+
     getFiles: (target) => ipcRenderer.invoke("getFiles", target),
     storeFiles: (target, files) => ipcRenderer.invoke("storeFiles", target, files),
 
     getVersion: () => ipcRenderer.invoke('getVersion'),
 });
+
+contextBridge.exposeInMainWorld('webUtils', webUtils)
 
 /**
  * CGMモード
