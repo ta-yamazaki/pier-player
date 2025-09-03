@@ -10,7 +10,7 @@ aside.menu {
     position: fixed; /* サイドメニューを固定 */
     top: 0;
     left: 0;
-    width: 120px;
+    width: 140px;
     height: 100vh; /* 画面の高さいっぱい */
     overflow-y: auto; /* メニューが長ければスクロール */
     /*border-right: 1px solid #ddd;*/
@@ -33,6 +33,6 @@ aside.menu .menu-list a.is-active {
 }
 
 main {
-    margin-left: calc(120px); /* サイドバーの分だけ右寄せ */
+    margin-left: calc(140px); /* サイドバーの分だけ右寄せ */
     flex: 1;
 }

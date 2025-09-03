@@ -64,6 +64,38 @@ contextBridge.exposeInMainWorld('vimeoShowcase', {
     storeShowcase: (showcase) => ipcRenderer.invoke("storeShowcase", showcase),
 });
 
+/**
+ * タイムラインモード
+ */
+contextBridge.exposeInMainWorld('timeline', {
+    // mainHandlers.jsの 'openSubWindow' チャンネルへ送信
+    openSubWindow: (fileMeta) => ipcRenderer.invoke('openTimelineWindow', fileMeta),
+    closeSubWindow: () => ipcRenderer.invoke('closeTimelineWindow'),
+    checkFilePath: (file) => ipcRenderer.invoke('checkTimelineFilePath', file),
+    checkFilePaths: (files) => ipcRenderer.invoke('checkTimelineFilePaths', files),
+
+    openFolder: (folderPath) => ipcRenderer.send("openTimelineFolder", folderPath),
+
+    // player from mainPage
+    mainPlayer: {
+        play: () => ipcRenderer.invoke('timelinePlay'),
+        pause: () => ipcRenderer.invoke('timelinePause'),
+        seek: (newTime) => ipcRenderer.invoke('timelineSeek', newTime),
+    },
+    // player from playerPage
+    listener: {
+        ready: (callback) => ipcRenderer.on("timelineReady", callback),
+        duration: (callback) => ipcRenderer.on("timelineDuration", callback),
+        play: (callback) => ipcRenderer.on("timelinePlay", callback),
+        timeupdate: (callback) => ipcRenderer.on('timelineTimeupdate', callback),
+        paused: (callback) => ipcRenderer.on("timelinePaused", callback),
+        ended: (callback) => ipcRenderer.on("timelineEnded", callback),
+    },
+
+    getFiles: () => ipcRenderer.invoke("getTimelineFiles"),
+    storeFiles: (files) => ipcRenderer.invoke("storeTimelineFiles", files),
+});
+
 // プリロードプロセスでは Node.js の全 API が利用可能です。
 // Chrome 拡張機能と同じサンドボックスも持っています。
 window.addEventListener('DOMContentLoaded', () => {

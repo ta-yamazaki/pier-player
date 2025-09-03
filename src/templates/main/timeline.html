@@ -7,6 +7,7 @@
   <title>Pier Player</title>
   <link rel="stylesheet" href="../../static/css/bulma.css">
   <link rel="stylesheet" href="../../static/css/main.css">
+  <link rel="stylesheet" href="../../static/css/timeline.css">
   <link rel="stylesheet" href="../../static/css/side-menu.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
@@ -37,20 +38,18 @@
     }
 </style>
 <body>
-<div id="app" v-cloak>
+<div id="appTimeline" v-cloak>
   <aside id="sideMenu"></aside>
 
   <main>
-    <div class="tabs is-boxed is-centered is-fullwidth mb-2">
-      <ul style="background-color: #f1f5f7">
-        <li @click="selectSundayTab()" class="is-active"><a>主日礼拝</a></li>
-        <li @click="selectWednesdayTab()"><a>水曜礼拝</a></li>
-        <!--      <li @click="selectDawnTab()"><a>明け方</a></li>-->
-        <li @click="selectOtherTab()"><a>その他</a></li>
-      </ul>
-    </div>
-
-    <div style="margin: auto; width: fit-content; min-width: 360px; max-width: 95%;">
+    <div class="p-4" style="margin: auto;">
+      <h5 class="title is-5 my-3">
+        タイムライン
+        <button class="button is-small is-pulled-right"
+                @click="reset()"
+        >表示リセット
+        </button>
+      </h5>
       <div
           class="dropArea"
           @dragenter="dragDropEnter()"
@@ -65,12 +64,7 @@
       <table class="table my-2 is-fullwidth">
         <tbody :key="reDraw">
         <tr>
-          <td colspan="4">
-            <button class="button is-small is-pulled-right"
-                    @click="reset()"
-            >表示リセット
-            </button>
-          </td>
+          <td colspan="4"></td>
         </tr>
         <tr v-for="(file, i) in files"
             :key="i"
@@ -97,7 +91,7 @@
           <td style="font-size: 0.9rem; max-width: 20rem; overflow-x: auto;">
             <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
             <span v-if="isAudio(file.type)">{{ file.name }}</span>
-            <span v-if="file.exists"
+            <span v-if="file.exists && file.path"
                   class="icon is-small has-text-grey is-clickable"
                   @click="openFolder(file.path)">
               <i class="mdi mdi-folder-open"></i>
@@ -108,7 +102,7 @@
           <td class="px-1">
             <button v-if="isExists(file.path) && !file.isPlaying"
                     class="button is-small is-success"
-                    @click="play(i)"
+                    @click="start(i)"
                     :disabled="!file.exists"
             ><b>再生</b></button>
             <button v-if="file.isPlaying"
@@ -144,28 +138,82 @@
       </div>
     </footer>
   </main>
+
+  <!-- プレイヤー -->
+  <div v-if="showPlayer" id="timelinePlayer">
+    <p class="has-text-centered">
+      <span v-if="playerMeta.loadedmetadata">{{ targetFile.name }}</span>
+      <span v-else>読み込み中...</span>
+    </p>
+
+    <nav class="level is-mobile mb-1">
+      <p>{{ currentTimeColon }}</p>
+      <progress
+          ref="playerProgress"
+          class="mx-2 mb-0"
+          style="cursor: pointer;"
+          :value="playerMeta.currentTime"
+          :max="playerMeta.duration"
+          @mousedown="startSeek"
+      ></progress>
+      <p>{{ durationColon }}</p>
+    </nav>
+
+    <nav class="level is-mobile">
+      <p class="level-item">
+        <a class="icon is-clickable has-text-success-dark" @click="restart()">
+          <span class="mdi mdi-24px mdi-skip-previous"/>
+        </a>
+      </p>
+      <p class="level-item">
+        <a class="icon is-clickable has-text-success-dark" @click="rewind(10)">
+          <span class="mdi mdi-24px mdi-rewind-10"/>
+        </a>
+      </p>
+      <p class="level-item">
+        <span v-if="!playerMeta.isPlaying"
+              class="icon is-large is-clickable playIcon"
+              @click="play()">
+          <i class="mdi mdi mdi-48px mdi-play-circle"></i>
+        </span>
+        <span v-if="playerMeta.isPlaying"
+              class="icon is-large is-clickable pauseIcon"
+              @click="pause()">
+          <i class="mdi mdi mdi-48px mdi-pause-circle"></i>
+        </span>
+      </p>
+      <p class="level-item">
+        <a class="icon is-clickable has-text-success-dark" @click="forward(10)">
+          <span class="mdi mdi-24px mdi-fast-forward-10"/>
+        </a>
+      </p>
+      <p class="level-item">
+        <a class="icon is-clickable has-text-success-dark" @click="toEnd()">
+          <span class="mdi mdi-24px mdi-skip-next"/>
+        </a>
+      </p>
+    </nav>
+  </div>
+  <!-- プレイヤーここまで -->
 </div>
 
 
 <script src="../../static/js/jquery.js"></script>
+<script src="../../static/js/time.js"></script>
 <script>
     fetch('../components/side-nav.html')
         .then(res => res.text())
         .then(html => {
             $('#sideMenu').replaceWith(html);
-            $('#is-file').addClass("is-active");
+            $('#is-timeline').addClass("is-active");
         });
 </script>
 <script>
     new Vue({
-        el: "#app",
+        el: "#appTimeline",
         data: {
             files: [],
-            sundayFiles: [{path: "", name: "", type: "", exists: true}],
-            wednesdayFiles: [{path: "", name: "", type: "", exists: true}],
-            otherFiles: [{path: "", name: "", type: "", exists: true}],
-            // isPlaying: false,
-            selectedTab: "sunday",
+            // otherFiles: [{path: "", name: "", type: "", exists: true}],
             previewFile: {src: "", type: ""},
             dragIndex: null,
             isEnter: null,
@@ -173,45 +221,56 @@
             videoReload: 0,
             reDraw: 0,
             version: "",
+            // player
+            targetFile: {path: "", name: "", type: ""},
+            playerMeta: {
+                currentTime: 0,
+                duration: null,
+                loadedmetadata: false,
+                isPlaying: false,
+                seeking: false,
+            },
         },
         async created() {
             this.version = await window.api.getVersion()
 
-            this.sundayFiles = await window.api.getFiles("sunday");
-            this.wednesdayFiles = await window.api.getFiles("wednesday");
-            this.otherFiles = await window.api.getFiles("other");
-            await this.checkFilePaths();
-
-            this.files = this.sundayFiles
-
-            $(document).on("click", ".tabs li", function () {
-                $(".tabs li").removeClass("is-active");
-                $(this).addClass("is-active");
-            })
+            const files = await window.timeline.getFiles();
+            this.files = await window.timeline.checkFilePaths(files);
         },
         computed: {
-            isPlaying(file) {
-                return file.isPlaying
+            showPlayer() {
+                return this.isExists(this.targetFile.path);
+            },
+            currentTimeColon() {
+                return minSecColonFrom(this.playerMeta.currentTime)
+            },
+            durationColon() {
+                return minSecColonFrom(this.playerMeta.duration)
+            },
+            progress() {
+                if (!this.playerMeta.currentTime) return 0
+                if (!this.playerMeta.duration) return 0
+                return (this.playerMeta.currentTime / this.playerMeta.duration) * 100;
             },
         },
         mounted() {
-            //表示後にやりたいことはここに書ける
+            this.playerHooks()
         },
         watch: {
             files: {
                 handler: function (newVal, oldVal) {
-                    window.api.storeFiles(this.selectedTab, newVal);
+                    window.timeline.storeFiles(newVal);
                 },
                 deep: true
-            }
-            // previewFile: function (newVal) {
-            //     this.preview();
-            // }
+            },
+            targetFile: function (newVal, oldVal) {
+                this.playerMeta.loadedmetadata = false
+            },
         },
         methods: {
             async selectFile(file) {
                 const path = window.webUtils.getPathForFile(file)
-                const checkedFile = await window.api.checkFilePath({
+                const checkedFile = await window.timeline.checkFilePath({
                     path: path,
                     name: file.name,
                     type: file.type,
@@ -237,45 +296,42 @@
             allowedFileType(type) {
                 return this.isVideo(type) || this.isAudio(type)
             },
-            async checkFilePaths() {
-                this.sundayFiles = await window.api.checkFilePaths(this.sundayFiles);
-                this.wednesdayFiles = await window.api.checkFilePaths(this.wednesdayFiles);
-                this.otherFiles = await window.api.checkFilePaths(this.otherFiles);
-            },
             openFolder(filePath) {
                 // 正規表現で最後の「\ファイル名」を削除
                 const folderPath = filePath.replace(/[\\/][^\\/]+$/, "");
-                window.api.openFolder(folderPath);
+                window.timeline.openFolder(folderPath);
             },
-            play(i) {
+            start(i) {
                 this.closeStatusAll()
 
                 // this.isPlaying = true;
                 const file = this.files[i]
                 file.isPlaying = true;
 
-                window.api.openSubWindow(file)
+                window.timeline.openSubWindow(file)
                     .then((isExists) => {
                         if (!isExists) {
                             // this.isPlaying = false;
                             alert(`ファイルが開けませんでした。\n「${file.name}」`)
                             file.isPlaying = false;
                         }
+                        this.targetFile = file
                         this.reDraw++
                     })
             },
             close(i) {
                 const file = this.files[i]
-                window.api.closeSubWindow();
+                window.timeline.closeSubWindow();
                 file.isPlaying = false
+                this.targetFile = {}
                 this.reDraw++
             },
             // close() {
-            //     window.api.closeSubWindow();
+            //     window.timeline.closeSubWindow();
             //     // this.isPlaying = false
             // },
             closeStatusAll() {
-                window.api.closeSubWindow();
+                window.timeline.closeSubWindow();
                 this.files.forEach((file) => {
                     file.isPlaying = false
                 })
@@ -290,28 +346,10 @@
             removeRow(i) {
                 this.files.splice(i, 1);
             },
-            isPlaying(file) {
-                return file.isPlaying
-            },
             preview(file) {
                 this.previewFile.src = file.path
                 this.previewFile.type = file.type
                 this.videoReload++
-            },
-            async storeFileInfo() {
-                window.api.storeFiles(this.selectedTab, this.files);
-            },
-            selectSundayTab() {
-                this.files = this.sundayFiles;
-                this.selectedTab = "sunday";
-            },
-            selectWednesdayTab() {
-                this.files = this.wednesdayFiles;
-                this.selectedTab = "wednesday";
-            },
-            selectOtherTab() {
-                this.files = this.otherFiles;
-                this.selectedTab = "other";
             },
             dragStart(index) {
                 this.dragIndex = index;
@@ -343,6 +381,64 @@
             },
             isExists(v) {
                 return typeof v !== 'undefined' && v !== null && v !== "" && v !== {};
+            },
+            // player
+            restart: () => window.timeline.mainPlayer.restart(),
+            rewind: (seekTime) => window.timeline.mainPlayer.rewind(seekTime),
+            play: () => window.timeline.mainPlayer.play(),
+            pause: () => window.timeline.mainPlayer.pause(),
+            forward: (seekTime) => window.timeline.mainPlayer.forward(seekTime),
+            toEnd: () => window.timeline.mainPlayer.toEnd(),
+            seek(e) {
+                const rect = this.$refs.playerProgress.getBoundingClientRect();
+                const clickX = e.clientX - rect.left; // クリック位置
+                let ratio = clickX / rect.width;   // 全体に対する割合
+                ratio = Math.max(0, Math.min(1, ratio)); // 0~1に制限
+                const newTime = Math.round(ratio * this.playerMeta.duration);
+                window.timeline.mainPlayer.seek(newTime)
+            },
+            startSeek(e) {
+                this.playerMeta.seeking = true;
+                this.updateSeek(e);
+
+                // ドキュメント全体で mousemove / mouseup を監視
+                document.addEventListener('mousemove', this.updateSeek);
+                document.addEventListener('mouseup', this.stopSeek);
+                document.addEventListener('mouseleave', this.stopSeek);
+            },
+            updateSeek(e) {
+                if (!this.playerMeta.seeking) return;
+                const rect = this.$refs.playerProgress.getBoundingClientRect();
+                const clickX = e.clientX - rect.left; // クリック位置
+                let ratio = clickX / rect.width;   // 全体に対する割合
+                ratio = Math.max(0, Math.min(1, ratio)); // 0~1に制限
+                const newTime = Math.round(ratio * this.playerMeta.duration);
+                window.timeline.mainPlayer.seek(newTime)
+            },
+            stopSeek() {
+                this.playerMeta.seeking = false;
+                document.removeEventListener('mousemove', this.updateSeek);
+                document.removeEventListener('mouseup', this.stopSeek);
+                document.removeEventListener('mouseleave', this.stopSeek);
+            },
+            playerHooks() {
+                window.timeline.listener.ready((event, param) => {
+                })
+                window.timeline.listener.duration((event, param) => {
+                    this.playerMeta.duration = param.duration
+                    this.playerMeta.loadedmetadata = true
+                })
+                window.timeline.listener.play((event, param) => {
+                    this.playerMeta.isPlaying = true
+                })
+                window.timeline.listener.timeupdate((event, param) => {
+                    this.playerMeta.currentTime = param.currentTime
+                })
+                window.timeline.listener.paused((event, param) => {
+                    this.playerMeta.isPlaying = false
+                })
+                window.timeline.listener.ended((event, param) => {
+                })
             },
         },
     })

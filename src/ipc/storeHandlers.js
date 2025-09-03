@@ -10,6 +10,8 @@ const keys = {
 
     vimeoShowcase : "vimeoShowcase",
     vimeoShowcasePlayList : "vimeoShowcasePlayList",
+
+    timelineList : "timelineList",
 };
 
 export const registerStoreHandlers = () => {
@@ -60,5 +62,16 @@ export const registerStoreHandlers = () => {
     });
     ipcMain.handle("storeShowcasePlayList", (event, vimeoList) => {
         store.set(keys.vimeoShowcasePlayList, vimeoList);
+    });
+
+    /**
+     * メイン画面 タイムラインモード
+     */
+    ipcMain.handle('getTimelineFiles', (_event) => {
+        return store.get(keys.timelineList, [{ path: "", name: "", type: "", showCloseButton: false }]);
+    });
+
+    ipcMain.handle("storeTimelineFiles", (_event, files) => {
+        store.set(keys.timelineList, files);
     });
 };

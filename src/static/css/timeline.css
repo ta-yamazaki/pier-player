@@ -1,0 +1,81 @@
+#timelinePlayer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 7px;
+    background-color: #ffffe9;
+    box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 0.2);
+    animation: SlideIN 0.4s ease-in-out;
+}
+
+@keyframes SlideIN {
+    from {
+        transform: translateY(100px);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.playIcon, .pauseIcon{
+    background: linear-gradient(
+            125deg,
+            rgb(9, 150, 175),
+            rgb(151, 136, 218),
+            rgb(168, 15, 137)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Bulmaのprogressリセット */
+progress {
+    all: unset;           /* ほぼ全てのCSSをリセット */
+    display: block;       /* progress は block にする */
+    width: 100%;          /* 元の幅を確保 */
+    height: auto;         /* 高さは自分で設定 */
+    box-sizing: border-box;
+}
+
+/* progress のベース */
+progress {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 12px;
+    border-radius: 999px;
+    overflow: hidden;
+    background-color: #e6eaf0;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* WebKit (Chrome, Safari) */
+progress::-webkit-progress-bar {
+    background-color: #e6eaf0;
+    border-radius: 999px;
+}
+
+progress::-webkit-progress-value {
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),
+    linear-gradient(
+            125deg,
+            rgb(9, 150, 175),
+            rgb(151, 136, 218),
+            rgb(168, 15, 137)
+    );
+    transition: width 0.2s ease-out;
+}
+
+/* Firefox */
+progress::-moz-progress-bar {
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),
+    linear-gradient(
+            125deg,
+            rgb(9, 150, 175),
+            rgb(151, 136, 218),
+            rgb(168, 15, 137)
+    );
+    transition: width 0.2s ease-out;
+}
