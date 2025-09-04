@@ -67,6 +67,14 @@
             if (param.type.match(/audio\/.*/)) playAudio(event, param)
         })
 
+        window.timeline.mainPlayer.restart((event, param) => {
+            if (videoEl) videoEl.currentTime = 0
+            if (audioEl) audioEl.currentTime = 0
+        })
+        window.timeline.mainPlayer.rewind((event, param) => {
+            if (videoEl) videoEl.currentTime -= param.seekTime
+            if (audioEl) audioEl.currentTime -= param.seekTime
+        })
         window.timeline.mainPlayer.play((event, param) => {
             if (videoEl) videoEl.play()
             if (audioEl) audioEl.play()
@@ -74,6 +82,14 @@
         window.timeline.mainPlayer.pause((event, param) => {
             if (videoEl) videoEl.pause()
             if (audioEl) audioEl.pause()
+        })
+        window.timeline.mainPlayer.forward((event, param) => {
+            if (videoEl) videoEl.currentTime += param.seekTime
+            if (audioEl) audioEl.currentTime += param.seekTime
+        })
+        window.timeline.mainPlayer.toEnd((event, param) => {
+            if (videoEl) videoEl.currentTime = videoEl.duration
+            if (audioEl) audioEl.currentTime = audioEl.duration
         })
         window.timeline.mainPlayer.seek((event, param) => {
             if (videoEl) videoEl.currentTime = param.newTime

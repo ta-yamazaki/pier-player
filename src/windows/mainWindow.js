@@ -7,7 +7,7 @@ let mainWindow;
 
 export const createMainWindow = () => {
     mainWindow = new BrowserWindow({
-        width: 700,
+        width: 1000,
         height: 700,
         icon: iconPath,
         webPreferences: {

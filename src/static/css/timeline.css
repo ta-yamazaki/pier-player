@@ -1,13 +1,13 @@
-#timelinePlayer {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 100;
+.timelinePlayer {
+    /*position: fixed;*/
+    /*right: 0;*/
+    /*bottom: 0;*/
+    /*left: 0;*/
+    /*z-index: 100;*/
     padding: 7px;
-    background-color: #ffffe9;
-    box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 0.2);
-    animation: SlideIN 0.4s ease-in-out;
+    /*background-color: #ffffe9;*/
+    /*box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 0.2);*/
+    /*animation: SlideIN 0.4s ease-in-out;*/
 }
 
 @keyframes SlideIN {
@@ -65,7 +65,6 @@ progress::-webkit-progress-value {
             rgb(151, 136, 218),
             rgb(168, 15, 137)
     );
-    transition: width 0.2s ease-out;
 }
 
 /* Firefox */
@@ -77,5 +76,15 @@ progress::-moz-progress-bar {
             rgb(151, 136, 218),
             rgb(168, 15, 137)
     );
-    transition: width 0.2s ease-out;
+}
+
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield; /* Firefox */
 }

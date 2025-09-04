@@ -4,14 +4,14 @@ import {ipcMain} from "electron";
 const store = new Store();
 
 const keys = {
-    cgmList : "cgmList",
+    cgmList: "cgmList",
 
-    vimeoList : "vimeoList",
+    vimeoList: "vimeoList",
 
-    vimeoShowcase : "vimeoShowcase",
-    vimeoShowcasePlayList : "vimeoShowcasePlayList",
+    vimeoShowcase: "vimeoShowcase",
+    vimeoShowcasePlayList: "vimeoShowcasePlayList",
 
-    timelineList : "timelineList",
+    timelineList: "timelineList",
 };
 
 export const registerStoreHandlers = () => {
@@ -19,7 +19,7 @@ export const registerStoreHandlers = () => {
      * メイン画面 通常モード
      */
     ipcMain.handle('getFiles', (_event, target) => {
-        return store.get(target, [{ path: "", name: "", type: "", showCloseButton: false }]);
+        return store.get(target, [{path: "", name: "", type: "", showCloseButton: false}]);
     });
 
     ipcMain.handle("storeFiles", (_event, target, files) => {
@@ -30,7 +30,7 @@ export const registerStoreHandlers = () => {
      * メイン画面 CGMモード
      */
     ipcMain.handle("getCgmList", () => {
-        return store.get(keys.cgmList, [{ path: "", title: "", isViewed: false, isPlaying: false }]);
+        return store.get(keys.cgmList, [{path: "", title: "", isViewed: false, isPlaying: false}]);
     });
 
     ipcMain.handle("storeCgmList", (_event, cgmList) => {
@@ -41,7 +41,7 @@ export const registerStoreHandlers = () => {
      * メイン画面 Vimeoモード（個別動画）
      */
     ipcMain.handle("getVimeoList", (event) => {
-        return store.get(keys.vimeoList, [{ url: "", title: "", password: "", isViewed: false, isPlaying: false }]);
+        return store.get(keys.vimeoList, [{url: "", title: "", password: "", isViewed: false, isPlaying: false}]);
     });
     ipcMain.handle("storeVimeoList", (event, vimeoList) => {
         store.set(keys.vimeoList, vimeoList);
@@ -68,7 +68,12 @@ export const registerStoreHandlers = () => {
      * メイン画面 タイムラインモード
      */
     ipcMain.handle('getTimelineFiles', (_event) => {
-        return store.get(keys.timelineList, [{ path: "", name: "", type: "", showCloseButton: false }]);
+        return store.get(keys.timelineList, [{
+            path: "", name: "", type: "",
+            exists: false,
+            startTrimSec: 0,
+            endTrimSec: 0,
+        }]);
     });
 
     ipcMain.handle("storeTimelineFiles", (_event, files) => {

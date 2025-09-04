@@ -78,8 +78,12 @@ contextBridge.exposeInMainWorld('timeline', {
 
     // player from mainPage
     mainPlayer: {
+        restart: () => ipcRenderer.invoke('timelineRestart'),
+        rewind: (seekTime) => ipcRenderer.invoke('timelineRewind', seekTime),
         play: () => ipcRenderer.invoke('timelinePlay'),
         pause: () => ipcRenderer.invoke('timelinePause'),
+        forward: (seekTime) => ipcRenderer.invoke('timelineForward', seekTime),
+        toEnd: () => ipcRenderer.invoke('timelineToEnd'),
         seek: (newTime) => ipcRenderer.invoke('timelineSeek', newTime),
     },
     // player from playerPage

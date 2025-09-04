@@ -50,11 +50,27 @@ export const registerTimelineHandlers = () => {
     });
 
     // player from mainPage
+    ipcMain.handle('timelineRestart', (_event) => {
+        getTimelineWindow().webContents.send("timelineRestart");
+    });
+    ipcMain.handle('timelineRewind', (_event, seekTime) => {
+        getTimelineWindow().webContents.send("timelineRewind", {
+            seekTime: seekTime
+        });
+    });
     ipcMain.handle('timelinePlay', (_event) => {
         getTimelineWindow().webContents.send("timelinePlay");
     });
     ipcMain.handle('timelinePause', (_event) => {
         getTimelineWindow().webContents.send("timelinePause");
+    });
+    ipcMain.handle('timelineForward', (_event, seekTime) => {
+        getTimelineWindow().webContents.send("timelineForward", {
+            seekTime: seekTime
+        });
+    });
+    ipcMain.handle('timelineToEnd', (_event) => {
+        getTimelineWindow().webContents.send("timelineToEnd");
     });
     ipcMain.handle('timelineSeek', (_event, newTime) => {
         getTimelineWindow().webContents.send("timelineSeek", {

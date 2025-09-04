@@ -7,8 +7,12 @@ contextBridge.exposeInMainWorld('timeline', {
 
     // player from mainPage
     mainPlayer: {
+        restart: (callback) => ipcRenderer.on("timelineRestart", callback),
+        rewind: (callback) => ipcRenderer.on("timelineRewind", callback),
         play: (callback) => ipcRenderer.on("timelinePlay", callback),
         pause: (callback) => ipcRenderer.on("timelinePause", callback),
+        forward: (callback) => ipcRenderer.on("timelineForward", callback),
+        toEnd: (callback) => ipcRenderer.on("timelineToEnd", callback),
         seek: (callback) => ipcRenderer.on('timelineSeek', callback),
     },
 

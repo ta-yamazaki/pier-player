@@ -61,11 +61,9 @@
       </div>
       <p class="help is-danger">{{disallowedFileTypeMessage}}</p>
 
-      <table class="table my-2 is-fullwidth">
+      <br>
+      <table class="table my-2 is-striped is-fullwidth">
         <tbody :key="reDraw">
-        <tr>
-          <td colspan="4"></td>
-        </tr>
         <tr v-for="(file, i) in files"
             :key="i"
             :class="{
@@ -77,29 +75,122 @@
               @dragenter="dragEnter(i)"
               @dragover.prevent
               @dragend="dragEnd()"
+              class="pl-1 pr-0 fitContent"
               style="white-space: nowrap;">
             <span class="icon ml-0 mr-0 is-draggable">
               <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
             </span>
-            <span v-if="isVideo(file.type)" class="icon has-text-link">
-              <i class="mdi mdi-24px mdi-video"></i>
-            </span>
-            <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
-              <i class="mdi mdi-24px mdi-music-note"></i>
-            </span>
           </td>
           <td style="font-size: 0.9rem; max-width: 20rem; overflow-x: auto;">
+              <span v-if="isVideo(file.type)" class="icon has-text-link">
+                <i class="mdi mdi-18px mdi-video"></i>
+              </span>
+            <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
+                <i class="mdi mdi-18px mdi-music-note"></i>
+              </span>
             <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
             <span v-if="isAudio(file.type)">{{ file.name }}</span>
             <span v-if="file.exists && file.path"
                   class="icon is-small has-text-grey is-clickable"
                   @click="openFolder(file.path)">
-              <i class="mdi mdi-folder-open"></i>
-            </span>
+                <i class="mdi mdi-folder-open"></i>
+              </span>
             <p class="has-text-danger" v-if="!file.exists"
             >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
+
+            <nav class="level is-mobile mb-1">
+              <div class="level-left">
+                <div class="">
+                  <p class="is-size-7">開始位置</p>
+                  <div class="field has-addons my-1">
+                    <p class="control">
+                      <a @click="decreaseStartTrim(i)">-</a>
+                    </p>
+                    <p class="control mx-1">
+                      <input v-model="file.startTrimSec"
+                             class="input underlined is-small px-1 py-0 has-text-centered"
+                             type="number" min="0"
+                             style="width: 2.75rem;height: 1.75em;">
+                    </p>
+                    <p class="control">
+                      <a @click="increaseStartTrim(i)">+</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="level-right">
+                <div class="">
+                  <p class="is-size-7 has-text-right">終了位置</p>
+                  <div class="field has-addons my-1">
+                    <p class="control">
+                      <a @click="decreaseEndTrim(i)">-</a>
+                    </p>
+                    <p class="control mx-1">
+                      <input v-model="file.endTrimSec"
+                             class="input underlined is-small px-1 has-text-centered"
+                             type="number" min="0"
+                             style="width: 2.75rem;height: 1.75em;">
+                    </p>
+                    <p class="control">
+                      <a @click="increaseEndTrim(i)">+</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </nav>
+
+            <!-- プレイヤー -->
+            <div v-if="file.isPlaying" class="timelinePlayer">
+              <nav class="level is-mobile mb-1">
+                <p>{{ currentTimeColon }}</p>
+                <progress
+                    class="mx-2 mb-0"
+                    style="cursor: pointer;"
+                    :value="playerMeta.currentTime"
+                    :max="playerMeta.duration"
+                    @mousedown="startSeek"
+                ></progress>
+                <p>{{ durationColon }}</p>
+              </nav>
+
+              <nav class="level is-mobile">
+                <p class="level-item">
+                  <a class="icon is-clickable has-text-success-dark" @click="restart()">
+                    <span class="mdi mdi-24px mdi-skip-previous"/>
+                  </a>
+                </p>
+                <p class="level-item">
+                  <a class="icon is-clickable has-text-success-dark" @click="rewind(10)">
+                    <span class="mdi mdi-24px mdi-rewind-10"/>
+                  </a>
+                </p>
+                <p class="level-item">
+                <span v-if="!playerMeta.isPlaying"
+                      class="icon is-large is-clickable playIcon"
+                      @click="play()">
+                  <i class="mdi mdi mdi-48px mdi-play-circle"></i>
+                </span>
+                  <span v-if="playerMeta.isPlaying"
+                        class="icon is-large is-clickable pauseIcon"
+                        @click="pause()">
+                  <i class="mdi mdi mdi-48px mdi-pause-circle"></i>
+                </span>
+                </p>
+                <p class="level-item">
+                  <a class="icon is-clickable has-text-success-dark" @click="forward(10)">
+                    <span class="mdi mdi-24px mdi-fast-forward-10"/>
+                  </a>
+                </p>
+                <p class="level-item">
+                  <a class="icon is-clickable has-text-success-dark" @click="toEnd()">
+                    <span class="mdi mdi-24px mdi-skip-next"/>
+                  </a>
+                </p>
+              </nav>
+            </div>
+            <!-- プレイヤーここまで -->
           </td>
-          <td class="px-1">
+          <td class="px-1 fitContent">
             <button v-if="isExists(file.path) && !file.isPlaying"
                     class="button is-small is-success"
                     @click="start(i)"
@@ -110,7 +201,7 @@
                     @click="close(i)"
             ><b>停止</b></button>
           </td>
-          <td style="width: 1rem;" class="mx-2">
+          <td class="mx-1 fitContent">
             <button class="delete" @click="removeRow(i)"></button>
           </td>
         </tr>
@@ -138,63 +229,6 @@
       </div>
     </footer>
   </main>
-
-  <!-- プレイヤー -->
-  <div v-if="showPlayer" id="timelinePlayer">
-    <p class="has-text-centered">
-      <span v-if="playerMeta.loadedmetadata">{{ targetFile.name }}</span>
-      <span v-else>読み込み中...</span>
-    </p>
-
-    <nav class="level is-mobile mb-1">
-      <p>{{ currentTimeColon }}</p>
-      <progress
-          ref="playerProgress"
-          class="mx-2 mb-0"
-          style="cursor: pointer;"
-          :value="playerMeta.currentTime"
-          :max="playerMeta.duration"
-          @mousedown="startSeek"
-      ></progress>
-      <p>{{ durationColon }}</p>
-    </nav>
-
-    <nav class="level is-mobile">
-      <p class="level-item">
-        <a class="icon is-clickable has-text-success-dark" @click="restart()">
-          <span class="mdi mdi-24px mdi-skip-previous"/>
-        </a>
-      </p>
-      <p class="level-item">
-        <a class="icon is-clickable has-text-success-dark" @click="rewind(10)">
-          <span class="mdi mdi-24px mdi-rewind-10"/>
-        </a>
-      </p>
-      <p class="level-item">
-        <span v-if="!playerMeta.isPlaying"
-              class="icon is-large is-clickable playIcon"
-              @click="play()">
-          <i class="mdi mdi mdi-48px mdi-play-circle"></i>
-        </span>
-        <span v-if="playerMeta.isPlaying"
-              class="icon is-large is-clickable pauseIcon"
-              @click="pause()">
-          <i class="mdi mdi mdi-48px mdi-pause-circle"></i>
-        </span>
-      </p>
-      <p class="level-item">
-        <a class="icon is-clickable has-text-success-dark" @click="forward(10)">
-          <span class="mdi mdi-24px mdi-fast-forward-10"/>
-        </a>
-      </p>
-      <p class="level-item">
-        <a class="icon is-clickable has-text-success-dark" @click="toEnd()">
-          <span class="mdi mdi-24px mdi-skip-next"/>
-        </a>
-      </p>
-    </nav>
-  </div>
-  <!-- プレイヤーここまで -->
 </div>
 
 
@@ -213,7 +247,15 @@
         el: "#appTimeline",
         data: {
             files: [],
-            // otherFiles: [{path: "", name: "", type: "", exists: true}],
+            // files: [{
+            //     path: "",
+            //     name: "",
+            //     type: "",
+            //     exists: true,
+            //     //トリミング
+            //     startTrimSec: 0,
+            //     endTrimSec: 0,
+            // }],
             previewFile: {src: "", type: ""},
             dragIndex: null,
             isEnter: null,
@@ -221,6 +263,7 @@
             videoReload: 0,
             reDraw: 0,
             version: "",
+            trimStep: 0.5,
             // player
             targetFile: {path: "", name: "", type: ""},
             playerMeta: {
@@ -274,7 +317,9 @@
                     path: path,
                     name: file.name,
                     type: file.type,
-                    exists: true
+                    exists: true,
+                    startTrimSec: 0,
+                    endTrimSec: 0,
                 });
 
                 this.files.push(checkedFile)
@@ -301,6 +346,34 @@
                 const folderPath = filePath.replace(/[\\/][^\\/]+$/, "");
                 window.timeline.openFolder(folderPath);
             },
+            increaseStartTrim(i) {
+                const file = this.files[i]
+                file.startTrimSec = this.increaseTrim(file.startTrimSec)
+                this.reDraw++
+            },
+            decreaseStartTrim(i) {
+                const file = this.files[i]
+                file.startTrimSec = this.decreaseTrim(file.startTrimSec)
+                this.reDraw++
+            },
+            increaseEndTrim(i) {
+                const file = this.files[i]
+                file.endTrimSec = this.increaseTrim(file.endTrimSec)
+                this.reDraw++
+            },
+            decreaseEndTrim(i) {
+                const file = this.files[i]
+                file.endTrimSec = this.decreaseTrim(file.endTrimSec)
+                this.reDraw++
+            },
+            increaseTrim(sec) {
+                if (!sec) return this.trimStep
+                return Number(sec) + this.trimStep
+            },
+            decreaseTrim(sec) {
+                if (!sec || sec < 0) return 0
+                return Number(sec) - this.trimStep
+            },
             start(i) {
                 this.closeStatusAll()
 
@@ -325,6 +398,7 @@
                 file.isPlaying = false
                 this.targetFile = {}
                 this.reDraw++
+                this.playerMeta.currentTime = 0
             },
             // close() {
             //     window.timeline.closeSubWindow();
@@ -339,6 +413,7 @@
             },
             reset() {
                 this.closeStatusAll()
+                this.playerMeta.currentTime = 0
             },
             addRow() {
                 this.files.push({path: "", name: "", type: ""})
@@ -389,14 +464,6 @@
             pause: () => window.timeline.mainPlayer.pause(),
             forward: (seekTime) => window.timeline.mainPlayer.forward(seekTime),
             toEnd: () => window.timeline.mainPlayer.toEnd(),
-            seek(e) {
-                const rect = this.$refs.playerProgress.getBoundingClientRect();
-                const clickX = e.clientX - rect.left; // クリック位置
-                let ratio = clickX / rect.width;   // 全体に対する割合
-                ratio = Math.max(0, Math.min(1, ratio)); // 0~1に制限
-                const newTime = Math.round(ratio * this.playerMeta.duration);
-                window.timeline.mainPlayer.seek(newTime)
-            },
             startSeek(e) {
                 this.playerMeta.seeking = true;
                 this.updateSeek(e);
@@ -408,11 +475,12 @@
             },
             updateSeek(e) {
                 if (!this.playerMeta.seeking) return;
-                const rect = this.$refs.playerProgress.getBoundingClientRect();
+                const rect = e.srcElement.getBoundingClientRect();
                 const clickX = e.clientX - rect.left; // クリック位置
                 let ratio = clickX / rect.width;   // 全体に対する割合
                 ratio = Math.max(0, Math.min(1, ratio)); // 0~1に制限
                 const newTime = Math.round(ratio * this.playerMeta.duration);
+                this.playerMeta.currentTime = newTime
                 window.timeline.mainPlayer.seek(newTime)
             },
             stopSeek() {
