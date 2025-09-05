@@ -16,11 +16,11 @@
         opacity: 0;
     }
 
-    body.start {
-        opacity: 1;
-        animation-name: fadeIn;
-        animation-duration: 1s;
-    }
+    /*body.start {*/
+    /*    opacity: 1;*/
+    /*    animation-name: fadeIn;*/
+    /*    animation-duration: 1s;*/
+    /*}*/
 
     @keyframes fadeIn {
         from {
@@ -31,11 +31,11 @@
         }
     }
 
-    body.start.end {
-        opacity: 0;
-        animation-name: blackOut;
-        animation-duration: 1s;
-    }
+    /*body.start.end {*/
+    /*    opacity: 0;*/
+    /*    animation-name: blackOut;*/
+    /*    animation-duration: 1s;*/
+    /*}*/
 
     @keyframes blackOut {
         from {
@@ -58,13 +58,20 @@
 <script>
     const body = document.getElementsByTagName('body')[0]
     let videoEl
+    let videoGainNode
     let audioEl
+    let audioGainNode
+
+    let file
 
     window.onload = (event) => {
         window.timeline.timelineWindowShow((event, param) => {
+            file = {...param.file}
+
             body.innerHTML = ""
-            if (param.type.match(/video\/.*/)) playVideo(event, param)
-            if (param.type.match(/audio\/.*/)) playAudio(event, param)
+            if (!file.type) return
+            if (file.type.match(/video\/.*/)) playVideo(event)
+            if (file.type.match(/audio\/.*/)) playAudio(event)
         })
 
         window.timeline.mainPlayer.restart((event, param) => {
@@ -95,30 +102,44 @@
             if (videoEl) videoEl.currentTime = param.newTime
             if (audioEl) audioEl.currentTime = param.newTime
         })
+        window.timeline.mainPlayer.fileMetaChange((event, param) => {
+            file = {...param.file}
+            if (videoEl)
+                videoGainNode.gain.value = file.gain;
+            if (audioEl)
+                audioGainNode.gain.value = file.gain;
+        })
 
-        function playVideo(event, param) {
+        function playVideo(event) {
             const source = document.createElement('source');
-            source.src = param.path
-            source.type = param.type
+            source.src = file.path
+            source.type = file.type
 
             const video = document.createElement('video');
             video.appendChild(source);
             body.appendChild(video);
             videoEl = video
 
+            videoGainSourceSetting()
+            videoGainNode.gain.value = file.gain;
+
             video.play().then(() => {
-                body.classList.add("start")
+                fadeInSetting(`${file.startFadeSec}s`)
             }).catch((e) => console.error(e))
 
             listeners(video)
         }
 
-        function playAudio(event, param) {
+        function playAudio(event) {
             const audio = document.createElement('audio');
-            audio.src = param.path
-            audio.type = param.type
+            audio.src = file.path
+            audio.type = file.type
+
             body.appendChild(audio);
             audioEl = audio
+
+            videoGainSourceSetting()
+            videoGainNode.gain.value = file.gain;
 
             audio.play()
 
@@ -133,18 +154,65 @@
                 window.timeline.listener.targetDuration(mediaEl.duration);
             });
             mediaEl.addEventListener('playing', (event) => {
+                // body.classList.remove("end")
                 window.timeline.listener.targetPlaying();
+                fadeOutSetting(`1`, ``, ``)
             });
             mediaEl.addEventListener('timeupdate', (event) => {
                 window.timeline.listener.targetTimeupdate(mediaEl.currentTime);
+
+                if (fadeOutReached(mediaEl))
+                    fadeOutSetting(`0`, `blackOut`, `${file.endFadeSec}s`)
             });
             mediaEl.addEventListener('pause', (event) => {
                 window.timeline.listener.targetPaused();
             });
             mediaEl.addEventListener('ended', (event) => {
-                body.classList.add("end")
+                // body.classList.add("end")
                 window.timeline.listener.targetEnded();
             });
+        }
+
+        function videoGainSourceSetting() {
+            videoGainNode = generateGainNode(videoEl)
+        }
+
+        function audioGainSourceSetting() {
+            audioGainNode = generateGainNode(audioEl)
+        }
+
+        function generateGainNode(element) {
+            // AudioContextの作成
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            // AudioContextのソースと接続
+            const source = context.createMediaElementSource(element);
+            // GainNodeの作成
+            const gainNode = context.createGain();
+
+            // 音声ソースをGainNodeに接続
+            source.connect(gainNode);
+            // GainNodeを出力に接続
+            gainNode.connect(context.destination);
+
+            return gainNode
+        }
+
+        function fadeInSetting(duration) {
+            body.style.opacity = "1"
+            body.style.animationName = "fadeIn"
+            body.style.animationDuration = duration
+        }
+
+        function fadeOutSetting(opacity, animationName, duration) {
+            body.style.opacity = opacity
+            body.style.animationName = animationName
+            body.style.animationDuration = duration
+        }
+
+        function fadeOutReached(mediaEl) {
+            if (!file.endFadeSec) return false
+            // マージンで 30ms いれておく
+            return mediaEl.currentTime >= mediaEl.duration - file.endFadeSec - 0.03;
         }
 
         // window.timeline.timelineWindowHide((event) => {

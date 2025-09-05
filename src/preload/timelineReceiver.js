@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('timeline', {
         forward: (callback) => ipcRenderer.on("timelineForward", callback),
         toEnd: (callback) => ipcRenderer.on("timelineToEnd", callback),
         seek: (callback) => ipcRenderer.on('timelineSeek', callback),
+        fileMetaChange: (callback) => ipcRenderer.on('timelineFileMetaChange', callback),
     },
 
     // player from playerPage

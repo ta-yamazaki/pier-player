@@ -73,6 +73,9 @@ export const registerStoreHandlers = () => {
             exists: false,
             startTrimSec: 0,
             endTrimSec: 0,
+            startFadeSec: 0.7,
+            endFadeSec: 0.7,
+            gain: 1,
         }]);
     });
 

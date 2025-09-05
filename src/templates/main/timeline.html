@@ -20,7 +20,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 95%;
+        width: 100%;
         margin: auto;
         height: 5rem;
         border: 3px solid powderblue;
@@ -43,13 +43,7 @@
 
   <main>
     <div class="p-4" style="margin: auto;">
-      <h5 class="title is-5 my-3">
-        タイムライン
-        <button class="button is-small is-pulled-right"
-                @click="reset()"
-        >表示リセット
-        </button>
-      </h5>
+      <h5 class="title is-5 my-3">タイムライン</h5>
       <div
           class="dropArea"
           @dragenter="dragDropEnter()"
@@ -61,14 +55,18 @@
       </div>
       <p class="help is-danger">{{disallowedFileTypeMessage}}</p>
 
-      <br>
-      <table class="table my-2 is-striped is-fullwidth">
+      <button class="button is-small is-pulled-right mb-3"
+              @click="reset()"
+      >表示リセット
+      </button>
+
+      <table class="table my-2 is-fullwidth">
         <tbody :key="reDraw">
         <tr v-for="(file, i) in files"
             :key="i"
             :class="{
               'dragging': i === dragIndex,
-              'has-background-success-light has-text-weight-bold': file.isPlaying
+              'has-background-success-light': file.isPlaying
             }">
           <td :draggable="true"
               @dragstart="dragStart(i)"
@@ -82,62 +80,38 @@
             </span>
           </td>
           <td style="font-size: 0.9rem; max-width: 20rem; overflow-x: auto;">
-              <span v-if="isVideo(file.type)" class="icon has-text-link">
-                <i class="mdi mdi-18px mdi-video"></i>
-              </span>
-            <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
-                <i class="mdi mdi-18px mdi-music-note"></i>
-              </span>
-            <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
-            <span v-if="isAudio(file.type)">{{ file.name }}</span>
-            <span v-if="file.exists && file.path"
-                  class="icon is-small has-text-grey is-clickable"
-                  @click="openFolder(file.path)">
-                <i class="mdi mdi-folder-open"></i>
-              </span>
-            <p class="has-text-danger" v-if="!file.exists"
-            >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
-
-            <nav class="level is-mobile mb-1">
-              <div class="level-left">
-                <div class="">
-                  <p class="is-size-7">開始位置</p>
-                  <div class="field has-addons my-1">
-                    <p class="control">
-                      <a @click="decreaseStartTrim(i)">-</a>
-                    </p>
-                    <p class="control mx-1">
-                      <input v-model="file.startTrimSec"
-                             class="input underlined is-small px-1 py-0 has-text-centered"
-                             type="number" min="0"
-                             style="width: 2.75rem;height: 1.75em;">
-                    </p>
-                    <p class="control">
-                      <a @click="increaseStartTrim(i)">+</a>
-                    </p>
-                  </div>
+            <div>
+              <nav class="level is-mobile">
+                <div class="level-left" style="max-width: calc(100% - 55px);">
+                   <span v-if="isVideo(file.type)" class="icon has-text-link">
+                    <i class="mdi mdi-18px mdi-video"></i>
+                  </span>
+                  <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
+                    <i class="mdi mdi-18px mdi-music-note"></i>
+                  </span>
+                  <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
+                  <span v-if="isAudio(file.type)">{{ file.name }}</span>
+                  <span v-if="file.exists && file.path"
+                        class="icon is-small has-text-grey is-clickable"
+                        @click="openFolder(file.path)">
+                    <i class="mdi mdi-folder-open"></i>
+                  </span>
                 </div>
-              </div>
-              <div class="level-right">
-                <div class="">
-                  <p class="is-size-7 has-text-right">終了位置</p>
-                  <div class="field has-addons my-1">
-                    <p class="control">
-                      <a @click="decreaseEndTrim(i)">-</a>
-                    </p>
-                    <p class="control mx-1">
-                      <input v-model="file.endTrimSec"
-                             class="input underlined is-small px-1 has-text-centered"
-                             type="number" min="0"
-                             style="width: 2.75rem;height: 1.75em;">
-                    </p>
-                    <p class="control">
-                      <a @click="increaseEndTrim(i)">+</a>
-                    </p>
-                  </div>
+                <div class="level-right">
+                  <button v-if="file.exists && !file.isPlaying"
+                          class="button is-small is-success"
+                          @click="start(i)"
+                  ><b>再生</b></button>
+                  <br>
+                  <button v-if="file.isPlaying"
+                          class="button is-small is-danger"
+                          @click="close(i)"
+                  ><b>停止</b></button>
                 </div>
-              </div>
-            </nav>
+              </nav>
+              <p class="has-text-danger" v-if="!file.exists"
+              >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
+            </div>
 
             <!-- プレイヤー -->
             <div v-if="file.isPlaying" class="timelinePlayer">
@@ -189,19 +163,82 @@
               </nav>
             </div>
             <!-- プレイヤーここまで -->
+            <!-- 再生編集-->
+            <div class="px-2 py-1 mt-2 mb-0" style="background-color: #f9f9f9">
+              <div class="is-flex is-align-items-center py-0">
+                <p class="nowrap" style="width: 5rem"></p>
+                <nav class="level is-mobile is-flex-grow-1 is-size-7">
+                  <div class="level-left ml-3">開始（秒）</div>
+                  <div class="level-right">終了（秒）</div>
+                </nav>
+              </div>
+              <div class="is-flex is-align-items-center py-1" style="border-bottom: 1px solid lightgray;">
+                <p class="nowrap" style="width: 5rem">
+                  <span class="mdi mdi-content-cut"></span>
+                  トリム
+                </p>
+                <nav class="level is-mobile is-flex-grow-1 is-size-7">
+                  <div class="level-left">
+                    <a @click="decreaseStartTrim(i)"><span class="mdi mdi-minus"></span></a>
+                    <input v-model="file.startTrimSec"
+                           class="input underlined is-small px-1 py-0 has-text-centered"
+                           type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                    <a @click="increaseStartTrim(i)"><span class="mdi mdi-plus"></span></a>
+                  </div>
+                  <div class="level-right">
+                    <a @click="decreaseEndTrim(i)"><span class="mdi mdi-minus"></span></a>
+                    <input v-model="file.endTrimSec"
+                           class="input underlined is-small px-1 has-text-centered"
+                           type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                    <a @click="increaseEndTrim(i)"><span class="mdi mdi-plus"></span></a>
+                  </div>
+                </nav>
+              </div>
+              <div class="is-flex is-align-items-center py-1">
+                <p class="nowrap" style="width: 5rem">
+                  <span class="mdi mdi-square-opacity"></span>
+                  フェード
+                </p>
+                <nav class="level is-mobile is-flex-grow-1 is-size-7">
+                  <div class="level-left">
+                    <a @click="decreaseStartFade(i)"><span class="mdi mdi-minus"></span></a>
+                    <input v-model="file.startFadeSec"
+                           class="input underlined is-small px-1 py-0 has-text-centered"
+                           type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                    <a @click="increaseStartFade(i)"><span class="mdi mdi-plus"></span></a>
+                  </div>
+                  <p class="has-text-grey">短 0.4　　中 0.7　　長 1.2</p>
+                  <div class="level-right">
+                    <a @click="decreaseEndFade(i)"><span class="mdi mdi-minus"></span></a>
+                    <input v-model="file.endFadeSec"
+                           class="input underlined is-small px-1 has-text-centered"
+                           type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                    <a @click="increaseEndFade(i)"><span class="mdi mdi-plus"></span></a>
+                  </div>
+                </nav>
+              </div>
+              <div class="is-flex is-align-items-center py-1">
+                <p class="nowrap" style="width: 5rem">
+                  <span class="mdi mdi-volume-high"></span>
+                  音量
+                </p>
+                <nav class="level is-mobile is-flex-grow-1 is-size-7">
+                  <div class="level-left">
+                    <a @click="decreaseGain(i)"><span class="mdi mdi-minus"></span></a>
+                    <input v-model="file.gain"
+                           class="input underlined is-small px-1 py-0 has-text-centered"
+                           type="number" min="-3" max="3" style="width: 2.75rem;height: 1.75em;">
+                    <a @click="increaseGain(i)"><span class="mdi mdi-plus"></span></a>
+                  </div>
+                  <p class="has-text-grey">少し小さく -0.2　　元の音量 1　　少し大きく +0.2</p>
+                  <div class="level-right"></div>
+                </nav>
+              </div>
+            </div>
+            <!-- 再生編集ここまで -->
+
           </td>
-          <td class="px-1 fitContent">
-            <button v-if="isExists(file.path) && !file.isPlaying"
-                    class="button is-small is-success"
-                    @click="start(i)"
-                    :disabled="!file.exists"
-            ><b>再生</b></button>
-            <button v-if="file.isPlaying"
-                    class="button is-small is-danger"
-                    @click="close(i)"
-            ><b>停止</b></button>
-          </td>
-          <td class="mx-1 fitContent">
+          <td class="mx-0 px-1 fitContent">
             <button class="delete" @click="removeRow(i)"></button>
           </td>
         </tr>
@@ -263,9 +300,10 @@
             videoReload: 0,
             reDraw: 0,
             version: "",
-            trimStep: 0.5,
+            trimStep: 0.5000,
+            fadeStep: 0.1000,
+            gainStep: 0.1000,
             // player
-            targetFile: {path: "", name: "", type: ""},
             playerMeta: {
                 currentTime: 0,
                 duration: null,
@@ -281,9 +319,6 @@
             this.files = await window.timeline.checkFilePaths(files);
         },
         computed: {
-            showPlayer() {
-                return this.isExists(this.targetFile.path);
-            },
             currentTimeColon() {
                 return minSecColonFrom(this.playerMeta.currentTime)
             },
@@ -301,13 +336,10 @@
         },
         watch: {
             files: {
-                handler: function (newVal, oldVal) {
-                    window.timeline.storeFiles(newVal);
+                handler: function (newFiles, oldFiles) {
+                    window.timeline.storeFiles(newFiles);
                 },
                 deep: true
-            },
-            targetFile: function (newVal, oldVal) {
-                this.playerMeta.loadedmetadata = false
             },
         },
         methods: {
@@ -320,6 +352,9 @@
                     exists: true,
                     startTrimSec: 0,
                     endTrimSec: 0,
+                    startFadeSec: 0.7,
+                    endFadeSec: 0.7,
+                    gain: 1,
                 });
 
                 this.files.push(checkedFile)
@@ -346,33 +381,72 @@
                 const folderPath = filePath.replace(/[\\/][^\\/]+$/, "");
                 window.timeline.openFolder(folderPath);
             },
+            //トリミング
             increaseStartTrim(i) {
                 const file = this.files[i]
-                file.startTrimSec = this.increaseTrim(file.startTrimSec)
+                file.startTrimSec = this.increase(file.startTrimSec, this.trimStep)
                 this.reDraw++
             },
             decreaseStartTrim(i) {
                 const file = this.files[i]
-                file.startTrimSec = this.decreaseTrim(file.startTrimSec)
+                file.startTrimSec = this.decrease(file.startTrimSec, this.trimStep)
                 this.reDraw++
             },
             increaseEndTrim(i) {
                 const file = this.files[i]
-                file.endTrimSec = this.increaseTrim(file.endTrimSec)
+                file.endTrimSec = this.increase(file.endTrimSec, this.trimStep)
                 this.reDraw++
             },
             decreaseEndTrim(i) {
                 const file = this.files[i]
-                file.endTrimSec = this.decreaseTrim(file.endTrimSec)
+                file.endTrimSec = this.decrease(file.endTrimSec, this.trimStep)
                 this.reDraw++
             },
-            increaseTrim(sec) {
-                if (!sec) return this.trimStep
-                return Number(sec) + this.trimStep
+            //フェード
+            increaseStartFade(i) {
+                const file = this.files[i]
+                file.startFadeSec = this.increase(file.startFadeSec, this.fadeStep)
+                this.reDraw++
             },
-            decreaseTrim(sec) {
-                if (!sec || sec < 0) return 0
-                return Number(sec) - this.trimStep
+            decreaseStartFade(i) {
+                const file = this.files[i]
+                file.startFadeSec = this.decrease(file.startFadeSec, this.fadeStep)
+                this.reDraw++
+            },
+            increaseEndFade(i) {
+                const file = this.files[i]
+                file.endFadeSec = this.increase(file.endFadeSec, this.fadeStep)
+                this.reDraw++
+            },
+            decreaseEndFade(i) {
+                const file = this.files[i]
+                file.endFadeSec = this.decrease(file.endFadeSec, this.fadeStep)
+                this.reDraw++
+            },
+            increaseGain(i) {
+                const file = this.files[i]
+                file.gain = this.increase(file.gain, this.gainStep, 3.0)
+                if (file.gain > 3) file.gain = 3.0
+                this.reDraw++
+                window.timeline.mainPlayer.fileMetaChange(file);
+            },
+            decreaseGain(i) {
+                const file = this.files[i]
+                file.gain = this.decrease(file.gain, this.gainStep, -3.0)
+                this.reDraw++
+                window.timeline.mainPlayer.fileMetaChange(file);
+            },
+            increase(sec, step, max = null) {
+                if (!sec) return step
+                if (!max && sec >= max) return max
+                const newSec = Number(sec) + step
+                return Math.round(newSec * 1000) / 1000
+            },
+            decrease(sec, step, min = 0) {
+                if (!sec) return min
+                if (sec <= min) return min
+                const newSec = Number(sec) - step
+                return Math.round(newSec * 1000) / 1000
             },
             start(i) {
                 this.closeStatusAll()
@@ -388,7 +462,6 @@
                             alert(`ファイルが開けませんでした。\n「${file.name}」`)
                             file.isPlaying = false;
                         }
-                        this.targetFile = file
                         this.reDraw++
                     })
             },
@@ -396,7 +469,6 @@
                 const file = this.files[i]
                 window.timeline.closeSubWindow();
                 file.isPlaying = false
-                this.targetFile = {}
                 this.reDraw++
                 this.playerMeta.currentTime = 0
             },

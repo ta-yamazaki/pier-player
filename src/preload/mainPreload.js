@@ -85,6 +85,7 @@ contextBridge.exposeInMainWorld('timeline', {
         forward: (seekTime) => ipcRenderer.invoke('timelineForward', seekTime),
         toEnd: () => ipcRenderer.invoke('timelineToEnd'),
         seek: (newTime) => ipcRenderer.invoke('timelineSeek', newTime),
+        fileMetaChange: (fileMeta) => ipcRenderer.invoke('timelineFileMetaChange', fileMeta),
     },
     // player from playerPage
     listener: {

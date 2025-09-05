@@ -40,8 +40,7 @@ export const loadTimelineWindow = (fileMeta) => {
     timelineWindow.setTitle(fileMeta.name);
     timelineWindow.setOpacity(1);
     timelineWindow.webContents.send("timelineWindowShow", {
-        path: fileMeta.path,
-        type: fileMeta.type,
+        file: fileMeta
     });
 };
 

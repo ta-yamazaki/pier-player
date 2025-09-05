@@ -42,7 +42,6 @@ export const registerTimelineHandlers = () => {
         }));
     });
 
-
     // フォルダを開く処理
     ipcMain.on("openTimelineFolder", (event, folderPath) => {
         // フォルダをエクスプローラーで開く
@@ -75,6 +74,11 @@ export const registerTimelineHandlers = () => {
     ipcMain.handle('timelineSeek', (_event, newTime) => {
         getTimelineWindow().webContents.send("timelineSeek", {
             newTime: newTime
+        });
+    });
+    ipcMain.handle('timelineFileMetaChange', (_event, fileMeta) => {
+        getTimelineWindow().webContents.send("timelineFileMetaChange", {
+            file: fileMeta
         });
     });
 
