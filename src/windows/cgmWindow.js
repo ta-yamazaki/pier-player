@@ -37,6 +37,9 @@ export const createCgmWindow = () => {
         body::-webkit-scrollbar {
             display:none;
         }
+        .mejs-controls:not(:hover) {
+          opacity: 0 !important;
+        }
     `);
 
     // if (devToolsEnabled) cgmWindow.webContents.openDevTools();
