@@ -64,10 +64,7 @@
         <tbody :key="reDraw">
         <tr v-for="(file, i) in files"
             :key="i"
-            :class="{
-              'dragging': i === dragIndex,
-              'has-background-success-light': file.isPlaying
-            }">
+            :class="{'dragging': i === dragIndex}">
           <td :draggable="!playerMeta.isPlaying"
               @dragstart="dragStart(i)"
               @dragenter="dragEnter(i)"
@@ -80,38 +77,37 @@
             </span>
           </td>
           <td class="p-1" style="font-size: 0.9rem; overflow-x: auto;">
-            <div class="box p-2">
-              <div>
-                <nav class="level is-mobile">
-                  <div class="level-left" style="max-width: calc(100% - 55px);">
+            <div class="box p-2"
+                 :class="{'has-background-success-light': file.isPlaying}">
+              <nav class="level is-mobile mb-0">
+                <div class="level-left" style="max-width: calc(100% - 55px);">
                     <span v-if="isVideo(file.type)" class="icon has-text-link">
                       <i class="mdi mdi-18px mdi-video"></i>
                     </span>
-                    <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
+                  <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
                       <i class="mdi mdi-18px mdi-music-note"></i>
                     </span>
-                    <b class="is-size-6 mx-2">{{ file.name }}</b>
-                    <span v-if="file.exists && file.path"
-                          class="icon is-small has-text-grey is-clickable"
-                          @click="openFolder(file.path)">
+                  <b class="is-size-6 mx-2">{{ file.name }}</b>
+                  <span v-if="file.exists && file.path"
+                        class="icon is-small has-text-grey is-clickable"
+                        @click="openFolder(file.path)">
                     <i class="mdi mdi-folder-open"></i>
                   </span>
-                  </div>
-                  <div class="level-right">
-                    <button v-if="file.exists && !file.isPlaying"
-                            class="button is-small is-success"
-                            @click="start(i)"
-                    ><b>再生</b></button>
-                    <br>
-                    <button v-if="file.isPlaying"
-                            class="button is-small is-danger"
-                            @click="close(i)"
-                    ><b>停止</b></button>
-                  </div>
-                </nav>
-                <p class="has-text-danger" v-if="!file.exists"
-                >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
-              </div>
+                </div>
+                <div class="level-right">
+                  <button v-if="file.exists && !file.isPlaying"
+                          class="button is-small is-success"
+                          @click="start(i)"
+                  ><b>再生</b></button>
+                  <br>
+                  <button v-if="file.isPlaying"
+                          class="button is-small is-danger"
+                          @click="close(i)"
+                  ><b>停止</b></button>
+                </div>
+              </nav>
+              <p class="has-text-danger mb-0" v-if="!file.exists"
+              >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
 
               <!-- プレイヤー -->
               <div v-if="file.isPlaying" class="timelinePlayer">
@@ -231,6 +227,7 @@
                              :max="gainMax"
                              type="range"
                              @change="changeGain(i)"
+                             @mousemove="changeGain(i)"
                              @dblclick="file.gain = 1">
                       <div class="control ml-2 is-size-7" style="font-size: inherit;">{{file.gain}}</div>
                       <div class="has-text-grey ml-2 is-size-7">（元の音量＝1）</div>
