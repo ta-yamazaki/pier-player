@@ -233,7 +233,8 @@
                       <div class="has-text-grey ml-2 is-size-7">（元の音量＝1）</div>
                     </div>
                     <div class="level-right">
-                      <label class="checkbox">
+                      <label v-if="i !== files.length - 1"
+                          class="checkbox">
                         <input type="checkbox" v-model="file.continuousPlay"/>
                         <span>次を自動再生</span>
                       </label>
@@ -585,16 +586,22 @@
                     this.playerMeta.loadedmetadata = true
                 })
                 window.timeline.listener.play((event, param) => {
+                    console.log("play")
                     this.playerMeta.isPlaying = true
                 })
                 window.timeline.listener.timeupdate((event, param) => {
                     this.playerMeta.currentTime = param.currentTime
                 })
                 window.timeline.listener.paused((event, param) => {
+                    console.log("paused")
                     this.playerMeta.isPlaying = false
                 })
                 window.timeline.listener.ended((event, param) => {
+                    console.log("end")
                     const index = this.playingFileIndex;
+                    const isLastFile = index !== this.files.length - 1
+                    if (isLastFile) return
+
                     const playingFile = this.files[index];
                     if (playingFile.continuousPlay) this.start(index + 1)
                 })
