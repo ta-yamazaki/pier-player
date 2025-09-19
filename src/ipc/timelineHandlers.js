@@ -77,7 +77,9 @@ export const registerTimelineHandlers = () => {
         });
     });
     ipcMain.handle('timelineFileMetaChange', (_event, fileMeta) => {
-        getTimelineWindow().webContents.send("timelineFileMetaChange", {
+        const timelineWindow = getTimelineWindow();
+        if (!timelineWindow) return
+        timelineWindow.webContents.send("timelineFileMetaChange", {
             file: fileMeta
         });
     });

@@ -1,3 +1,8 @@
+/**
+ * 秒を「分:秒」形式に
+ * @param timeInSec
+ * @return {string}
+ */
 function minSecColonFrom(timeInSec) {
     if (typeof timeInSec !== "number") return "";
 

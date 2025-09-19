@@ -1,3 +1,47 @@
+:root {
+    --timeline-linear-gradient: linear-gradient(
+            125deg,
+            rgb(9, 150, 175),
+            rgb(151, 136, 218),
+            rgb(168, 15, 137)
+    );
+}
+
+table.borderless td {
+    border: none;
+}
+
+/** 音量スライダー */
+input[type="range"] {
+    appearance: none;
+    width: 140px;
+    height: 6px;
+    border-radius: 99px;
+    background: transparent;
+    cursor: pointer;
+    border: 1px solid lightgray;
+}
+/* ツマミ：Chrome, Safari, Edge用 */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    background: darkgray;
+    box-shadow: none;
+    border: 1px solid gray;
+}
+/* ツマミ：Firefox用 */
+input[type="range"]::-moz-range-thumb {
+    border: 1px solid gray;
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    background: darkgray;
+    box-shadow: none;
+}
+
 .timelinePlayer {
     /*position: fixed;*/
     /*right: 0;*/
@@ -19,23 +63,18 @@
     }
 }
 
-.playIcon, .pauseIcon{
-    background: linear-gradient(
-            125deg,
-            rgb(9, 150, 175),
-            rgb(151, 136, 218),
-            rgb(168, 15, 137)
-    );
+.playIcon, .pauseIcon {
+    background: var(--timeline-linear-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 /* Bulmaのprogressリセット */
 progress {
-    all: unset;           /* ほぼ全てのCSSをリセット */
-    display: block;       /* progress は block にする */
-    width: 100%;          /* 元の幅を確保 */
-    height: auto;         /* 高さは自分で設定 */
+    all: unset; /* ほぼ全てのCSSをリセット */
+    display: block; /* progress は block にする */
+    width: 100%; /* 元の幅を確保 */
+    height: auto; /* 高さは自分で設定 */
     box-sizing: border-box;
 }
 
@@ -59,23 +98,13 @@ progress::-webkit-progress-bar {
 
 progress::-webkit-progress-value {
     background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),
-    linear-gradient(
-            125deg,
-            rgb(9, 150, 175),
-            rgb(151, 136, 218),
-            rgb(168, 15, 137)
-    );
+                var(--timeline-linear-gradient);
 }
 
 /* Firefox */
 progress::-moz-progress-bar {
     background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),
-    linear-gradient(
-            125deg,
-            rgb(9, 150, 175),
-            rgb(151, 136, 218),
-            rgb(168, 15, 137)
-    );
+                var(--timeline-linear-gradient);
 }
 
 

@@ -7,7 +7,7 @@ export const registerCgmHandlers = () => {
         const cgmWindow = createCgmWindow();
         try {
             await cgmWindow.loadURL(cgm.path);
-            cgmWindow.setTitle(cgm.title);
+            cgmWindow.setTitle(cgm.title || "CGM Player");
             cgmWindow.showInactive();
         } catch (e) {
             console.error(e);

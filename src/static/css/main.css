@@ -62,7 +62,19 @@ table, th, td {
     box-shadow: none;
     transition: border-color 0.2s ease;
 }
-
 .input.underlined:focus {
     border-width: 2px
+}
+
+
+/* ボーダースタイルInput */
+.input.borderless:focus {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+.input.borderless:not(:focus) {
+    border: none;
 }

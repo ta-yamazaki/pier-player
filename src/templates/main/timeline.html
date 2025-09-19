@@ -60,7 +60,7 @@
       >表示リセット
       </button>
 
-      <table class="table my-2 is-fullwidth">
+      <table class="table my-2 is-fullwidth borderless">
         <tbody :key="reDraw">
         <tr v-for="(file, i) in files"
             :key="i"
@@ -68,7 +68,7 @@
               'dragging': i === dragIndex,
               'has-background-success-light': file.isPlaying
             }">
-          <td :draggable="true"
+          <td :draggable="!playerMeta.isPlaying"
               @dragstart="dragStart(i)"
               @dragenter="dragEnter(i)"
               @dragover.prevent
@@ -79,164 +79,173 @@
               <i class="mdi mdi-24px mdi-drag-vertical mt-1"></i>
             </span>
           </td>
-          <td style="font-size: 0.9rem; max-width: 20rem; overflow-x: auto;">
-            <div>
-              <nav class="level is-mobile">
-                <div class="level-left" style="max-width: calc(100% - 55px);">
-                   <span v-if="isVideo(file.type)" class="icon has-text-link">
-                    <i class="mdi mdi-18px mdi-video"></i>
-                  </span>
-                  <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
-                    <i class="mdi mdi-18px mdi-music-note"></i>
-                  </span>
-                  <a v-if="isVideo(file.type)" @click="preview(file)">{{ file.name }}</a>
-                  <span v-if="isAudio(file.type)">{{ file.name }}</span>
-                  <span v-if="file.exists && file.path"
-                        class="icon is-small has-text-grey is-clickable"
-                        @click="openFolder(file.path)">
+          <td class="p-1" style="font-size: 0.9rem; overflow-x: auto;">
+            <div class="box p-2">
+              <div>
+                <nav class="level is-mobile">
+                  <div class="level-left" style="max-width: calc(100% - 55px);">
+                    <span v-if="isVideo(file.type)" class="icon has-text-link">
+                      <i class="mdi mdi-18px mdi-video"></i>
+                    </span>
+                    <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
+                      <i class="mdi mdi-18px mdi-music-note"></i>
+                    </span>
+                    <b class="is-size-6 mx-2">{{ file.name }}</b>
+                    <span v-if="file.exists && file.path"
+                          class="icon is-small has-text-grey is-clickable"
+                          @click="openFolder(file.path)">
                     <i class="mdi mdi-folder-open"></i>
                   </span>
-                </div>
-                <div class="level-right">
-                  <button v-if="file.exists && !file.isPlaying"
-                          class="button is-small is-success"
-                          @click="start(i)"
-                  ><b>再生</b></button>
-                  <br>
-                  <button v-if="file.isPlaying"
-                          class="button is-small is-danger"
-                          @click="close(i)"
-                  ><b>停止</b></button>
-                </div>
-              </nav>
-              <p class="has-text-danger" v-if="!file.exists"
-              >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
-            </div>
-
-            <!-- プレイヤー -->
-            <div v-if="file.isPlaying" class="timelinePlayer">
-              <nav class="level is-mobile mb-1">
-                <p>{{ currentTimeColon }}</p>
-                <progress
-                    class="mx-2 mb-0"
-                    style="cursor: pointer;"
-                    :value="playerMeta.currentTime"
-                    :max="playerMeta.duration"
-                    @mousedown="startSeek"
-                ></progress>
-                <p>{{ durationColon }}</p>
-              </nav>
-
-              <nav class="level is-mobile">
-                <p class="level-item">
-                  <a class="icon is-clickable has-text-success-dark" @click="restart()">
-                    <span class="mdi mdi-24px mdi-skip-previous"/>
-                  </a>
-                </p>
-                <p class="level-item">
-                  <a class="icon is-clickable has-text-success-dark" @click="rewind(10)">
-                    <span class="mdi mdi-24px mdi-rewind-10"/>
-                  </a>
-                </p>
-                <p class="level-item">
-                <span v-if="!playerMeta.isPlaying"
-                      class="icon is-large is-clickable playIcon"
-                      @click="play()">
-                  <i class="mdi mdi mdi-48px mdi-play-circle"></i>
-                </span>
-                  <span v-if="playerMeta.isPlaying"
-                        class="icon is-large is-clickable pauseIcon"
-                        @click="pause()">
-                  <i class="mdi mdi mdi-48px mdi-pause-circle"></i>
-                </span>
-                </p>
-                <p class="level-item">
-                  <a class="icon is-clickable has-text-success-dark" @click="forward(10)">
-                    <span class="mdi mdi-24px mdi-fast-forward-10"/>
-                  </a>
-                </p>
-                <p class="level-item">
-                  <a class="icon is-clickable has-text-success-dark" @click="toEnd()">
-                    <span class="mdi mdi-24px mdi-skip-next"/>
-                  </a>
-                </p>
-              </nav>
-            </div>
-            <!-- プレイヤーここまで -->
-            <!-- 再生編集-->
-            <div class="px-2 py-1 mt-2 mb-0" style="background-color: #f9f9f9">
-              <div class="is-flex is-align-items-center py-0">
-                <p class="nowrap" style="width: 5rem"></p>
-                <nav class="level is-mobile is-flex-grow-1 is-size-7">
-                  <div class="level-left ml-3">開始（秒）</div>
-                  <div class="level-right">終了（秒）</div>
-                </nav>
-              </div>
-              <div class="is-flex is-align-items-center py-1" style="border-bottom: 1px solid lightgray;">
-                <p class="nowrap" style="width: 5rem">
-                  <span class="mdi mdi-content-cut"></span>
-                  トリム
-                </p>
-                <nav class="level is-mobile is-flex-grow-1 is-size-7">
-                  <div class="level-left">
-                    <a @click="decreaseStartTrim(i)"><span class="mdi mdi-minus"></span></a>
-                    <input v-model="file.startTrimSec"
-                           class="input underlined is-small px-1 py-0 has-text-centered"
-                           type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-                    <a @click="increaseStartTrim(i)"><span class="mdi mdi-plus"></span></a>
                   </div>
                   <div class="level-right">
-                    <a @click="decreaseEndTrim(i)"><span class="mdi mdi-minus"></span></a>
-                    <input v-model="file.endTrimSec"
-                           class="input underlined is-small px-1 has-text-centered"
-                           type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-                    <a @click="increaseEndTrim(i)"><span class="mdi mdi-plus"></span></a>
+                    <button v-if="file.exists && !file.isPlaying"
+                            class="button is-small is-success"
+                            @click="start(i)"
+                    ><b>再生</b></button>
+                    <br>
+                    <button v-if="file.isPlaying"
+                            class="button is-small is-danger"
+                            @click="close(i)"
+                    ><b>停止</b></button>
                   </div>
                 </nav>
+                <p class="has-text-danger" v-if="!file.exists"
+                >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
               </div>
-              <div class="is-flex is-align-items-center py-1">
-                <p class="nowrap" style="width: 5rem">
-                  <span class="mdi mdi-square-opacity"></span>
-                  フェード
-                </p>
-                <nav class="level is-mobile is-flex-grow-1 is-size-7">
-                  <div class="level-left">
-                    <a @click="decreaseStartFade(i)"><span class="mdi mdi-minus"></span></a>
-                    <input v-model="file.startFadeSec"
-                           class="input underlined is-small px-1 py-0 has-text-centered"
-                           type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-                    <a @click="increaseStartFade(i)"><span class="mdi mdi-plus"></span></a>
-                  </div>
-                  <p class="has-text-grey">短 0.4　　中 0.7　　長 1.2</p>
-                  <div class="level-right">
-                    <a @click="decreaseEndFade(i)"><span class="mdi mdi-minus"></span></a>
-                    <input v-model="file.endFadeSec"
-                           class="input underlined is-small px-1 has-text-centered"
-                           type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-                    <a @click="increaseEndFade(i)"><span class="mdi mdi-plus"></span></a>
-                  </div>
-                </nav>
-              </div>
-              <div class="is-flex is-align-items-center py-1">
-                <p class="nowrap" style="width: 5rem">
-                  <span class="mdi mdi-volume-high"></span>
-                  音量
-                </p>
-                <nav class="level is-mobile is-flex-grow-1 is-size-7">
-                  <div class="level-left">
-                    <a @click="decreaseGain(i)"><span class="mdi mdi-minus"></span></a>
-                    <input v-model="file.gain"
-                           class="input underlined is-small px-1 py-0 has-text-centered"
-                           type="number" min="-3" max="3" style="width: 2.75rem;height: 1.75em;">
-                    <a @click="increaseGain(i)"><span class="mdi mdi-plus"></span></a>
-                  </div>
-                  <p class="has-text-grey">少し小さく -0.2　　元の音量 1　　少し大きく +0.2</p>
-                  <div class="level-right"></div>
-                </nav>
-              </div>
-            </div>
-            <!-- 再生編集ここまで -->
 
+              <!-- プレイヤー -->
+              <div v-if="file.isPlaying" class="timelinePlayer">
+                <nav class="level is-mobile mb-1">
+                  <p>{{ currentTimeColon }}</p>
+                  <progress
+                      class="mx-2 mb-0"
+                      style="cursor: pointer;"
+                      :value="playerMeta.currentTime"
+                      :max="playerMeta.duration"
+                      @mousedown="startSeek"
+                  ></progress>
+                  <p>{{ durationColon }}</p>
+                </nav>
+
+                <nav class="level is-mobile">
+                  <p class="level-item">
+                    <a class="icon is-clickable has-text-success-dark" @click="restart()">
+                      <span class="mdi mdi-24px mdi-skip-previous"/>
+                    </a>
+                  </p>
+                  <p class="level-item">
+                    <a class="icon is-clickable has-text-success-dark" @click="rewind(10)">
+                      <span class="mdi mdi-24px mdi-rewind-10"/>
+                    </a>
+                  </p>
+                  <p class="level-item">
+                    <span v-if="!playerMeta.isPlaying"
+                          class="icon is-large is-clickable playIcon"
+                          @click="play()">
+                      <i class="mdi mdi mdi-48px mdi-play-circle"></i>
+                    </span>
+                    <span v-if="playerMeta.isPlaying"
+                          class="icon is-large is-clickable pauseIcon"
+                          @click="pause()">
+                      <i class="mdi mdi mdi-48px mdi-pause-circle"></i>
+                    </span>
+                  </p>
+                  <p class="level-item">
+                    <a class="icon is-clickable has-text-success-dark" @click="forward(10)">
+                      <span class="mdi mdi-24px mdi-fast-forward-10"/>
+                    </a>
+                  </p>
+                  <p class="level-item">
+                    <a class="icon is-clickable has-text-success-dark" @click="toEnd()">
+                      <span class="mdi mdi-24px mdi-skip-next"/>
+                    </a>
+                  </p>
+                </nav>
+              </div>
+              <!-- プレイヤーここまで -->
+              <!-- 再生編集-->
+              <div class="mx-2 mt-2 mb-0">
+                <!--            <div class="px-2 py-1 mt-2 mb-0" style="background-color: #f9f9f9">-->
+                <div class="is-flex is-align-items-center py-0">
+                  <p class="nowrap" style="width: 5rem"></p>
+                  <nav class="level is-mobile is-flex-grow-1 is-size-7">
+                    <div class="level-left ml-3">開始（秒）</div>
+                    <div class="level-right">終了（秒）</div>
+                  </nav>
+                </div>
+                <div class="is-flex is-align-items-center py-1" style="border-bottom: 1px dashed lightgray;">
+                  <p class="nowrap" style="width: 5rem">
+                    <span class="mdi mdi-content-cut"></span>
+                    トリム
+                  </p>
+                  <nav class="level is-mobile is-flex-grow-1 is-size-7">
+                    <div class="level-left">
+                      <a @click="decreaseStartTrim(i)"><span class="mdi mdi-minus"></span></a>
+                      <input v-model="file.startTrimSec"
+                             class="input borderless is-small px-1 py-0 has-text-centered"
+                             type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                      <a @click="increaseStartTrim(i)"><span class="mdi mdi-plus"></span></a>
+                    </div>
+                    <div class="level-right">
+                      <a @click="decreaseEndTrim(i)"><span class="mdi mdi-minus"></span></a>
+                      <input v-model="file.endTrimSec"
+                             class="input borderless is-small px-1 has-text-centered"
+                             type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                      <a @click="increaseEndTrim(i)"><span class="mdi mdi-plus"></span></a>
+                    </div>
+                  </nav>
+                </div>
+                <div v-if="isVideo(file.type)"
+                     class="is-flex is-align-items-center py-1" style="border-bottom: 1px dashed lightgray;">
+                  <p class="nowrap" style="width: 5rem">
+                    <span class="mdi mdi-square-opacity"></span>
+                    フェード
+                  </p>
+                  <nav class="level is-mobile is-flex-grow-1 is-size-7">
+                    <div class="level-left">
+                      <a @click="decreaseStartFade(i)"><span class="mdi mdi-minus"></span></a>
+                      <input v-model="file.startFadeSec"
+                             class="input borderless is-small px-1 py-0 has-text-centered"
+                             type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                      <a @click="increaseStartFade(i)"><span class="mdi mdi-plus"></span></a>
+                    </div>
+                    <div class="level-right">
+                      <a @click="decreaseEndFade(i)"><span class="mdi mdi-minus"></span></a>
+                      <input v-model="file.endFadeSec"
+                             class="input borderless is-small px-1 has-text-centered"
+                             type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                      <a @click="increaseEndFade(i)"><span class="mdi mdi-plus"></span></a>
+                    </div>
+                  </nav>
+                </div>
+                <div class="py-1">
+                  <nav class="level is-mobile is-flex-grow-1">
+                    <div class="level-left nowrap">
+                      <span class="mdi mdi-volume-high"></span>
+                      <input v-model="file.gain"
+                             class="is-size-7 ml-2"
+                             style="vertical-align: middle"
+                             :style="{background: sliderBackground(file.gain)}"
+                             step="0.1"
+                             :min="gainMin"
+                             :max="gainMax"
+                             type="range"
+                             @change="changeGain(i)"
+                             @dblclick="file.gain = 1">
+                      <div class="control ml-2 is-size-7" style="font-size: inherit;">{{file.gain}}</div>
+                      <div class="has-text-grey ml-2 is-size-7">（元の音量＝1）</div>
+                    </div>
+                    <div class="level-right">
+                      <label class="checkbox">
+                        <input type="checkbox" v-model="file.continuousPlay"/>
+                        <span>次を自動再生</span>
+                      </label>
+                    </div>
+                  </nav>
+                </div>
+              </div>
+              <!-- 再生編集ここまで -->
+            </div>
           </td>
           <td class="mx-0 px-1 fitContent">
             <button class="delete" @click="removeRow(i)"></button>
@@ -244,19 +253,6 @@
         </tr>
         </tbody>
       </table>
-      <br><br>
-      <div style="width: 100%; max-width: 480px; margin: auto">
-        <h6 class="title is-6 mt-4 mb-1">映像プレビュー</h6>
-        <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
-          <template v-if="previewFile.src">
-            <video controls autoplay muted :key="videoReload">
-              <source :src="previewFile.src" :type="previewFile.type"/>
-            </video>
-            <br>
-            <small>※サブモニターでは再生バーは表示されません。</small>
-          </template>
-        </div>
-      </div>
     </div>
 
     <br>
@@ -293,7 +289,6 @@
             //     startTrimSec: 0,
             //     endTrimSec: 0,
             // }],
-            previewFile: {src: "", type: ""},
             dragIndex: null,
             isEnter: null,
             disallowedFileTypeMessage: "",
@@ -303,6 +298,8 @@
             trimStep: 0.5000,
             fadeStep: 0.1000,
             gainStep: 0.1000,
+            gainMin: 0,
+            gainMax: 3,
             // player
             playerMeta: {
                 currentTime: 0,
@@ -329,6 +326,9 @@
                 if (!this.playerMeta.currentTime) return 0
                 if (!this.playerMeta.duration) return 0
                 return (this.playerMeta.currentTime / this.playerMeta.duration) * 100;
+            },
+            playingFileIndex() {
+                return this.files.findIndex(file => file.isPlaying);
             },
         },
         mounted() {
@@ -423,6 +423,27 @@
                 file.endFadeSec = this.decrease(file.endFadeSec, this.fadeStep)
                 this.reDraw++
             },
+            changeGain(i) {
+                const file = this.files[i]
+                window.timeline.mainPlayer.fileMetaChange(file);
+            },
+            sliderBackground(value) {
+                const activeColor = "darkgray";
+                const inactiveColor = "transparent";
+                const ratio = (value - this.gainMin) / (this.gainMax - this.gainMin) * 100;
+                const barColor = `linear-gradient(90deg, ${activeColor} ${ratio}%, ${inactiveColor} ${ratio}%)`;
+
+                const percent = (1 / this.gainMax - this.gainMin) * 100; // デフォルト値1の位置（min=0, max=3）
+                const defaultLine = `
+                  linear-gradient(to right,
+                    transparent ${percent - 1}%,
+                    gray ${percent - 1}%,
+                    gray ${percent + 1}%,
+                    transparent ${percent + 1}%)
+                `;
+
+                return `${defaultLine}, ${barColor}`
+            },
             increaseGain(i) {
                 const file = this.files[i]
                 file.gain = this.increase(file.gain, this.gainStep, 3.0)
@@ -432,13 +453,13 @@
             },
             decreaseGain(i) {
                 const file = this.files[i]
-                file.gain = this.decrease(file.gain, this.gainStep, -3.0)
+                file.gain = this.decrease(file.gain, this.gainStep)
                 this.reDraw++
                 window.timeline.mainPlayer.fileMetaChange(file);
             },
             increase(sec, step, max = null) {
                 if (!sec) return step
-                if (!max && sec >= max) return max
+                if (max && sec >= max) return max
                 const newSec = Number(sec) + step
                 return Math.round(newSec * 1000) / 1000
             },
@@ -471,6 +492,7 @@
                 file.isPlaying = false
                 this.reDraw++
                 this.playerMeta.currentTime = 0
+                this.playerMeta.isPlaying = false
             },
             // close() {
             //     window.timeline.closeSubWindow();
@@ -493,15 +515,12 @@
             removeRow(i) {
                 this.files.splice(i, 1);
             },
-            preview(file) {
-                this.previewFile.src = file.path
-                this.previewFile.type = file.type
-                this.videoReload++
-            },
             dragStart(index) {
+                if (this.playerMeta.isPlaying) return alert("再生中は順番を変えられません")
                 this.dragIndex = index;
             },
             dragEnter(index) {
+                if (this.playerMeta.isPlaying) return alert("再生中は順番を変えられません")
                 if (index === this.dragIndex) return;
                 const deleteElement = this.files.splice(this.dragIndex, 1)[0];
                 this.files.splice(index, 0, deleteElement);
@@ -578,6 +597,9 @@
                     this.playerMeta.isPlaying = false
                 })
                 window.timeline.listener.ended((event, param) => {
+                    const index = this.playingFileIndex;
+                    const playingFile = this.files[index];
+                    if (playingFile.continuousPlay) this.start(index + 1)
                 })
             },
         },

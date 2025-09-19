@@ -10,6 +10,7 @@ export const registerVimeoHandlers = () => {
         const vimeoWindow = createVimeoWindow()
         vimeoWindow.loadURL(url).then(async () => {
             await vimeoWindow.webContents.executeJavaScript(verifyVimeoPassword(password), true)
+            vimeoWindow.setTitle("Vimeo Player");
             vimeoWindow.showInactive();
         }).catch((e) => {
             console.error(e)

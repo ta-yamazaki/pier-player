@@ -111,6 +111,7 @@
         })
 
         function playVideo(event) {
+            // video要素生成
             const source = document.createElement('source');
             source.src = file.path
             source.type = file.type
@@ -120,8 +121,12 @@
             body.appendChild(video);
             videoEl = video
 
+            // ゲイン設定
             videoGainSourceSetting()
             videoGainNode.gain.value = file.gain;
+
+            // 再生位置
+            video.currentTime = file.startTrimSec
 
             video.play().then(() => {
                 fadeInSetting(`${file.startFadeSec}s`)
@@ -160,6 +165,12 @@
             });
             mediaEl.addEventListener('timeupdate', (event) => {
                 window.timeline.listener.targetTimeupdate(mediaEl.currentTime);
+
+                if (endTimeReached(mediaEl)) {
+                    mediaEl.pause()
+                    mediaEl.currentTime = file.startTrimSec
+                    window.timeline.listener.targetEnded();
+                }
 
                 if (fadeOutReached(mediaEl))
                     fadeOutSetting(`0`, `blackOut`, `${file.endFadeSec}s`)
@@ -211,8 +222,15 @@
 
         function fadeOutReached(mediaEl) {
             if (!file.endFadeSec) return false
+            if (!file.endTrimSec) return false
             // マージンで 30ms いれておく
-            return mediaEl.currentTime >= mediaEl.duration - file.endFadeSec - 0.03;
+            return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - file.endFadeSec - 0.03;
+        }
+
+        function endTimeReached(mediaEl) {
+            if (!file.endTrimSec) return false
+            // マージンで 30ms いれておく
+            return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - 0.03;
         }
 
         // window.timeline.timelineWindowHide((event) => {
