@@ -30,8 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $releases = gh release list --json tagName,isDraft --jq 'reverse' --limit 2 | ConvertFrom-Json
-          $latestDraft = $releases | Where-Object { $_.isDraft -eq $true } | Select-Object -First 1
+          $latestDraft = gh release list --json tagName --limit 1 | ConvertFrom-Json
 
           if ($null -ne $latestDraft) {
             Write-Output "Latest draft release: $($latestDraft.tagName)"
