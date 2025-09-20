@@ -8,7 +8,8 @@
     "start": "electron .",
     "build": "electron-builder --win --x64",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "release": "node release.js"
+    "release": "node release.js",
+    "release:force": "node release-force.js"
   },
   "author": "zakky",
   "license": "MIT",
@@ -40,7 +41,7 @@
     "publish": [
       {
         "provider": "github",
-        "draft": false,
+        "draft": false
       }
     ]
   }
