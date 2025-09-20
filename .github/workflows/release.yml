@@ -25,21 +25,31 @@ jobs:
 
       - name: Get current and previous tag
         id: tags
+        shell: bash
         run: |
-          $currentTag = "${GITHUB_REF##*/}"
-          $prevTag = git tag --sort=-creatordate | Where-Object { $_ -ne $currentTag } | Select-Object -First 1
-          echo "PREV_TAG=$prevTag" >> $env:GITHUB_ENV
-          echo "CURRENT_TAG=$currentTag" >> $env:GITHUB_ENV
+          CURRENT_TAG=${GITHUB_REF##*/}
+          PREV_TAG=$(git tag --sort=-creatordate | grep -v "$CURRENT_TAG" | head -n 1)
+          echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
+          echo "PREV_TAG=$PREV_TAG" >> $GITHUB_ENV
 
       - name: Get commits since previous tag
         id: commits
+        shell: bash
         run: |
-          $commits = git log $env:PREV_TAG..HEAD --pretty=format:'- %s'
-          echo "COMMITS=$commits" >> $env:GITHUB_ENV
+          COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:'- %s')
+          echo "COMMITS<<EOF" >> $GITHUB_ENV
+          echo "$COMMITS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
-      - name: Build & Publish (Windows)
-        run: |
-          npx electron-builder --win --x64 --publish always
+      - name: Build (Windows)
+        run: npx electron-builder --win --x64 --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          npm_config_build_extraMetadata_releaseNotes: ${{ env.COMMITS }}
+
+      - name: Update release notes
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.CURRENT_TAG }}
+          body: ${{ env.COMMITS }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -38,9 +38,6 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     },
-    "extraMetadata": {
-      "releaseNotes": ""
-    },
     "publish": [
       {
         "provider": "github",
