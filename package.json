@@ -43,6 +43,7 @@
         "provider": "github",
         "owner": "ta-yamazaki",
         "repo": "pier-player",
+        "private": false,
         "draft": false,
         "releaseType": "release"
       }
