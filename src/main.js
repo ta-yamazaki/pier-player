@@ -1,4 +1,4 @@
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, dialog} from 'electron';
 import electronUpdater from 'electron-updater'
 import {registerIpcHandlers} from './ipc/handlers.js';
 import {createWindows, initMainWindow} from "./windows/windows.js";
