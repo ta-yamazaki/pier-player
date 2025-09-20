@@ -14,8 +14,7 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^37.2.6",
-    "electron-builder": "^26.0.12",
-    "npm-package-versions": "^2.0.3"
+    "electron-builder": "^26.0.12"
   },
   "dependencies": {
     "electron-store": "^10.1.0",
@@ -41,8 +40,6 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "ta-yamazaki",
-        "repo": "pier-player",
         "private": false,
         "draft": false,
         "releaseType": "release"
