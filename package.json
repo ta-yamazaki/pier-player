@@ -41,7 +41,8 @@
     "publish": [
       {
         "provider": "github",
-        "draft": false
+        "owner": "ta-yamazaki",
+        "repo": "pier-player"
       }
     ]
   }
