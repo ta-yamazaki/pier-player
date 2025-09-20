@@ -9,14 +9,12 @@ app.whenReady().then(() => {
     createWindows();
     registerIpcHandlers();
 
-    app.on('ready', () => {
-        autoUpdater.checkForUpdatesAndNotify()
-    })
+    autoUpdater.checkForUpdatesAndNotify()
+});
 
-    app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0)
-            initMainWindow();
-    });
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0)
+        initMainWindow();
 });
 
 app.on('window-all-closed', () => {
