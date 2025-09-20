@@ -40,7 +40,7 @@
     },
     "publish": [
       {
-        "provider": "github",
+        "provider": "generic",
         "owner": "ta-yamazaki",
         "repo": "pier-player",
         "private": false,
