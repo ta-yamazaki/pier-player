@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('api', {
     storeFiles: (target, files) => ipcRenderer.invoke("storeFiles", target, files),
 
     getVersion: () => ipcRenderer.invoke('getVersion'),
+    checkUpdate: () => ipcRenderer.invoke('checkUpdate'),
 });
 
 contextBridge.exposeInMainWorld('webUtils', webUtils)

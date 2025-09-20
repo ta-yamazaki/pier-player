@@ -176,6 +176,11 @@
         },
         async created() {
             this.version = await window.api.getVersion()
+            window.api.checkUpdate().then((result) => {
+                console.log(result)
+            }).catch((e) => {
+                console.error(e)
+            })
 
             this.sundayFiles = await window.api.getFiles("sunday");
             this.wednesdayFiles = await window.api.getFiles("wednesday");

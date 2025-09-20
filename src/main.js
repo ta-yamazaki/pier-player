@@ -6,10 +6,10 @@ import {createWindows, initMainWindow} from "./windows/windows.js";
 const {autoUpdater} = electronUpdater;
 
 app.whenReady().then(() => {
+    autoUpdater.checkForUpdatesAndNotify()
+
     createWindows();
     registerIpcHandlers();
-
-    autoUpdater.checkForUpdatesAndNotify()
 });
 
 app.on('activate', () => {
