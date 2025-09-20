@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0   # 全タグ取得
 
       - name: Install Node
         uses: actions/setup-node@v3
@@ -23,34 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Get current and previous tag
-        id: tags
-        shell: bash
-        run: |
-          CURRENT_TAG=${GITHUB_REF#refs/tags/}
-          PREV_TAG=$(git tag --sort=-creatordate | grep -v "$CURRENT_TAG" | head -n 1 || true)
-          echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
-          echo "PREV_TAG=$PREV_TAG" >> $GITHUB_ENV
-
-      - name: Get commits since previous tag
-        id: commits
-        shell: bash
-        run: |
-          COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:'- %s')
-          echo "COMMITS<<EOF" >> $GITHUB_ENV
-          echo "$COMMITS" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
       - name: Build & Publish (Windows)
         run: npm run build -- --publish always
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update release notes
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.CURRENT_TAG }}
-          body: ${{ env.COMMITS }}
-          draft: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.github_token }}
