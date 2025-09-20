@@ -39,7 +39,9 @@
     },
     "publish": [
       {
-        "provider": "github"
+        "provider": "github",
+        "draft": false,
+        "releaseType": "release"
       }
     ]
   }
