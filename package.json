@@ -45,7 +45,8 @@
         "repo": "pier-player",
         "private": false,
         "draft": false,
-        "releaseType": "release"
+        "releaseType": "release",
+        "releaseNotes": "${env:COMMITS}"
       }
     ]
   }

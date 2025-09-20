@@ -13,7 +13,7 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0   # タグ全取得が必要
+          fetch-depth: 0   # 全タグ取得
 
       - name: Install Node
         uses: actions/setup-node@v3
@@ -23,12 +23,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Get previous tag
-        id: prev_tag
+      - name: Get current and previous tag
+        id: tags
         run: |
           $currentTag = "${GITHUB_REF##*/}"
           $prevTag = git tag --sort=-creatordate | Where-Object { $_ -ne $currentTag } | Select-Object -First 1
           echo "PREV_TAG=$prevTag" >> $env:GITHUB_ENV
+          echo "CURRENT_TAG=$currentTag" >> $env:GITHUB_ENV
 
       - name: Get commits since previous tag
         id: commits
@@ -37,6 +38,8 @@ jobs:
           echo "COMMITS=$commits" >> $env:GITHUB_ENV
 
       - name: Build & Publish (Windows)
-        run: npm run build -- --publish always --release-notes "$env:COMMITS"
+        run: |
+          npx electron-builder --win --x64 --publish always --config.extraMetadata.releaseNotes="$env:COMMITS"
         env:
           GH_TOKEN: ${{ secrets.github_token }}
+          COMMITS: ${{ env.COMMITS }}
