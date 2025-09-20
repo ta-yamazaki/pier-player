@@ -39,7 +39,7 @@ jobs:
 
       - name: Build & Publish (Windows)
         run: |
-          npx electron-builder --win --x64 --publish always --config.extraMetadata.releaseNotes="$env:COMMITS"
+          npx electron-builder --win --x64 --publish always
         env:
-          GH_TOKEN: ${{ secrets.github_token }}
-          COMMITS: ${{ env.COMMITS }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          npm_config_build_extraMetadata_releaseNotes: ${{ env.COMMITS }}
