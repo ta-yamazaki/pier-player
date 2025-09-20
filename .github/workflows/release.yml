@@ -2,8 +2,8 @@ name: Build and Release (Windows)
 
 on:
   push:
-    tags:
-      - 'v*'   # v1.0.0 のようなタグで起動
+    branches:
+      - autoUpdate
 
 jobs:
   release:
