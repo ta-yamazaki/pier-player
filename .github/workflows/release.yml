@@ -25,3 +25,26 @@ jobs:
         run: npm run build -- --publish always
         env:
           GH_TOKEN: ${{ secrets.github_token }}
+
+      - name: Setup GitHub CLI
+        uses: cli/gh-actions@v2
+
+      - name: Authenticate GitHub CLI
+        run: gh auth setup-git
+
+      - name: List releases
+        run: gh release list
+
+      - name: Publish drkaft release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+#           ここでは最新の draft release を取得して draft解除
+          LATEST_DRAFT=$(gh release list --draft --limit 1 --json tagName --jq '.[0].tagName')
+          echo "Latest draft release: $LATEST_DRAFT"
+          if [ "$LATEST_DRAFT" != "null" ]; then
+            gh release edit "$LATEST_DRAFT" --draft=false
+            echo "Draft release '$LATEST_DRAFT' is now published as latest."
+          else
+            echo "No draft release found."
+          fi
