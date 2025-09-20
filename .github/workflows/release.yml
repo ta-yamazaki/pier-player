@@ -27,13 +27,10 @@ jobs:
           GH_TOKEN: ${{ secrets.github_token }}
 
       - name: Setup GitHub CLI
-        uses: cli/gh-actions@v2
+        uses: actions/setup-gh@v2
 
       - name: Authenticate GitHub CLI
-        run: gh auth setup-git
-
-      - name: List releases
-        run: gh release list
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Publish draft release # 最新の draft release を取得
         env:
