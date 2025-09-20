@@ -1,7 +1,9 @@
 import {app, BrowserWindow} from 'electron';
-import {autoUpdater} from 'electron-updater'
+import electronUpdater from 'electron-updater'
 import {registerIpcHandlers} from './ipc/handlers.js';
 import {createWindows, initMainWindow} from "./windows/windows.js";
+
+const {autoUpdater} = electronUpdater;
 
 app.whenReady().then(() => {
     createWindows();

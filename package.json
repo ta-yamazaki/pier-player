@@ -7,7 +7,8 @@
   "scripts": {
     "start": "electron .",
     "build": "electron-builder --win --x64",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "git tag v$(node -p \"require('./package.json').version\") && git push origin v$(node -p \"require('./package.json').version\")"
   },
   "author": "zakky",
   "license": "MIT",
