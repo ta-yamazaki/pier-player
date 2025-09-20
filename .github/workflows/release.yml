@@ -26,11 +26,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.github_token }}
 
-      - name: Authenticate GitHub CLI
-        run: gh auth login --with-token
-        env:
-          GH_TOKEN: ${{ secrets.github_token }}
-
       - name: Publish draft release # 最新の draft release を取得
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
