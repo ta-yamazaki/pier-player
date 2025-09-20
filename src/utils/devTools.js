@@ -1,2 +1,6 @@
-// export const devToolsEnabled = false;
-export const devToolsEnabled = true;
+import {app} from "electron";
+
+export const devToolsEnabled = () => {
+    // return false;
+    return !app.isPackaged;
+}
