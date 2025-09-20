@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Check out Git repository
@@ -30,11 +30,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LATEST_DRAFT=$(gh release list --draft --limit 1 --json tagName --jq '.[0].tagName')
-          echo "Latest draft release: $LATEST_DRAFT"
-          if [ "$LATEST_DRAFT" != "null" ]; then
-            gh release edit "$LATEST_DRAFT" --draft=false
-            echo "Draft release '$LATEST_DRAFT' is now published as latest."
-          else
-            echo "No draft release found."
-          fi
+          $latestDraft = gh release list --draft --limit 1 --json tagName --jq ".[0].tagName"
+          Write-Output "Latest draft release: $latestDraft"
+
+          if ($latestDraft -and $latestDraft -ne "null") {
+            gh release edit $latestDraft --draft=false --prerelease=false
+            Write-Output "Draft release '$latestDraft' is now published as latest."
+          }
+          else {
+            Write-Output "No draft release found."
+          }
