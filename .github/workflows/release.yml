@@ -27,7 +27,7 @@ jobs:
         id: tags
         shell: bash
         run: |
-          CURRENT_TAG=${GITHUB_REF##*/}
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
           PREV_TAG=$(git tag --sort=-creatordate | grep -v "$CURRENT_TAG" | head -n 1)
           echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
           echo "PREV_TAG=$PREV_TAG" >> $GITHUB_ENV
