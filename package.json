@@ -1,6 +1,6 @@
 {
   "name": "pier-player",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "",
   "main": "src/main.js",
   "type": "module",
@@ -8,13 +8,14 @@
     "start": "electron .",
     "build": "electron-builder --win --x64",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "release": "git tag v$(node -p \"require('./package.json').version\") && git push origin v$(node -p \"require('./package.json').version\")"
+    "release": "node release.js"
   },
   "author": "zakky",
   "license": "MIT",
   "devDependencies": {
     "electron": "^37.2.6",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "npm-package-versions": "^2.0.3"
   },
   "dependencies": {
     "electron-store": "^10.1.0",
