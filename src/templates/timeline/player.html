@@ -221,14 +221,11 @@
         }
 
         function fadeOutReached(mediaEl) {
-            if (!file.endFadeSec) return false
-            if (!file.endTrimSec) return false
             // マージンで 30ms いれておく
             return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - file.endFadeSec - 0.03;
         }
 
         function endTimeReached(mediaEl) {
-            if (!file.endTrimSec) return false
             // マージンで 30ms いれておく
             return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - 0.03;
         }

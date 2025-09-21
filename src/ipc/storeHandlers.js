@@ -68,15 +68,7 @@ export const registerStoreHandlers = () => {
      * メイン画面 タイムラインモード
      */
     ipcMain.handle('getTimelineFiles', (_event) => {
-        return store.get(keys.timelineList, [{
-            path: "", name: "", type: "",
-            exists: false,
-            startTrimSec: 0,
-            endTrimSec: 0,
-            startFadeSec: 0.7,
-            endFadeSec: 0.7,
-            gain: 1,
-        }]);
+        return store.get(keys.timelineList, []);
     });
 
     ipcMain.handle("storeTimelineFiles", (_event, files) => {

@@ -72,6 +72,7 @@ contextBridge.exposeInMainWorld('timeline', {
     // mainHandlers.jsの 'openSubWindow' チャンネルへ送信
     openSubWindow: (fileMeta) => ipcRenderer.invoke('openTimelineWindow', fileMeta),
     closeSubWindow: () => ipcRenderer.invoke('closeTimelineWindow'),
+    continuousPlay: (nextFileMeta) => ipcRenderer.invoke('timelineContinuousPlay', nextFileMeta),
     checkFilePath: (file) => ipcRenderer.invoke('checkTimelineFilePath', file),
     checkFilePaths: (files) => ipcRenderer.invoke('checkTimelineFilePaths', files),
 

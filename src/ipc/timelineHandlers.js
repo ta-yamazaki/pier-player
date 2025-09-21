@@ -5,27 +5,25 @@ import {getMainWindow} from "../windows/mainWindow.js";
 
 export const registerTimelineHandlers = () => {
     ipcMain.handle('openTimelineWindow', async (_event, fileMeta) => {
-        const timelineWindow = createTimelineWindow();
-
         if (!fs.existsSync(fileMeta.path)) return false;
 
-        await timelineWindow.loadFile('src/templates/timeline/player.html');
-        if (fileMeta.type.match(/video\/.*/)) {
-            timelineWindow.showInactive();
-            timelineWindow.moveTop();
-        }
-
-        const displays = screen.getAllDisplays();
-        for (const display of displays) {
-            if (display.bounds.x === 0 && display.bounds.y === 0) continue;
-            loadTimelineWindow(fileMeta);
-            break;
-        }
+        const timelineWindow = createTimelineWindow();
+        await loadTimelineWindow(timelineWindow, fileMeta);
         return true;
     });
 
     ipcMain.handle('closeTimelineWindow', () => {
         getTimelineWindow()?.destroy();
+    });
+
+    ipcMain.handle('timelineContinuousPlay', async (_event, nextFileMeta) => {
+        if (!fs.existsSync(nextFileMeta.path)) return false;
+
+        const currentWindow = getTimelineWindow();
+        const newWindow = createTimelineWindow();
+        await loadTimelineWindow(newWindow, nextFileMeta);
+        currentWindow.destroy();
+        return true;
     });
 
     ipcMain.handle('checkTimelineFilePath', async (_event, file) => {

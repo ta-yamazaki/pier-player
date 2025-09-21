@@ -31,12 +31,18 @@ export const createTimelineWindow = () => {
         break;
     }
 
-    if (devToolsEnabled) timelineWindow.webContents.openDevTools();
+    // if (devToolsEnabled) timelineWindow.webContents.openDevTools();
 
     return timelineWindow;
 };
 
-export const loadTimelineWindow = (fileMeta) => {
+export const loadTimelineWindow = async (timelineWindow, fileMeta) => {
+    await timelineWindow.loadFile('src/templates/timeline/player.html');
+    if (fileMeta.type.match(/video\/.*/)) {
+        timelineWindow.showInactive();
+        timelineWindow.moveTop();
+    }
+
     timelineWindow.setTitle(fileMeta.name);
     timelineWindow.setOpacity(1);
     timelineWindow.webContents.send("timelineWindowShow", {
