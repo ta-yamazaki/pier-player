@@ -37,7 +37,8 @@ export const createVimeoWindow = () => {
           display: none !important;
         }
         
-        [class^="ControlBar_"]:not(:hover) {
+        [class^="ControlBar_"]:not(:hover),
+        [class^="ControlBarV1_"]:not(:hover) {
           opacity: 0 !important;
         }
     `)
