@@ -11,7 +11,7 @@ export const registerCommonHandlers = () => {
         }
         // プレーンオブジェクトにして返す
         return {
-            updateAvailable: result.updateAvailable,
+            updateAvailable: result.isUpdateAvailable,
             version: result.updateInfo.version,
             releaseNotes: result.updateInfo.releaseNotes,
             releaseName: result.updateInfo.releaseName,
