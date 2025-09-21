@@ -81,12 +81,12 @@
                  :class="{'has-background-success-light': file.isPlaying}">
               <nav class="level is-mobile mb-0">
                 <div class="level-left" style="max-width: calc(100% - 55px);">
-                    <span v-if="isVideo(file.type)" class="icon has-text-link">
-                      <i class="mdi mdi-18px mdi-video"></i>
-                    </span>
+                  <span v-if="isVideo(file.type)" class="icon has-text-link">
+                    <i class="mdi mdi-18px mdi-video"></i>
+                  </span>
                   <span v-if="isAudio(file.type)" class="icon" style="color:#eebe3a!important">
-                      <i class="mdi mdi-18px mdi-music-note"></i>
-                    </span>
+                    <i class="mdi mdi-18px mdi-music-note"></i>
+                  </span>
                   <b class="is-size-6 mx-2" style="word-break: break-all;">{{ file.name }}</b>
                   <span v-if="file.exists && file.path"
                         class="icon is-small has-text-grey is-clickable"
@@ -121,20 +121,20 @@
                 </div>
                 <nav class="level is-mobile is-size-7 py-1 m-0" style="border-bottom: 1px dashed lightgray;">
                   <div class="level-left">
-                    <p class="nowrap" style="width: 5rem">
+                    <p class="nowrap" style="width: 4.5rem">
                       <span class="mdi mdi-content-cut"></span>
                       カット
                     </p>
                     <a @click="decreaseStartTrim(i)"><span class="mdi mdi-minus"></span></a>
                     <input v-model="file.startTrimSec"
-                           class="input borderless is-small px-1 py-0 has-text-centered"
+                           class="input borderless editInput is-small px-1 py-0"
                            type="number" min="0" style="width: 2.75rem;height: 1.75em;">
                     <a @click="increaseStartTrim(i)"><span class="mdi mdi-plus"></span></a>
                   </div>
                   <div class="level-right">
                     <a @click="decreaseEndTrim(i)"><span class="mdi mdi-minus"></span></a>
                     <input v-model="file.endTrimSec"
-                           class="input borderless is-small px-1 has-text-centered"
+                           class="input borderless editInput is-small px-1 py-0"
                            type="number" min="0" style="width: 2.75rem;height: 1.75em;">
                     <a @click="increaseEndTrim(i)"><span class="mdi mdi-plus"></span></a>
                   </div>
@@ -142,20 +142,20 @@
                 <nav v-if="isVideo(file.type)"
                      class="level is-mobile is-size-7 py-1 m-0" style="border-bottom: 1px dashed lightgray;">
                   <div class="level-left">
-                    <p class="nowrap" style="width: 5rem">
+                    <p class="nowrap" style="width: 4.5rem">
                       <span class="mdi mdi-square-opacity"></span>
                       フェード
                     </p>
                     <a @click="decreaseStartFade(i)"><span class="mdi mdi-minus"></span></a>
                     <input v-model="file.startFadeSec"
-                           class="input borderless is-small px-1 py-0 has-text-centered"
-                           type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                           class="input borderless editInput is-small px-1 py-0"
+                           type="number" min="0">
                     <a @click="increaseStartFade(i)"><span class="mdi mdi-plus"></span></a>
                   </div>
                   <div class="level-right">
                     <a @click="decreaseEndFade(i)"><span class="mdi mdi-minus"></span></a>
                     <input v-model="file.endFadeSec"
-                           class="input borderless is-small px-1 has-text-centered"
+                           class="input borderless editInput is-small px-1 py-0"
                            type="number" min="0" style="width: 2.75rem;height: 1.75em;">
                     <a @click="increaseEndFade(i)"><span class="mdi mdi-plus"></span></a>
                   </div>

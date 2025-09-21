@@ -14,7 +14,7 @@ table.borderless td {
 /** 音量スライダー */
 input[type="range"] {
     appearance: none;
-    width: 140px;
+    width: 110px;
     height: 6px;
     border-radius: 99px;
     background: transparent;
@@ -40,6 +40,13 @@ input[type="range"]::-moz-range-thumb {
     border-radius: 4px;
     background: darkgray;
     box-shadow: none;
+}
+
+input.editInput {
+    text-align: center;
+    width: 2.75rem;
+    height: 1.75em;
+    background-color: whitesmoke;
 }
 
 .timelinePlayer {
