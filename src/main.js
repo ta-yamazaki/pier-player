@@ -15,7 +15,7 @@ app.whenReady().then(() => {
 
 
 function checkForUpdatesDialog() {
-    autoUpdater.checkForUpdates();
+    autoUpdater.checkForUpdatesAndNotify();
     //
     // // 更新がある場合
     // autoUpdater.on('update-available', (info) => {
