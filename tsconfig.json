@@ -1,0 +1,9 @@
+{
+  // https://nuxt.com/docs/guide/concepts/typescript
+  "files": [],
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "types": []
+  },
+//  "include": ["types/**/*.d.ts", "src/**/*"]
+}
