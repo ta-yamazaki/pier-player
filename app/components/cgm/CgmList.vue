@@ -18,9 +18,9 @@
             @dragenter="dragEnter(i)"
             @dragover.prevent
             @dragend="dragEnd()"
-            style="width: min-content; white-space: nowrap; vertical-align: middle"
-            class="px-0 is-draggable">
-          <NuxtIcon name="ic:baseline-drag-indicator" class="m-0"/>
+            style="vertical-align: middle"
+            class="px-0 is-draggable fitContent">
+          <NuxtIcon name="ic:baseline-drag-indicator"/>
         </td>
         <td>
           <Cgm
@@ -115,10 +115,6 @@ function removeRow(i: number) {
 
 function preview(cgm: any) {
   emit("preview", cgm)
-}
-
-function storeFileInfo() {
-  cgmApi.storeCgmList(cgmList.value)
 }
 
 const dragStart = (index) => (dragIndex.value = index);

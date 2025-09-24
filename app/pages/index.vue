@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs is-toggle is-centered is-fullwidth mb-4">
+  <div class="tabs is-centered is-fullwidth mb-4">
     <ul style="background-color: #f1f5f7">
       <li @click="selectSundayTab()" :class="{'is-active': selectedTab === 'sunday'}"><a>主日礼拝</a></li>
       <li @click="selectWednesdayTab()" :class="{'is-active': selectedTab === 'wednesday'}"><a>水曜礼拝</a></li>

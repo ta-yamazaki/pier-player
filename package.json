@@ -6,9 +6,7 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "npx nuxi dev",
-    "build": "nuxt build",
-    "build:win": "nuxt build --prerender && electron-builder --win",
-    "build:mac": "nuxt build --prerender && electron-builder --mac",
+    "build": "nuxt build --prerender && electron-builder --win",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"

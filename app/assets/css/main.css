@@ -18,6 +18,17 @@ img#logo {
     vertical-align: bottom;
 }
 
+/*.tabs.is-boxed li.is-active a {*/
+/*    background-color: transparent;*/
+/*}*/
+.tabs li a {
+    border-bottom-width: 3px;
+}
+
+.tabs li:not(:has(.is-active)) a {
+    background-color: transparent;
+}
+
 table, th, td {
     vertical-align: middle;
 }

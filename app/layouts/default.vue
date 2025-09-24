@@ -21,8 +21,6 @@ const version = ref("");
 onMounted(async () => {
   version.value = await window.api.getVersion();
 });
-
-// methods
 </script>
 
 <style scoped>

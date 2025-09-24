@@ -1,7 +1,7 @@
 <template>
-  <div class="tabs is-toggle is-centered is-fullwidth mb-4">
-    <ul style="background-color: #f1f5f7">
-      <li><a href="./showcase.html">ショーケース</a></li>
+  <div class="tabs is-centered is-fullwidth mb-4">
+    <ul>
+      <li><NuxtLink to="/vimeo/showcase">ショーケース</NuxtLink></li>
       <li class="is-active"><a>個別映像</a></li>
     </ul>
   </div>

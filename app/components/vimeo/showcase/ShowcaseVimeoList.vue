@@ -1,6 +1,18 @@
 <template>
+  <div class="buttons is-right my-2">
+    <button class="button is-small" @click="closeAll()">表示リセット</button>
+  </div>
   <div v-if="vimeoList.length > 0" class="box py-1 px-2">
-    <table class="table my-2 is-fullwidth">
+    <table class="table my-2 is-narrow is-fullwidth">
+      <thead>
+      <tr class="is-size-7" style="white-space: nowrap;">
+        <th></th>
+        <th>
+          <span>タイトル（完全一致）</span>
+        </th>
+        <th></th>
+      </tr>
+      </thead>
       <tbody>
       <tr v-for="(vimeo, i) in vimeoList"
           :key="vimeo"
@@ -18,10 +30,11 @@
             class="px-0 is-draggable fitContent">
           <NuxtIcon name="ic:baseline-drag-indicator"/>
         </td>
-        <td>
-          <Vimeo
+        <td style="width: 30rem;">
+          <ShowcaseVimeo
               :vimeo="vimeo"
-              @view="closeAll()"
+              :showcaseUrlWithPassword="showcaseUrlWithPassword"
+              @view="closeAll"
           />
         </td>
         <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
@@ -32,83 +45,67 @@
       </tbody>
     </table>
   </div>
+
+  <button class="button is-link is-outlined is-fullwidth mt-5" @click="addShowcaseVimeo()">
+    ＋追加
+  </button>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue"
+import {onMounted, ref, watch} from 'vue'
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
+import ShowcaseVimeo from "~/components/vimeo/showcase/ShowcaseVimeo.vue";
 
 /**
- * state
+ * Props
  */
+interface Props {
+  showcaseUrlWithPassword: String,
+}
+
+const props = defineProps<Props>();
+
+// state
 const vimeoList = ref<any[]>([])
 const dragIndex = ref<number | null>(null)
 
-const vimeoApi = window.vimeo
+// API (Electron preload で expose 済みのやつを参照)
+const showcaseApi = window.vimeoShowcase
 
-/**
- * lifecycle
- */
+// init
 onMounted(async () => {
-  vimeoList.value = await vimeoApi.getVimeoList()
+  vimeoList.value = await showcaseApi.getPlayList()
 })
 
-/**
- * watch
- */
-watch(
-    vimeoList,
-    (newVal) => {
-      vimeoApi.storeVimeoList(toRaw(newVal))
-    },
-    {deep: true}
-)
+// watchers
+watch(vimeoList, (newVal) => {
+  showcaseApi.storePlayList(toRaw(newVal))
+}, {deep: true})
 
-/**
- * methods
- */
-const view = async (i: number) => {
-  closeAll()
-  const vimeo = vimeoList.value[i]
-  await vimeoApi.openVimeo(toRaw(vimeo.playerUrl), toRaw(vimeo.password))
-  vimeo.isViewed = true
-}
+// computed
 
-const play = (i: number) => {
-  const vimeo = vimeoList.value[i]
-  vimeoApi.playVimeo()
-  vimeo.isPlaying = true
-}
-
-const close = (i: number) => {
-  const vimeo = vimeoList.value[i]
-  vimeoApi.closeVimeo()
-  vimeo.isViewed = false
-  vimeo.isPlaying = false
-}
-
-const isBeforeViewing = (vimeo: any) => !vimeo.isViewed && !vimeo.isPlaying
+// methods
 const isViewedBeforePlay = (vimeo: any) => vimeo.isViewed && !vimeo.isPlaying
 const isPlaying = (vimeo: any) => vimeo.isPlaying
 
 const closeAll = () => {
-  vimeoApi.closeVimeo()
-  vimeoList.value.forEach((vimeo) => {
-    vimeo.isViewed = false
-    vimeo.isPlaying = false
+  showcaseApi.closeVimeoShowcase()
+  vimeoList.value.forEach(v => {
+    v.isViewed = false
+    v.isPlaying = false
   })
 }
 
-const addVimeo = () => {
+const addShowcaseVimeo = () => {
   vimeoList.value.push({
-    title: "",
+    title: '',
     isViewed: false,
     isPlaying: false
   })
 }
 
 const removeRow = (i: number) => {
-  close(i)
+  showcaseApi.closeVimeoShowcase()
   vimeoList.value.splice(i, 1)
 }
 
@@ -128,30 +125,17 @@ const dragEnd = () => {
 }
 
 const isExists = (v: any) =>
-    typeof v !== "undefined" && v !== null && v !== "" && v !== {}
+    typeof v !== 'undefined' && v !== null && v !== '' && v !== {}
 
-const generatePlayerUrl = (vimeo: any) => {
-  const url = vimeo.url
-  if (!url) return (vimeo.playerUrl = "")
 
-  // https://vimeo.com/[videoId] または https://vimeo.com/[videoId]?share=copy
-  const match = url.match(/^https:\/\/vimeo\.com\/(.+)/)
-  if (!match) return (vimeo.playerUrl = "")
-
-  const videoId = match[1].replace(/\?.*$/, "")
-  vimeo.playerUrl = `https://player.vimeo.com/video/${videoId}?title=0&byline=0&badge=0&portrait=0&preload=auto`
+const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {
+  console.log([...vimeoList.value, ...titles])
+  if (isOverride) vimeoList.value = toRaw(titles)
+  else vimeoList.value = [...toRaw(vimeoList.value), ...titles]
 }
 
-defineExpose({addVimeo, closeAll})
+defineExpose({closeAll, addShowcaseVimeo, getShowcaseVideoTitles})
 </script>
 
 <style scoped>
-.control a.label {
-  width: 5rem;
-  cursor: unset;
-}
-
-.control button.label {
-  cursor: unset;
-}
 </style>

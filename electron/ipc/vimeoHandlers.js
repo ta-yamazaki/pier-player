@@ -88,11 +88,15 @@ function showcaseTitleSelect(title) {
       const html = document.getElementsByTagName("html")[0];
 
       const interval_click = setInterval(() => {
-        const el = document.querySelector('div[class^="PlaylistTrack_playlistTrack"]:has([title="${title}"])');
-        if (!el) return;
-       
-        if (!el.className.includes("PlaylistTrack_selected"))
-            el.click();
+        const selected = document.querySelector('li[class*="PlaylistTrack_selected"] div[class*="PlaylistTrack_playlistTrackClipTitle"]');
+        const selectedTitle = selected.getAttribute("title")
+        if (selectedTitle !== "${title}") {
+            const el = document.querySelector('div[class^="PlaylistTrack_playlistTrack"]:has([title="${title}"])');
+            if (!el) return clearInterval(interval_click);
+           
+            if (!el.className.includes("PlaylistTrack_selected"))
+                el.click();
+        }
         
         setTimeout(() => {
             html.style.opacity = 1

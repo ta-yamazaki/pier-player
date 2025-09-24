@@ -81,7 +81,7 @@ contextBridge.exposeInMainWorld('vimeo', vimeoApi);
 /**
  * Vimeoモード（ショーケース）
  */
-contextBridge.exposeInMainWorld('vimeoShowcase', {
+export const showcaseApi = {
     openVimeoShowcase: (vimeo: any, showcaseUrl: any) => ipcRenderer.invoke('openShowcaseVimeo', vimeo, showcaseUrl),
     playVimeoShowcase: () => ipcRenderer.invoke('playShowcaseVimeo'),
     closeVimeoShowcase: () => ipcRenderer.invoke('closeShowcaseVimeo'),
@@ -90,7 +90,8 @@ contextBridge.exposeInMainWorld('vimeoShowcase', {
     storePlayList: (vimeoList: any) => ipcRenderer.invoke("storeShowcasePlayList", vimeoList),
     getShowcase: () => ipcRenderer.invoke("getShowcase"),
     storeShowcase: (showcase: any) => ipcRenderer.invoke("storeShowcase", showcase),
-});
+}
+contextBridge.exposeInMainWorld('vimeoShowcase', showcaseApi);
 
 /**
  * タイムラインモード

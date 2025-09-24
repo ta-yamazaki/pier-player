@@ -15,7 +15,8 @@
         </NuxtLink>
       </li>
       <li>
-        <NuxtLink to="/vimeo" style="vertical-align: middle;">
+        <NuxtLink to="/vimeo/showcase" style="vertical-align: middle;"
+                  :class="{ 'router-link-active': isVimeoActive }">
           <img src="@/assets/img/Vimeo.webp" height="18" width="18" class="mr-2">
           <small>Vimeo</small>
         </NuxtLink>
@@ -31,7 +32,8 @@
 </template>
 
 <script setup lang="ts">
-
+  const route = useRoute()
+  const isVimeoActive = computed(() => route.path.startsWith('/vimeo'))
 </script>
 
 <style scoped>
@@ -39,7 +41,7 @@
     background-color: transparent;
   }
 
-  li a.router-link-exact-active {
+  li a.router-link-active {
     background-color: whitesmoke;
     font-weight: bold;
   }
