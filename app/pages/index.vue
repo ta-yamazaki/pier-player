@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs is-boxed is-centered is-fullwidth mb-2">
+  <div class="tabs is-toggle is-centered is-fullwidth mb-2">
     <ul style="background-color: #f1f5f7">
       <li @click="selectSundayTab()" :class="{'is-active': selectedTab === 'sunday'}"><a>主日礼拝</a></li>
       <li @click="selectWednesdayTab()" :class="{'is-active': selectedTab === 'wednesday'}"><a>水曜礼拝</a></li>
@@ -18,26 +18,25 @@
     </div>
     <p class="help is-danger">{{ disallowedFileTypeMessage }}</p>
 
-    <button class="button is-small is-pulled-right my-2"
-            @click="reset()"
-    >表示リセット
-    </button>
+    <div class="buttons is-right my-2">
+      <button class="button is-small" @click="reset()">表示リセット</button>
+    </div>
+
     <MediaFileList
         ref="mediaFileListRef"
         :tab="selectedTab"
         @preview="preview"
     />
-    <br><br>
-    <div style="width: 100%; margin: auto">
-      <h6 class="title is-6 mt-4 mb-1">映像プレビュー</h6>
-      <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
-        <template v-if="previewFile.src">
-          <video controls autoplay muted :key="videoReload">
-            <source :src="previewFile.src" :type="previewFile.type"/>
-          </video>
-          <br>
-          <small>※サブモニターでは再生バーは表示されません。</small>
-        </template>
+    <br>
+    <div v-if="previewFile.path" style="width: 100%; margin: auto">
+      <small class="mt-4 mb-1">映像プレビュー</small>
+      <h6 class="title is-6 mb-2">{{ previewFile.name }}</h6>
+      <div style="aspect-ratio: 16/9">
+        <video controls autoplay muted :key="videoReload">
+          <source :src="previewFile.path" :type="previewFile.type"/>
+        </video>
+        <br>
+        <small>※サブモニターでは再生バーは表示されません。</small>
       </div>
     </div>
   </div>
@@ -89,7 +88,9 @@ const reset = () => {
 };
 
 const preview = (file) => {
-  previewFile.value.src = file.path;
+  console.log(file)
+  previewFile.value.name = file.name;
+  previewFile.value.path = file.path;
   previewFile.value.type = file.type;
   videoReload.value++;
 };
@@ -133,7 +134,6 @@ const droppedFile = (event) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 95%;
   margin: auto;
   height: 5rem;
   border: 3px solid powderblue;

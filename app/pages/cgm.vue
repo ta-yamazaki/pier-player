@@ -1,23 +1,22 @@
 <template>
   <div style="margin: auto; width: 95%; max-width: 640px">
-    <h5 class="title is-5 mb-1 mt-3">
+    <h5 class="title is-5 mb-2 pt-3">
       CGM映像
-      <button class="button is-small is-pulled-right"
-              @click="reset()"
-      >表示リセット
-      </button>
     </h5>
+    <div class="buttons is-right my-2">
+      <button class="button is-small" @click="reset()">表示リセット</button>
+    </div>
     <CgmList ref="cgmListRef" @preview="preview"/>
-    <button class="button is-link is-outlined is-fullwidth mt-5"
+    <button class="button is-link is-outlined is-fullwidth"
             @click="addRow()">
       ＋追加
     </button>
 
-    <br><br>
-    <div style="width: 100%;">
-      <p class="mt-4 mb-1">映像プレビュー ※再生すると音が出ます</p>
-      <div class="box" style="width: 100%; background-color: whitesmoke; aspect-ratio: 16/9">
-        <h6 class="title is-6 mb-2">{{ previewCgm.title }}</h6>
+    <br>
+    <div v-if="previewCgm.path" style="width: 100%; margin: auto">
+      <small class="mt-4 mb-1">映像プレビュー ※再生すると音が出ます</small>
+      <h6 class="title is-6 mb-2">{{ previewCgm.title }}</h6>
+      <div style="aspect-ratio: 16/9">
         <iframe :src="previewCgm.path" :key="videoReload"
                 width="100%" height="100%"></iframe>
       </div>

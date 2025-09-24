@@ -1,4 +1,5 @@
 <template>
+  <div v-if="targetFiles.length > 0" class="box py-1 px-2">
   <table class="table my-2 is-fullwidth">
     <tbody>
     <tr v-for="(file, i) in targetFiles" :key="file"
@@ -23,6 +24,7 @@
     </tr>
     </tbody>
   </table>
+  </div>
 </template>
 
 <script setup lang="ts">

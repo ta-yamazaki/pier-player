@@ -21,7 +21,6 @@ export const registerStoreHandlers = () => {
     ipcMain.handle('getFiles', (_event, target) => {
         return store.get(target, [{path: "", name: "", type: "", showCloseButton: false}]);
     });
-
     ipcMain.handle("storeFiles", (_event, target, files) => {
         store.set(target, files);
     });
@@ -32,7 +31,6 @@ export const registerStoreHandlers = () => {
     ipcMain.handle("getCgmList", () => {
         return store.get(keys.cgmList, [{path: "", title: "", isViewed: false, isPlaying: false}]);
     });
-
     ipcMain.handle("storeCgmList", (_event, cgmList) => {
         store.set(keys.cgmList, cgmList);
     });
@@ -70,7 +68,6 @@ export const registerStoreHandlers = () => {
     ipcMain.handle('getTimelineFiles', (_event) => {
         return store.get(keys.timelineList, []);
     });
-
     ipcMain.handle("storeTimelineFiles", (_event, files) => {
         store.set(keys.timelineList, files);
     });

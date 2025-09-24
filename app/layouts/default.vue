@@ -1,8 +1,8 @@
 <template>
   <SideMenu/>
-  <main>
+  <main style="background-color: whitesmoke">
     <slot/>
-    <footer class="footer mt-6">
+    <footer class="footer mt-6 has-background-white">
       <div class="content has-text-centered">
         <p>Pier Player - v{{ version }}</p>
       </div>
@@ -19,11 +19,10 @@ const version = ref("");
 
 // init
 onMounted(async () => {
-  version.value = await api.getVersion();
+  version.value = await window.api.getVersion();
 });
 
 // methods
-const isVideo = (type) => type.match(/video\/.*/);
 </script>
 
 <style scoped>

@@ -1,39 +1,41 @@
 <template>
-  <table class="table mb-2 is-fullwidth">
-    <tbody>
-    <tr class="is-size-7" style="white-space: nowrap;">
-      <td colspan="3">
-        <small>※表示に少し時間がかかる場合があります。</small>
-      </td>
-    </tr>
-    <tr v-for="(cgm, i) in cgmList" :key="cgm"
-        :class="{
+  <div v-if="cgmList.length > 0" class="box py-1 px-2">
+    <table class="table mb-2 is-fullwidth">
+      <tbody>
+      <tr class="is-size-7" style="white-space: nowrap;">
+        <td colspan="3">
+          <small>※表示に少し時間がかかる場合があります。</small>
+        </td>
+      </tr>
+      <tr v-for="(cgm, i) in cgmList" :key="cgm"
+          :class="{
               'dragging': i === dragIndex,
               'has-background-success-light': isViewedBeforePlay(cgm),
               'has-background-danger-light': isPlaying(cgm)
             }">
-      <td :draggable="true"
-          @dragstart="dragStart(i)"
-          @dragenter="dragEnter(i)"
-          @dragover.prevent
-          @dragend="dragEnd()"
-          style="width: min-content; white-space: nowrap; vertical-align: middle"
-          class="px-0 is-draggable">
-        <NuxtIcon name="ic:baseline-drag-indicator" class="m-0"/>
-      </td>
-      <td>
-        <Cgm
-            :cgm="cgm"
-            @preview="preview(cgm)"
-            @view="closeStatusAll()"
-        />
-      </td>
-      <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
-        <button class="delete" @click="removeRow(i)"></button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+        <td :draggable="true"
+            @dragstart="dragStart(i)"
+            @dragenter="dragEnter(i)"
+            @dragover.prevent
+            @dragend="dragEnd()"
+            style="width: min-content; white-space: nowrap; vertical-align: middle"
+            class="px-0 is-draggable">
+          <NuxtIcon name="ic:baseline-drag-indicator" class="m-0"/>
+        </td>
+        <td>
+          <Cgm
+              :cgm="cgm"
+              @preview="preview(cgm)"
+              @view="closeStatusAll()"
+          />
+        </td>
+        <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
+          <button class="delete" @click="removeRow(i)"></button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup lang="ts">

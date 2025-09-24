@@ -40,7 +40,7 @@
   }
 
   li a.router-link-exact-active {
-    background-color: white;
+    background-color: whitesmoke;
     font-weight: bold;
   }
 </style>
