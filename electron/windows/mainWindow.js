@@ -3,7 +3,7 @@ import path from 'node:path';
 import {iconPath} from "../utils/path.js";
 
 process.env.APP_ROOT = path.join(__dirname, '..')
-const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
+export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
 
 let mainWindow;
 
@@ -16,6 +16,7 @@ export const createMainWindow = () => {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
+            webSecurity: false,
             preload: path.join(MAIN_DIST, '/preload.js'),
         },
         titleBarStyle: 'customButtonsOnHover',
@@ -26,9 +27,10 @@ export const createMainWindow = () => {
         app.quit();
     });
 
-    console.log("DEV URL:", process.env.VITE_DEV_SERVER_URL)
     if (process.env.VITE_DEV_SERVER_URL) {
-        mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL)
+        mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL).catch(reason => {
+            console.log(reason)
+        })
         mainWindow.webContents.openDevTools()
     } else {
         mainWindow.loadFile(path.join(process.env.VITE_PUBLIC, 'index.html'))

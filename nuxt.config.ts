@@ -9,6 +9,11 @@ export default defineNuxtConfig({
         '@nuxt/eslint',
         '@nuxt/icon'
     ],
+    router: {
+        options: {
+            hashMode: true
+        }
+    },
     electron: {
         build: [
             {
@@ -16,10 +21,22 @@ export default defineNuxtConfig({
                 entry: 'electron/main.ts',
             },
             {
-                entry: 'electron/preload.ts',
+                entry: 'electron/preload/index.ts',
                 onstart(args) {
                     // Notify the Renderer-Process to reload the page when the Preload-Scripts build is complete,
                     // instead of restarting the entire Electron App.
+                    args.reload()
+                },
+            },
+            {
+                entry: 'electron/preload/subReceiver.ts',
+                onstart(args) {
+                    args.reload()
+                },
+            },
+            {
+                entry: 'electron/preload/timelineReceiver.ts',
+                onstart(args) {
                     args.reload()
                 },
             },
@@ -31,6 +48,11 @@ export default defineNuxtConfig({
     },
     ssr: false, // #43
     css: [
-        "bulma/css/bulma.css"
-    ]
+        "bulma/css/bulma.css",
+        '@/assets/css/main.css',
+        '@/assets/css/side-menu.css'
+    ],
+    nitro: {
+        compatibilityDate: '2026-12-31', // 今日以降の日付ならOK
+    }
 })

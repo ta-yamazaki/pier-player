@@ -1,23 +1,20 @@
 import fs from 'fs';
 import {ipcMain, screen, shell} from 'electron';
 import {createSubWindow, getSubWindow, loadSubWindow} from '../windows/subWindow.js';
+import {channels} from "../utils/channels";
 
 export const registerMainHandlers = () => {
-    ipcMain.handle('openSubWindow', async (_event, fileMeta) => {
+    ipcMain.handle(channels.openSubWindow, async (_event, fileMeta) => {
+        const currentWindow = getSubWindow();
         const subWindow = createSubWindow();
 
         if (!fs.existsSync(fileMeta.path)) return false;
 
-        await subWindow.loadFile('src/templates/sub/player.html');
-        if (fileMeta.type.match(/video\/.*/)) {
-            subWindow.showInactive();
-            subWindow.moveTop();
-        }
-
         const displays = screen.getAllDisplays();
         for (const display of displays) {
             if (display.bounds.x === 0 && display.bounds.y === 0) continue;
-            loadSubWindow(fileMeta);
+            loadSubWindow(subWindow, fileMeta);
+            currentWindow.destroy()
             break;
         }
         return true;

@@ -1,5 +1,5 @@
 import {contextBridge, ipcRenderer, webUtils} from 'electron'
-import {channels} from "./utils/channels";
+import {channels} from "../utils/channels";
 //
 // // --------- Expose some API to the Renderer process ---------
 // contextBridge.exposeInMainWorld('ipcRenderer', {
@@ -29,14 +29,14 @@ import {channels} from "./utils/channels";
  */
 export const api = {
     // mainHandlers.jsの 'openSubWindow' チャンネルへ送信
-    openSubWindow: (fileMeta: any) => ipcRenderer.invoke('openSubWindow', fileMeta),
+    openSubWindow: (fileMeta: any) => ipcRenderer.invoke(channels.openSubWindow, fileMeta),
     closeSubWindow: () => ipcRenderer.invoke('close-window'),
     checkFilePath: (file: any) => ipcRenderer.invoke('checkFilePath', file),
     checkFilePaths: (files: any) => ipcRenderer.invoke('checkFilePaths', files),
 
     openFolder: (folderPath: any) => ipcRenderer.send("open-folder", folderPath),
 
-    getFiles: (target: any) => ipcRenderer.invoke("getFiles", target),
+    getFiles: (target: string) => ipcRenderer.invoke("getFiles", target),
     storeFiles: (target: string, files: any) => ipcRenderer.invoke("storeFiles", target, files),
 
     getVersion: () => ipcRenderer.invoke(channels.getVersion),
@@ -96,7 +96,7 @@ contextBridge.exposeInMainWorld('vimeoShowcase', {
  * タイムラインモード
  */
 contextBridge.exposeInMainWorld('timeline', {
-    // mainHandlers.jsの 'openSubWindow' チャンネルへ送信
+    // mainWindowからhandlers.jsの 'openTimelineWindow' チャンネルへ送信
     openSubWindow: (fileMeta: any) => ipcRenderer.invoke('openTimelineWindow', fileMeta),
     closeSubWindow: () => ipcRenderer.invoke('closeTimelineWindow'),
     continuousPlay: (nextFileMeta: any) => ipcRenderer.invoke('timelineContinuousPlay', nextFileMeta),

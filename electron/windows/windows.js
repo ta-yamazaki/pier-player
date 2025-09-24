@@ -13,6 +13,5 @@ export const createWindows = () => {
 };
 
 export const initMainWindow = () => {
-    console.log("initMainWindow")
     createMainWindow();
 };

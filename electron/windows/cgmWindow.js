@@ -1,7 +1,7 @@
 import {BrowserWindow, screen} from 'electron';
 import path from 'node:path';
-import {devToolsEnabled} from "../utils/devTools.js";
-import {iconPath, preloadPath} from "../utils/path.js";
+import {iconPath} from "../utils/path.js";
+import {MAIN_DIST} from "./mainWindow";
 
 let cgmWindow;
 
@@ -16,7 +16,8 @@ export const createCgmWindow = () => {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
-            preload: path.join(preloadPath, '/cgmReceiver.js')
+            webSecurity: false,
+            preload: path.join(MAIN_DIST, '/cgmReceiver.js')
         },
     });
 

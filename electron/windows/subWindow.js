@@ -1,6 +1,7 @@
 import {BrowserWindow, screen} from 'electron';
 import path from 'node:path';
-import {iconPath, preloadPath} from "../utils/path.js";
+import {iconPath} from "../utils/path.js";
+import {MAIN_DIST} from "./mainWindow";
 
 let subWindow;
 
@@ -18,7 +19,8 @@ export const createSubWindow = () => {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
-            preload: path.join(preloadPath, '/subReceiver.js')
+            webSecurity: false,
+            preload: path.join(MAIN_DIST, '/subReceiver.js')
         },
     });
 
@@ -30,12 +32,22 @@ export const createSubWindow = () => {
         break;
     }
 
-    // if (devToolsEnabled) subWindow.webContents.openDevTools();
-
     return subWindow;
 };
 
-export const loadSubWindow = (fileMeta) => {
+export const loadSubWindow = (subWindow, fileMeta) => {
+    if (process.env.VITE_DEV_SERVER_URL) {
+        subWindow.loadURL(path.join(process.env.VITE_DEV_SERVER_URL, 'sub/player.html'))
+        subWindow.webContents.openDevTools()
+    } else {
+        subWindow.loadFile(path.join(process.env.VITE_PUBLIC, 'public', 'sub', 'player.html'),
+            {hash: '/sub/player'})
+    }
+
+    if (fileMeta.type.match(/video\/.*/)) {
+        subWindow.showInactive();
+        subWindow.moveTop();
+    }
     subWindow.setTitle(fileMeta.name);
     subWindow.setOpacity(1);
     subWindow.webContents.send("subWindowShow", {

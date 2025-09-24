@@ -1,6 +1,7 @@
 import {BrowserWindow, screen} from 'electron';
 import path from 'node:path';
-import {iconPath, preloadPath} from "../utils/path.js";
+import {iconPath} from "../utils/path.js";
+import {MAIN_DIST} from "./mainWindow";
 
 let vimeoWindow;
 export const createVimeoWindow = () => {
@@ -15,7 +16,8 @@ export const createVimeoWindow = () => {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
-            preload: path.join(preloadPath, '/vimeoReceiver.js')
+            webSecurity: false,
+            preload: path.join(MAIN_DIST, '/vimeoReceiver.js')
         },
     });
 

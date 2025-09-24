@@ -1,7 +1,7 @@
 import {BrowserWindow, screen} from 'electron';
 import path from 'node:path';
 import {iconPath, preloadPath} from "../utils/path.js";
-import {devToolsEnabled} from "../utils/devTools.js";
+import {MAIN_DIST} from "./mainWindow";
 
 let timelineWindow;
 
@@ -19,7 +19,8 @@ export const createTimelineWindow = () => {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: true,
-            preload: path.join(preloadPath, '/timelineReceiver.js')
+            webSecurity: false,
+            preload: path.join(MAIN_DIST, '/timelineReceiver.js')
         },
     });
 
