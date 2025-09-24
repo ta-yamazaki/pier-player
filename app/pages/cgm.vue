@@ -55,12 +55,7 @@ onMounted(async () => {
 // --------------------------------------------------
 // methods
 // --------------------------------------------------
-function closeStatusAll() {
-  cgmApi.closeCgm()
-}
-
 function reset() {
-  closeStatusAll()
   cgmListRef.value?.closeStatusAll()  // 子のメソッドを呼び出す
 }
 
@@ -71,10 +66,6 @@ function addRow() {
 function preview(cgm: any) {
   previewCgm.value = cgm
   videoReload.value++
-}
-
-function storeFileInfo() {
-  cgmApi.storeCgmList(cgmList.value)
 }
 
 function isExists(v: any) {
