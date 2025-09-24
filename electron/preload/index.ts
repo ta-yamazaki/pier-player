@@ -49,7 +49,7 @@ contextBridge.exposeInMainWorld('webUtils', webUtils)
 /**
  * CGMモード
  */
-export const cgm = {
+export const cgmApi = {
     // cgmHandlers.jsの 'openCgm' チャンネルへ送信
     openCgm: (cgm: any) => ipcRenderer.invoke('openCgm', cgm),
     playCgm: () => ipcRenderer.invoke('playCgm'),
@@ -60,12 +60,12 @@ export const cgm = {
     // CGM windowからイベントを受け取る
     errorCgmOpen: (callback: any) => ipcRenderer.on('errorCgmOpen', callback),
 }
-contextBridge.exposeInMainWorld('cgm', cgm);
+contextBridge.exposeInMainWorld('cgm', cgmApi);
 
 /**
  * Vimeoモード（個別動画）
  */
-export const vimeo = {
+export const vimeoApi = {
     openVimeo: (url: string, password: string) => ipcRenderer.invoke('openVimeo', url, password),
     playVimeo: () => ipcRenderer.invoke('playVimeo'),
     closeVimeo: () => ipcRenderer.invoke('closeVimeo'),
@@ -76,7 +76,7 @@ export const vimeo = {
     //Vimeo画面から受け取る
     errorVimeoOpen: (callback: any) => ipcRenderer.on("errorVimeoOpen", callback),
 };
-contextBridge.exposeInMainWorld('vimeo', vimeo);
+contextBridge.exposeInMainWorld('vimeo', vimeoApi);
 
 /**
  * Vimeoモード（ショーケース）

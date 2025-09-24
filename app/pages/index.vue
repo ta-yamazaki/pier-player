@@ -7,7 +7,7 @@
     </ul>
   </div>
 
-  <div style="margin: auto; width: 90%; max-width: 640px">
+  <div style="margin: auto; width: 95%; max-width: 640px">
     <div class="dropArea"
          @dragenter="dragDropEnter()"
          @dragleave="dragDropLeave()"
@@ -18,22 +18,15 @@
     </div>
     <p class="help is-danger">{{ disallowedFileTypeMessage }}</p>
 
-    <table class="table my-2 is-fullwidth">
-      <tbody>
-      <tr>
-        <td colspan="4">
-          <button class="button is-small is-pulled-right"
-                  @click="reset()"
-          >表示リセット
-          </button>
-        </td>
-      </tr>
-      <MediaFileList
-          ref="mediaFileListRef"
-          :tab="selectedTab"
-          @preview="preview"/>
-      </tbody>
-    </table>
+    <button class="button is-small is-pulled-right my-2"
+            @click="reset()"
+    >表示リセット
+    </button>
+    <MediaFileList
+        ref="mediaFileListRef"
+        :tab="selectedTab"
+        @preview="preview"
+    />
     <br><br>
     <div style="width: 100%; margin: auto">
       <h6 class="title is-6 mt-4 mb-1">映像プレビュー</h6>
@@ -48,35 +41,32 @@
       </div>
     </div>
   </div>
-
-  <br>
-  <footer class="footer">
-    <div class="content has-text-centered">
-      <p>Pier Player - v{{ version }}</p>
-    </div>
-  </footer>
 </template>
 <script setup lang="ts">
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, ref} from "vue";
 import MediaFileList from "~/components/file/MediaFileList.vue";
 
 const mediaFileListRef = ref<InstanceType<typeof MediaFileList> | null>(null)
 
-// state
+/**
+ * state
+ */
 const selectedTab = ref("sunday");
-const previewFile = reactive({src: "", type: ""});
+const previewFile = ref({src: "", type: ""});
 const isEnter = ref(false);
 const disallowedFileTypeMessage = ref("");
 const videoReload = ref(0);
-const version = ref("");
 const api = window.api;
 
-// init
+/**
+ * lifecycle
+ */
 onMounted(async () => {
-  version.value = await api.getVersion();
 });
 
-// methods
+/**
+ * methods
+ */
 const selectFile = async (file) => {
   const path = window.webUtils.getPathForFile(file);
   const checkedFile = await api.checkFilePath({
@@ -99,8 +89,8 @@ const reset = () => {
 };
 
 const preview = (file) => {
-  previewFile.src = file.path;
-  previewFile.type = file.type;
+  previewFile.value.src = file.path;
+  previewFile.value.type = file.type;
   videoReload.value++;
 };
 
@@ -130,7 +120,9 @@ const droppedFile = (event) => {
   return selectFile(file);
 };
 
-// watch
+/**
+ * watch
+ */
 </script>
 
 <style scoped>

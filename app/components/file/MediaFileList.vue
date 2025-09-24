@@ -1,19 +1,28 @@
 <template>
-  <tr v-for="(file, i) in targetFiles" :key="file"
-      :class="{
+  <table class="table my-2 is-fullwidth">
+    <tbody>
+    <tr v-for="(file, i) in targetFiles" :key="file"
+        :class="{
               'dragging': i === dragIndex,
               'has-background-success-light has-text-weight-bold': file.isPlaying
             }">
-    <td :draggable="true"
-        @dragstart="dragStart(i)"
-        @dragenter="dragEnter(i)"
-        @dragover.prevent
-        @dragend="dragEnd()"
-        class="px-0 fitContent">
-      <NuxtIcon name="ic:baseline-drag-indicator" class="m-0 is-draggable"/>
-    </td>
-    <MediaFile :file="file" @play="reset" @removeRow="removeRow(i)" @preview="preview"/>
-  </tr>
+      <td :draggable="true"
+          @dragstart="dragStart(i)"
+          @dragenter="dragEnter(i)"
+          @dragover.prevent
+          @dragend="dragEnd()"
+          class="px-0 fitContent">
+        <NuxtIcon name="ic:baseline-drag-indicator" class="m-0 is-draggable"/>
+      </td>
+      <td class="pr-0 py-0">
+        <MediaFile :file="file" @play="reset" @preview="preview"/>
+      </td>
+      <td class="mx-2 fitContent">
+        <button class="delete" @click="removeRow(i)"></button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
 </template>
 
 <script setup lang="ts">
@@ -21,19 +30,27 @@ import {onMounted, ref, watch} from "vue";
 import MediaFile from "~/components/file/MediaFile.vue";
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
+/**
+ * emits
+ */
 // 1つめにイベント名, ２つ目にemitする値の型
 type Emits = {
   (event: "preview", value: any): void;
 };
 const emit = defineEmits<Emits>();
 
+/**
+ * props
+ */
 interface Props {
   tab: string;
 }
 
 const props = defineProps<Props>();
 
-// state
+/**
+ * state
+ */
 const files = {
   sunday: ref([]),
   wednesday: ref([]),
@@ -44,7 +61,9 @@ const targetFiles = ref([]);
 const dragIndex = ref(null);
 const api = window.api;
 
-// init
+/**
+ * lifecycle
+ */
 onMounted(async () => {
   files.sunday.value = await getFiles("sunday");
   files.wednesday.value = await getFiles("wednesday");
@@ -53,7 +72,9 @@ onMounted(async () => {
   targetFiles.value = files.sunday.value;
 });
 
-// methods
+/**
+ * methods
+ */
 const getFiles = async (target: string) => {
   const files = await api.getFiles(target);
   return await api.checkFilePaths(files);
@@ -70,12 +91,16 @@ const close = (i) => {
 };
 
 function reset() {
+  api.closeSubWindow();
   targetFiles.value.forEach((file) => {
     file.isPlaying = false;
   });
 }
 
-const removeRow = (i) => targetFiles.value.splice(i, 1);
+const removeRow = (i) => {
+  api.closeSubWindow();
+  targetFiles.value.splice(i, 1);
+};
 
 const preview = (file) => {
   emit("preview", file)
@@ -92,7 +117,9 @@ const dragEnd = () => (dragIndex.value = null);
 
 defineExpose({addFile, reset})
 
-// watch
+/**
+ * watch
+ */
 watch(
     () => props.tab,
     (newVal) => {

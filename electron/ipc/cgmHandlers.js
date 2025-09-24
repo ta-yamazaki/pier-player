@@ -11,7 +11,7 @@ export const registerCgmHandlers = () => {
             cgmWindow.showInactive();
         } catch (e) {
             console.error(e);
-            cgmWindow.close();
+            cgmWindow.destroy();
             getMainWindow().webContents.send("errorCgmOpen");
         }
     });
@@ -21,6 +21,6 @@ export const registerCgmHandlers = () => {
     });
 
     ipcMain.handle("closeCgm", () => {
-        getCgmWindow()?.close();
+        getCgmWindow()?.destroy();
     });
 };

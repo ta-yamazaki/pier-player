@@ -3,13 +3,13 @@
     display: none;
 }
 
-body {
-    -ms-overflow-style: none; /*スクロールバー非表示（IE・Edge）*/
-    scrollbar-width: none; /*スクロールバー非表示（Firefox）*/
-    /*background-color: #f1f5f7;*/
+::-webkit-scrollbar {
+    display: none;
 }
-body::-webkit-scrollbar {
-    display:none; /*スクロールバー非表示（Chrome・Safari）*/
+
+html, body {
+    -ms-overflow-style: none;  /* IE, Edge */
+    scrollbar-width: none;     /* Firefox */
 }
 
 img#logo {
