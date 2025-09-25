@@ -2,7 +2,8 @@ import {app, BrowserWindow} from 'electron';
 import path from 'node:path';
 import {iconPath} from "../utils/path.js";
 
-export const MAIN_DIST = path.join(__dirname, '../dist-electron')
+process.env.APP_ROOT = path.join(__dirname, '..')
+export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
 
 let mainWindow;
 

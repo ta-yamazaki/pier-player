@@ -1,0 +1,42 @@
+name: Build and Release (Windows)
+
+on:
+  push:
+    tags:
+      - 'v*'   # v1.0.0 のようなタグで起動
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.11.0
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build & Publish (Windows)
+        run: npm run build -- --publish always
+        env:
+          GH_TOKEN: ${{ secrets.github_token }}
+
+      - name: Publish draft release # 最新の draft release を取得
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $latestDraft = gh release list --json tagName --limit 1 | ConvertFrom-Json
+
+          if ($null -ne $latestDraft) {
+            Write-Output "Latest draft release: $($latestDraft.tagName)"
+            gh release edit $latestDraft.tagName --draft=false --prerelease=false
+            Write-Output "Draft release '$($latestDraft.tagName)' is now published as latest."
+          }
+          else {
+            Write-Output "No draft release found."
+          }

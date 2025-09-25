@@ -15,12 +15,8 @@ const {autoUpdater} = electronUpdater;
 // │ │ └── index.js
 // │ ├─┬ renderer
 // │ │ └── index.html
-const appRoot = path.join(__dirname, '..')
-export const RENDERER_DIST = path.join(appRoot, '.output/public')
-
-process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
-    ? path.join(appRoot, 'public')
-    : RENDERER_DIST
+process.env.APP_ROOT = path.join(__dirname, '..')
+process.env.VITE_PUBLIC = path.join(process.env.APP_ROOT, '.output/public')
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()

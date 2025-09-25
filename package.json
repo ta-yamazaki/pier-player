@@ -1,12 +1,12 @@
 {
   "name": "pier-player",
-  "version": "0.0.0",
+  "version": "3.1.7",
   "description": "",
   "private": true,
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "npx nuxi dev",
-    "build": "nuxt build --prerender && electron-builder --win",
+    "build": "nuxi generate && electron-builder --win --x64",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"

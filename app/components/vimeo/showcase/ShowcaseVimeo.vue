@@ -54,7 +54,7 @@ const vimeo = ref(props.vimeo)
 const showcaseApi = window.vimeoShowcase
 
 // init
-onMounted(async () => {
+onMounted(() => {
 })
 
 // watchers
@@ -64,12 +64,12 @@ const isViewedBeforePlay = computed(() => vimeo.value.isViewed && !vimeo.value.i
 const isPlaying = computed(() => vimeo.value.isPlaying)
 
 // methods
-const view = async () => {
+const view = () => {
   emit("view")
   isLoading.value = true
-  showcaseApi.openVimeoShowcase(toRaw(vimeo.value), toRaw(props.showcaseUrlWithPassword)).then(() => {
+  showcaseApi.openVimeoShowcase(toRaw(vimeo.value), unref(props.showcaseUrlWithPassword)).then(() => {
     vimeo.value.isViewed = true
-  }).catch((e) => {
+  }).catch((e: any) => {
     alert("ショーケース映像の表示に失敗しました。URLやタイトルが間違っている可能性があります。")
     console.error(e)
   }).finally(() => {

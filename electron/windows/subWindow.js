@@ -40,8 +40,7 @@ export const loadSubWindow = async (subWindow, fileMeta) => {
         await subWindow.loadURL(path.join(process.env.VITE_DEV_SERVER_URL, 'sub/player.html'))
         // subWindow.webContents.openDevTools()
     } else {
-        await subWindow.loadFile(path.join(process.env.VITE_PUBLIC, 'public', 'sub', 'player.html'),
-            {hash: '/sub/player'})
+        await subWindow.loadFile(path.join(process.env.VITE_PUBLIC, 'sub', 'player.html'))
     }
 
     if (fileMeta.type.match(/video\/.*/)) {
