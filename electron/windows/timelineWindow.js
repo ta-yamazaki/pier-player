@@ -1,6 +1,6 @@
 import {BrowserWindow, screen} from 'electron';
 import path from 'node:path';
-import {iconPath, preloadPath} from "../utils/path.js";
+import {iconPath} from "../utils/path.js";
 import {MAIN_DIST} from "./mainWindow";
 
 let timelineWindow;

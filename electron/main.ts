@@ -15,11 +15,11 @@ const {autoUpdater} = electronUpdater;
 // │ │ └── index.js
 // │ ├─┬ renderer
 // │ │ └── index.html
-process.env.APP_ROOT = path.join(__dirname, '..')
-export const RENDERER_DIST = path.join(process.env.APP_ROOT, '.output/public')
+const appRoot = path.join(__dirname, '..')
+export const RENDERER_DIST = path.join(appRoot, '.output/public')
 
 process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
-    ? path.join(process.env.APP_ROOT, 'public')
+    ? path.join(appRoot, 'public')
     : RENDERER_DIST
 
 app.on('window-all-closed', () => {
