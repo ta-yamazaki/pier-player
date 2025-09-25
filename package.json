@@ -9,7 +9,8 @@
     "build": "nuxi generate && electron-builder --win --x64",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "release": "node release.js"
   },
   "dependencies": {
   },
