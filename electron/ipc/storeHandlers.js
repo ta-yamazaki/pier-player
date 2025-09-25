@@ -1,5 +1,6 @@
 import Store from 'electron-store';
 import {ipcMain} from "electron";
+import fs from "fs";
 
 const store = new Store();
 
@@ -16,10 +17,14 @@ const keys = {
 
 export const registerStoreHandlers = () => {
     /**
-     * メイン画面 通常モード
+     * メイン画面 ファイルモード
      */
     ipcMain.handle('getFiles', (_event, target) => {
-        return store.get(target, [{path: "", name: "", type: "", showCloseButton: false}]);
+        const files = store.get(target, []);
+        return files.map(file => ({
+            ...file,
+            exists: file.path === "" ? true : fs.existsSync(file.path)
+        }));
     });
     ipcMain.handle("storeFiles", (_event, target, files) => {
         store.set(target, files);
@@ -66,7 +71,11 @@ export const registerStoreHandlers = () => {
      * メイン画面 タイムラインモード
      */
     ipcMain.handle('getTimelineFiles', (_event) => {
-        return store.get(keys.timelineList, []);
+        const files = store.get(keys.timelineList, []);
+        return files.map(file => ({
+            ...file,
+            exists: file.path === "" ? true : fs.existsSync(file.path)
+        }));
     });
     ipcMain.handle("storeTimelineFiles", (_event, files) => {
         store.set(keys.timelineList, files);

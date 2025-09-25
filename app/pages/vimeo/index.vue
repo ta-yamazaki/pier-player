@@ -7,9 +7,12 @@
   </div>
 
   <div style="margin: auto; width: 95%; max-width: 640px">
-    <div class="buttons is-right mb-2">
-      <button class="button is-small" @click="reset()">表示リセット</button>
-    </div>
+    <nav class="level is-mobile my-2">
+      <div class="level-left is-size-7">※最初の表示は少し時間がかかります。</div>
+      <div class="level-right">
+        <button class="button is-small" @click="reset()">表示リセット</button>
+      </div>
+    </nav>
     <VimeoList ref="vimeoListRef"/>
     <button class="button is-link is-outlined is-fullwidth mt-5" @click="addRow()">
       ＋追加

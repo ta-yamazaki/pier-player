@@ -71,7 +71,7 @@ const selectFile = async (file) => {
   const checkedFile = await api.checkFilePath({
     path,
     name: file.name,
-    type: file.type,
+    type: fmediaStartile.type,
     exists: true,
   });
 
@@ -88,7 +88,6 @@ const reset = () => {
 };
 
 const preview = (file) => {
-  console.log(file)
   previewFile.value.name = file.name;
   previewFile.value.path = file.path;
   previewFile.value.type = file.type;

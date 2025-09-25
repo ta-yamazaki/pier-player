@@ -1,7 +1,8 @@
 :root {
+    --theme-color: rgb(9, 150, 175);
     --timeline-linear-gradient: linear-gradient(
             125deg,
-            rgb(9, 150, 175),
+            var(--theme-color),
             rgb(151, 136, 218),
             rgb(168, 15, 137)
     );
@@ -70,7 +71,7 @@ input.editInput {
     }
 }
 
-.playIcon, .pauseIcon {
+.playIcon path, .pauseIcon path {
     background: var(--timeline-linear-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -104,14 +105,16 @@ progress::-webkit-progress-bar {
 }
 
 progress::-webkit-progress-value {
-    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),
-                var(--timeline-linear-gradient);
+    /*background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),*/
+    /*            var(--timeline-linear-gradient);*/
+    background-color: var(--theme-color);
 }
 
 /* Firefox */
 progress::-moz-progress-bar {
-    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),
-                var(--timeline-linear-gradient);
+    /*background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),*/
+    /*            var(--timeline-linear-gradient);*/
+    background-color: var(--theme-color);
 }
 
 
@@ -127,4 +130,9 @@ input[type=number] {
 
 details.trim summary::marker {
     content: "✂";
+}
+
+.level .level-left,
+.level .level-right {
+    flex-direction: row !important;
 }

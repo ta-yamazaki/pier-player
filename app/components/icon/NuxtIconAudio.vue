@@ -1,15 +1,15 @@
 <template>
-  <Icon
-      :name="name"
+  <NuxtIcon
+      name="solar:music-notes-bold"
       :size="size"
       :color="color"
-      mode="svg"
   />
 </template>
 
 <script setup lang="ts">
+import NuxtIcon from "~/components/icon/NuxtIcon.vue";
+
 interface Props {
-  name: string;
   size?: string | number;
   color?: string;
 }

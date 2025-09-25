@@ -1,7 +1,10 @@
 <template>
-  <div class="buttons is-right my-2">
-    <button class="button is-small" @click="closeAll()">表示リセット</button>
-  </div>
+  <nav class="level is-mobile my-2">
+    <div class="level-left is-size-7">※最初の表示は少し時間がかかります。</div>
+    <div class="level-right">
+      <button class="button is-small" @click="closeAll()">表示リセット</button>
+    </div>
+  </nav>
   <div v-if="vimeoList.length > 0" class="box py-1 px-2">
     <table class="table my-2 is-narrow is-fullwidth">
       <thead>
@@ -129,7 +132,6 @@ const isExists = (v: any) =>
 
 
 const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {
-  console.log([...vimeoList.value, ...titles])
   if (isOverride) vimeoList.value = toRaw(titles)
   else vimeoList.value = [...toRaw(vimeoList.value), ...titles]
 }

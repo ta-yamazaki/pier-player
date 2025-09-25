@@ -1,6 +1,6 @@
 import {contextBridge, ipcRenderer} from 'electron'
 
-contextBridge.exposeInMainWorld('timeline', {
+export const timelineReceiver = {
     // timeline windowからイベントを受け取る
     timelineWindowShow: (callback: any) => ipcRenderer.on('timelineWindowShow', callback),
     timelineWindowHide: (callback: any) => ipcRenderer.on('timelineWindowHide', callback),
@@ -26,7 +26,8 @@ contextBridge.exposeInMainWorld('timeline', {
         targetPaused: () => ipcRenderer.send("targetTimelinePaused"),
         targetEnded: () => ipcRenderer.send("targetTimelineEnded"),
     },
-});
+};
+contextBridge.exposeInMainWorld('timelineReceiver', timelineReceiver);
 
 // プリロードプロセスでは Node.js の全 API が利用可能です。
 // Chrome 拡張機能と同じサンドボックスも持っています。

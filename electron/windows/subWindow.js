@@ -35,12 +35,12 @@ export const createSubWindow = () => {
     return subWindow;
 };
 
-export const loadSubWindow = (subWindow, fileMeta) => {
+export const loadSubWindow = async (subWindow, fileMeta) => {
     if (process.env.VITE_DEV_SERVER_URL) {
-        subWindow.loadURL(path.join(process.env.VITE_DEV_SERVER_URL, 'sub/player.html'))
-        subWindow.webContents.openDevTools()
+        await subWindow.loadURL(path.join(process.env.VITE_DEV_SERVER_URL, 'sub/player.html'))
+        // subWindow.webContents.openDevTools()
     } else {
-        subWindow.loadFile(path.join(process.env.VITE_PUBLIC, 'public', 'sub', 'player.html'),
+        await subWindow.loadFile(path.join(process.env.VITE_PUBLIC, 'public', 'sub', 'player.html'),
             {hash: '/sub/player'})
     }
 

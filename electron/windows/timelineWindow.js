@@ -38,7 +38,14 @@ export const createTimelineWindow = () => {
 };
 
 export const loadTimelineWindow = async (timelineWindow, fileMeta) => {
-    await timelineWindow.loadFile('src/templates/timeline/player.html');
+    if (process.env.VITE_DEV_SERVER_URL) {
+        await timelineWindow.loadURL(path.join(process.env.VITE_DEV_SERVER_URL, 'timeline/player.html'))
+        // timelineWindow.webContents.openDevTools()
+    } else {
+        await timelineWindow.loadFile(path.join(process.env.VITE_PUBLIC, 'public', 'timeline', 'player.html'),
+            {hash: '/timeline/player'})
+    }
+
     if (fileMeta.type.match(/video\/.*/)) {
         timelineWindow.showInactive();
         timelineWindow.moveTop();

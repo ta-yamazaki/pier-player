@@ -96,7 +96,7 @@ contextBridge.exposeInMainWorld('vimeoShowcase', showcaseApi);
 /**
  * タイムラインモード
  */
-contextBridge.exposeInMainWorld('timeline', {
+export const timelineApi = {
     // mainWindowからhandlers.jsの 'openTimelineWindow' チャンネルへ送信
     openSubWindow: (fileMeta: any) => ipcRenderer.invoke('openTimelineWindow', fileMeta),
     closeSubWindow: () => ipcRenderer.invoke('closeTimelineWindow'),
@@ -129,7 +129,8 @@ contextBridge.exposeInMainWorld('timeline', {
 
     getFiles: () => ipcRenderer.invoke("getTimelineFiles"),
     storeFiles: (files: any) => ipcRenderer.invoke("storeTimelineFiles", files),
-});
+}
+contextBridge.exposeInMainWorld('timeline', timelineApi);
 
 // プリロードプロセスでは Node.js の全 API が利用可能です。
 // Chrome 拡張機能と同じサンドボックスも持っています。

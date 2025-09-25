@@ -67,21 +67,15 @@ const api = window.api;
  * lifecycle
  */
 onMounted(async () => {
-  files.sunday.value = await getFiles("sunday");
-  files.wednesday.value = await getFiles("wednesday");
-  files.other.value = await getFiles("other");
-
+  files.sunday.value = await api.getFiles("sunday");
   targetFiles.value = files.sunday.value;
+  files.wednesday.value = await api.getFiles("wednesday");
+  files.other.value = await api.getFiles("other");
 });
 
 /**
  * methods
  */
-const getFiles = async (target: string) => {
-  const files = await api.getFiles(target);
-  return await api.checkFilePaths(files);
-};
-
 function addFile(file: any) {
   targetFiles.value.push(file)
 }

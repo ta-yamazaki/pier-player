@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <!--  &lt;!&ndash; https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP &ndash;&gt;-->
+  <!--  <meta http-equiv="Content-Security-Policy" content="default-src file://; script-src 'self'">-->
+</head>
+<style>
+    html {
+        background-color: black;
+    }
+
+    body {
+        margin: 0;
+        overflow: hidden;
+        opacity: 0;
+    }
+
+    /*body.start {*/
+    /*    opacity: 1;*/
+    /*    animation-name: fadeIn;*/
+    /*    animation-duration: 1s;*/
+    /*}*/
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    /*body.start.end {*/
+    /*    opacity: 0;*/
+    /*    animation-name: blackOut;*/
+    /*    animation-duration: 1s;*/
+    /*}*/
+
+    @keyframes blackOut {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+
+    video {
+        width: 100%;
+    }
+</style>
+<body>
+<!--<video id="player">-->
+<!--  <source id="source" src="" type="" />-->
+<!--</video>-->
+<!--<div id="blackScreen"></div>-->
+<script>
+    window.onload = (event) => {
+    };
+
+    const body = document.getElementsByTagName('body')[0]
+
+    let videoEl
+    let audioEl
+    const element = () => videoEl || audioEl;
+
+    let videoGainNode
+    let audioGainNode
+    const gainNode = () => videoEl ? videoGainNode : audioGainNode;
+
+    let file
+
+    const receiver = window.timelineReceiver
+    const mainCallback = receiver.mainPlayer
+    const timelineListener = receiver.listener
+
+    receiver.timelineWindowShow((event, param) => {
+        file = {...param.file}
+
+        body.innerHTML = ""
+        if (!file.type) return
+        if (file.type.match(/video\/.*/)) playVideo(event)
+        if (file.type.match(/audio\/.*/)) playAudio(event)
+    })
+
+    function playVideo(event) {
+        videoEl = createVideoEl()
+
+        videoGainSourceSetting() // ゲイン設定
+        videoEl.currentTime = file.startTrimSec // 再生位置
+
+        videoEl.play().then(() => {
+            fadeInSetting(`${file.startFadeSec}s`)
+        }).catch((e) => console.error(e))
+
+        listeners(videoEl)
+    }
+
+    function createVideoEl() { // video要素生成
+        const source = document.createElement('source');
+        source.src = file.path
+        source.type = file.type
+
+        const video = document.createElement('video');
+        video.appendChild(source);
+        body.appendChild(video);
+        return video
+    }
+
+    function playAudio(event) {
+        audioEl = createAudioEl()
+
+        audioGainSourceSetting()
+        audioEl.currentTime = file.startTrimSec // 再生位置
+
+        audioEl.play()
+
+        listeners(audioEl)
+    }
+
+    function createAudioEl() { // audio要素生成
+        const audio = document.createElement('audio');
+        audio.src = file.path
+        audio.type = file.type
+        body.appendChild(audio);
+        return audio
+    }
+
+    function listeners(mediaEl) {
+        mediaEl.addEventListener('ready', (event) => {
+            timelineListener.targetReady();
+        });
+        mediaEl.addEventListener('loadedmetadata', (event) => {
+            timelineListener.targetDuration(mediaEl.duration);
+        });
+        mediaEl.addEventListener('playing', (event) => {
+            // body.classList.remove("end")
+            timelineListener.targetPlaying();
+            fadeOutSetting(`1`, ``, ``)
+        });
+        mediaEl.addEventListener('timeupdate', (event) => {
+            timelineListener.targetTimeupdate(mediaEl.currentTime);
+
+            if (endTimeReached(mediaEl)) {
+                mediaEl.pause()
+                mediaEl.currentTime = file.startTrimSec
+                timelineListener.targetEnded();
+            }
+
+            if (fadeOutReached(mediaEl))
+                fadeOutSetting(`0`, `blackOut`, `${file.endFadeSec}s`)
+        });
+        mediaEl.addEventListener('pause', (event) => {
+            timelineListener.targetPaused();
+        });
+        mediaEl.addEventListener('ended', (event) => {
+            // body.classList.add("end")
+            timelineListener.targetEnded();
+        });
+    }
+
+    function videoGainSourceSetting() {
+        videoGainNode = generateGainNode(videoEl)
+        videoGainNode.gain.value = file.gain;
+    }
+
+    function audioGainSourceSetting() {
+        audioGainNode = generateGainNode(audioEl)
+        audioGainNode.gain.value = file.gain;
+    }
+
+    function generateGainNode(element) {
+        // AudioContextの作成
+        const context = new (window.AudioContext || window.webkitAudioContext)();
+        // AudioContextのソースと接続
+        const source = context.createMediaElementSource(element);
+        // GainNodeの作成
+        const gainNode = context.createGain();
+
+        // 音声ソースをGainNodeに接続
+        source.connect(gainNode);
+        // GainNodeを出力に接続
+        gainNode.connect(context.destination);
+
+        return gainNode
+    }
+
+    function fadeInSetting(duration) {
+        body.style.opacity = "1"
+        body.style.animationName = "fadeIn"
+        body.style.animationDuration = duration
+    }
+
+    function fadeOutSetting(opacity, animationName, duration) {
+        body.style.opacity = opacity
+        body.style.animationName = animationName
+        body.style.animationDuration = duration
+    }
+
+    function fadeOutReached(mediaEl) {
+        // マージンで 30ms いれておく
+        return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - file.endFadeSec - 0.03;
+    }
+
+    function endTimeReached(mediaEl) {
+        // マージンで 30ms いれておく
+        return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - 0.03;
+    }
+
+    // timelineReceiver.timelineWindowHide((event) => {
+    //     body.innerHTML = ""
+    //     body.classList.remove("start")
+    //     body.classList.remove("end")
+    // })
+
+    mainCallback.restart((event, param) => element().currentTime = 0)
+    mainCallback.rewind((event, param) => element().currentTime -= param.seekTime)
+    mainCallback.play((event, param) => element().play())
+    mainCallback.pause((event, param) => element().pause())
+    mainCallback.forward((event, param) => element().currentTime += param.seekTime)
+    mainCallback.toEnd((event, param) => element().currentTime = element().duration)
+    mainCallback.seek((event, param) => element().currentTime = param.newTime)
+    mainCallback.fileMetaChange((event, param) => {
+        file = {...param.file}
+        gainNode().gain.value = file.gain;
+    })
+</script>
+
+</body>
+</html>
