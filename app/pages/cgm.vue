@@ -1,8 +1,6 @@
 <template>
   <div style="margin: auto; width: 95%; max-width: 640px">
-    <h5 class="title is-5 mb-2 pt-3">
-      CGM映像
-    </h5>
+    <h5 class="title is-5 mb-2 pt-3">CGM映像</h5>
     <div class="buttons is-right my-2">
       <button class="button is-small" @click="reset()">表示リセット</button>
     </div>

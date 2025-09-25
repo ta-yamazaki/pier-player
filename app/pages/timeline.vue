@@ -1,6 +1,6 @@
 <template>
-  <div class="p-4" style="margin: auto; min-width: 540px;">
-    <h5 class="title is-5 my-3">タイムライン</h5>
+  <div style="margin: auto; width: 95%; max-width: 640px">
+    <h5 class="title is-5 mb-2 pt-3">タイムライン</h5>
     <div
         class="dropArea"
         @dragenter="dragDropEnter()"
