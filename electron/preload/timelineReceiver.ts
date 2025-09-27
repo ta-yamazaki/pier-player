@@ -22,7 +22,7 @@ export const timelineReceiver = {
         targetReady: () => ipcRenderer.send("targetTimelineReady"),
         targetDuration: (duration: any) => ipcRenderer.send("targetTimelineDuration", duration),
         targetPlaying: () => ipcRenderer.send("targetTimelinePlay"),
-        targetTimeupdate: (currentTime: any) => ipcRenderer.send("targetTimelineTimeupdate", currentTime),
+        targetTimeupdate: (file: any, currentTime: any, duration: any) => ipcRenderer.send("targetTimelineTimeupdate", file, currentTime, duration),
         targetPaused: () => ipcRenderer.send("targetTimelinePaused"),
         targetEnded: () => ipcRenderer.send("targetTimelineEnded"),
     },

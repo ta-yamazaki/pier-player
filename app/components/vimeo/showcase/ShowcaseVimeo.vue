@@ -13,7 +13,7 @@
               :class="{'is-loading': isLoading}"
       ><b>表示</b></button>
       <button v-if="isViewedBeforePlay"
-              class="button is-success ml-2"
+              class="button is-primary ml-2"
               @click="play()"
               :class="{'is-loading': isLoading}"
       ><b>再生</b></button>
@@ -51,7 +51,7 @@ const isLoading = ref(false)
 const vimeo = ref(props.vimeo)
 
 // API (Electron preload で expose 済みのやつを参照)
-const showcaseApi = window.vimeoShowcase
+const showcaseApi = window.showcaseApi
 
 // init
 onMounted(() => {

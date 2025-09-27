@@ -129,6 +129,10 @@ export const timelineApi = {
 
     getFiles: () => ipcRenderer.invoke("getTimelineFiles"),
     storeFiles: (files: any) => ipcRenderer.invoke("storeTimelineFiles", files),
+    storeAdditionalFiles: (files: any[]) => ipcRenderer.invoke("storeAdditionalTimelineFiles", files),
+
+    getHistory: () => ipcRenderer.invoke("getTimelineHistory"),
+    storeHistory: (file: any) => ipcRenderer.invoke("storeTimelineHistory", file),
 }
 contextBridge.exposeInMainWorld('timeline', timelineApi);
 

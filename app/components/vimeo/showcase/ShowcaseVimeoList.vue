@@ -21,7 +21,7 @@
           :key="vimeo"
           :class="{
               'dragging': i === dragIndex,
-              'has-background-success-light': isViewedBeforePlay(vimeo),
+              'has-background-primary-light': isViewedBeforePlay(vimeo),
               'has-background-danger-light': isPlaying(vimeo)
             }">
         <td :draggable="true"
@@ -49,7 +49,7 @@
     </table>
   </div>
 
-  <button class="button is-link is-outlined is-fullwidth mt-5" @click="addShowcaseVimeo()">
+  <button class="button is-primary is-fullwidth mt-5" @click="addShowcaseVimeo()">
     ＋追加
   </button>
 </template>
@@ -73,7 +73,7 @@ const vimeoList = ref<any[]>([])
 const dragIndex = ref<number | null>(null)
 
 // API (Electron preload で expose 済みのやつを参照)
-const showcaseApi = window.vimeoShowcase
+const showcaseApi = window.showcaseApi
 
 // init
 onMounted(async () => {

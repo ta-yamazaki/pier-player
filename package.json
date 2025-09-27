@@ -6,8 +6,9 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "npx nuxi dev",
+    "build:nuxt": "nuxi build",
     "build": "nuxi generate && electron-builder --win --x64",
-    "generate": "nuxt generate",
+    "generate": "nuxi generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "release": "node release.js"

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import {ipcMain, screen, shell} from 'electron';
+import {ipcMain, shell} from 'electron';
 import {createTimelineWindow, getTimelineWindow, loadTimelineWindow} from "../windows/timelineWindow.js";
 import {getMainWindow} from "../windows/mainWindow.js";
 
@@ -94,9 +94,11 @@ export const registerTimelineHandlers = () => {
     ipcMain.on("targetTimelinePlay", (event) => {
         getMainWindow().webContents.send("timelinePlay");
     });
-    ipcMain.on("targetTimelineTimeupdate", (event, currentTime) => {
+    ipcMain.on("targetTimelineTimeupdate", (event, file, currentTime, duration) => {
         getMainWindow().webContents.send("timelineTimeupdate", {
-            currentTime: currentTime
+            file: file,
+            currentTime: currentTime,
+            duration: duration
         });
     });
     ipcMain.on("targetTimelinePaused", (event) => {

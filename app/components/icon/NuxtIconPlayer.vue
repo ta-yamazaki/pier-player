@@ -19,7 +19,7 @@ interface Props {
 // withDefaults を使って default 値を指定
 const props = withDefaults(defineProps<Props>(), {
   size: "24",
-  color: "dimgray"
+  color: "'var(--bulma-primary-dark)'"
 });
 </script>
 

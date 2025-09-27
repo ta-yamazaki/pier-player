@@ -14,7 +14,7 @@
       </div>
     </nav>
     <VimeoList ref="vimeoListRef"/>
-    <button class="button is-link is-outlined is-fullwidth mt-5" @click="addRow()">
+    <button class="button is-primary is-fullwidth mt-5" @click="addRow()">
       ＋追加
     </button>
   </div>

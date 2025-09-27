@@ -13,6 +13,7 @@ const keys = {
     vimeoShowcasePlayList: "vimeoShowcasePlayList",
 
     timelineList: "timelineList",
+    timelineHistory: "timelineHistory",
 };
 
 export const registerStoreHandlers = () => {
@@ -80,4 +81,27 @@ export const registerStoreHandlers = () => {
     ipcMain.handle("storeTimelineFiles", (_event, files) => {
         store.set(keys.timelineList, files);
     });
+    ipcMain.handle("storeAdditionalTimelineFiles", (_event, files) => {
+        const currentFiles = store.get(keys.timelineList, []);
+        const added = currentFiles.concat(files)
+        store.set(keys.timelineList, added);
+    });
+    ipcMain.handle("getTimelineHistory", (_event) => {
+        return loadMap(keys.timelineHistory);
+    });
+    ipcMain.handle("storeTimelineHistory", (_event, file) => {
+        file.updatedAt = new Date()
+        saveMap(keys.timelineHistory, file.name, file);
+    });
 };
+
+function saveMap(storeKey, targetKey, targetValue) {
+    const map = loadMap(storeKey);
+    map.set(targetKey, targetValue);
+    store.set(storeKey, Array.from(map.entries()));
+}
+
+function loadMap(storeKey) {
+    const raw = store.get(storeKey, []);
+    return new Map(raw);
+}

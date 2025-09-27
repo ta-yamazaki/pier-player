@@ -22,7 +22,8 @@
         </NuxtLink>
       </li>
       <li>
-        <NuxtLink to="/timeline" style="vertical-align: middle;">
+        <NuxtLink to="/timeline" style="vertical-align: middle;"
+                  :class="{ 'router-link-active': isTimelineActive }">
           <img src="@/assets/img/Timeline.webp" height="18" width="18" class="mr-2">
           <small>タイムライン</small>
         </NuxtLink>
@@ -34,6 +35,7 @@
 <script setup lang="ts">
   const route = useRoute()
   const isVimeoActive = computed(() => route.path.startsWith('/vimeo'))
+  const isTimelineActive = computed(() => route.path.startsWith('/timeline'))
 </script>
 
 <style scoped>

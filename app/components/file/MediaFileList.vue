@@ -5,7 +5,7 @@
     <tr v-for="(file, i) in targetFiles" :key="file"
         :class="{
               'dragging': i === dragIndex,
-              'has-background-success-light has-text-weight-bold': file.isPlaying
+              'has-background-primary-light has-text-weight-bold': file.isPlaying
             }">
       <td :draggable="true"
           @dragstart="dragStart(i)"

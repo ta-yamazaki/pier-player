@@ -53,10 +53,10 @@ interface Props {
     selectedFilename: string,
     currentTime: number,
     duration: number | null,
-    loadedmetadata: false,
-    isPlaying: false,
-    seeking: false,
-    iconColor: "rgb(9, 150, 175)",
+    loadedmetadata: boolean,
+    isPlaying: boolean,
+    seeking: boolean,
+    iconColor: string,
   };
 }
 
@@ -74,10 +74,11 @@ onMounted(async () => {
 watch(files, (newFiles) => {
   emit("changeFiles", newFiles)
   timelineApi.storeFiles(toRaw(newFiles))
+  timelineApi.mainPlayer.fileMetaChange(toRaw(playingFile.value))
 }, {deep: true})
 
 /* -------------------- computed -------------------- */
-
+const playingFile = computed(() => files.value.find(f => f.isPlaying))
 
 /* -------------------- 再生関連 -------------------- */
 function mediaStart(i) {

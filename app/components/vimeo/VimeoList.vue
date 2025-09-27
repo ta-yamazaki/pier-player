@@ -6,7 +6,7 @@
           :key="vimeo"
           :class="{
               'dragging': i === dragIndex,
-              'has-background-success-light': isViewedBeforePlay(vimeo),
+              'has-background-primary-light': isViewedBeforePlay(vimeo),
               'has-background-danger-light': isPlaying(vimeo)
             }">
         <td :draggable="true"

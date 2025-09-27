@@ -10,7 +10,7 @@
       <tr v-for="(cgm, i) in cgmList" :key="cgm"
           :class="{
               'dragging': i === dragIndex,
-              'has-background-success-light': isViewedBeforePlay(cgm),
+              'has-background-primary-light': isViewedBeforePlay(cgm),
               'has-background-danger-light': isPlaying(cgm)
             }">
         <td :draggable="true"

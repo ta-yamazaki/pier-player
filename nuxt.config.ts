@@ -21,7 +21,7 @@ export default defineNuxtConfig({
                 entry: 'electron/main.ts',
             },
             {
-                entry: 'electron/preload/index.ts',
+                entry: 'electron/preload/preload.ts',
                 onstart(args) {
                     // Notify the Renderer-Process to reload the page when the Preload-Scripts build is complete,
                     // instead of restarting the entire Electron App.

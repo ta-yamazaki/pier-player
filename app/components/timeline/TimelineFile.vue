@@ -13,115 +13,114 @@
     </p>
   </div>
   <!-- ファイルが存在する-->
-  <div v-else
-       class="box p-2"
-       :class="{'has-background-danger-light': file.isPlaying}">
-    <nav class="level is-mobile mb-0">
-      <div class="level-left" style="max-width: calc(100% - 55px);">
-        <NuxtIconVideo v-if="isVideo" class="has-text-link"/>
-        <NuxtIconAudio v-if="isAudio" style="color:#eebe3a!important"/>
-        <b class="is-size-6" style="word-break: break-all;">{{ file.name }}</b>
-        <NuxtIconFolder
-            v-if="file.path"
-            class="icon is-small has-text-grey is-clickable"
-            @click="openFolder()"/>
-      </div>
-      <div class="level-right">
-        <button v-if="!file.isPlaying"
-                class="button is-small is-success"
-                @click="start()"
-        ><b>再生</b></button>
-        <button v-if="file.isPlaying"
-                class="button is-small is-danger"
-                @click="close()"
-        ><b>停止</b></button>
-      </div>
-    </nav>
+  <template v-else>
 
-    <!-- 再生編集-->
-    <div class="mx-2 mt-2 mb-0">
-      <div class="is-flex is-align-items-center py-0">
-        <nav class="level is-mobile is-flex-grow-1 is-size-7">
+    <div class="box p-2 mb-1" :class="{'has-background-danger-light': file.isPlaying}">
+      <nav class="level is-mobile mb-0">
+        <div class="level-left" style="max-width: calc(100% - 55px);">
+          <NuxtIconVideo v-if="isVideo" class="has-text-link"/>
+          <NuxtIconAudio v-if="isAudio" style="color:#eebe3a!important"/>
+          <b class="is-size-6" style="word-break: break-all;">{{ file.name }}</b>
+          <NuxtIconFolder
+              v-if="file.path"
+              class="icon is-small has-text-grey is-clickable"
+              @click="openFolder()"/>
+        </div>
+        <div class="level-right">
+          <button v-if="!file.isPlaying"
+                  class="button is-small is-primary"
+                  @click="start()"
+          ><b>再生</b></button>
+          <button v-if="file.isPlaying"
+                  class="button is-small is-danger"
+                  @click="close()"
+          ><b>停止</b></button>
+        </div>
+      </nav>
+
+      <!-- 再生編集-->
+      <div class="mx-2 mt-2 mb-0">
+        <div class="is-flex is-align-items-center py-0">
+          <nav class="level is-mobile is-flex-grow-1 is-size-7">
+            <div class="level-left">
+              <p class="nowrap" style="width: 5.75rem"></p>
+              冒頭（秒）
+            </div>
+            <div class="level-right">
+              末尾（秒）
+              <p class="nowrap" style="width: 0.1rem"></p>
+            </div>
+          </nav>
+        </div>
+        <nav class="level is-mobile is-size-7 py-1 m-0" style="border-bottom: 1px dashed lightgray;">
           <div class="level-left">
-            <p class="nowrap" style="width: 5.75rem"></p>
-            冒頭（秒）
+            <p class="nowrap" style="width: 4.5rem">
+              <NuxtIcon name="mdi:content-cut"/>
+              カット
+            </p>
+            <NuxtIconMinus @click="decreaseStartTrim()" class="is-clickable"/>
+            <input v-model="file.startTrimSec"
+                   class="input borderless editInput is-small px-1 py-0"
+                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+            <NuxtIconPlus @click="increaseStartTrim()" class="is-clickable"/>
           </div>
           <div class="level-right">
-            末尾（秒）
-            <p class="nowrap" style="width: 0.1rem"></p>
+            <NuxtIconMinus @click="decreaseEndTrim()" class="is-clickable"/>
+            <input v-model="file.endTrimSec"
+                   class="input borderless editInput is-small px-1 py-0"
+                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+            <NuxtIconPlus @click="increaseEndTrim()" class="is-clickable"/>
+          </div>
+        </nav>
+        <nav v-if="isVideo"
+             class="level is-mobile is-size-7 py-1 m-0" style="border-bottom: 1px dashed lightgray;">
+          <div class="level-left">
+            <p class="nowrap" style="width: 4.5rem">
+              <NuxtIcon name="material-symbols:transition-fade"/>
+              フェード
+            </p>
+            <NuxtIconMinus @click="decreaseStartFade()" class="is-clickable"/>
+            <input v-model="file.startFadeSec"
+                   class="input borderless editInput is-small px-1 py-0"
+                   type="number" min="0">
+            <NuxtIconPlus @click="increaseStartFade()" class="is-clickable"/>
+          </div>
+          <div class="level-right">
+            <NuxtIconMinus @click="decreaseEndFade()" class="is-clickable"/>
+            <input v-model="file.endFadeSec"
+                   class="input borderless editInput is-small px-1 py-0"
+                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+            <NuxtIconPlus @click="increaseEndFade()" class="is-clickable"/>
+          </div>
+        </nav>
+        <nav class="level is-mobile py-1 m-0">
+          <div class="level-left nowrap">
+            <NuxtIcon name="mdi:volume-high"/>
+            <input v-model="file.gain"
+                   type="range"
+                   class="is-size-7"
+                   style="vertical-align: middle;"
+                   :style="{background: sliderBackground()}"
+                   step="0.1" :min="gainMin" :max="gainMax"
+                   @dblclick="file.gain = 1">
+            <div class="control ml-1 is-size-7" style="font-size: inherit;">{{ file.gain }}</div>
+            <div class="has-text-grey ml-2 is-size-7">（元の音量＝1）</div>
+          </div>
+          <div class="level-right">
+            <label v-if="!isLast" class="checkbox">
+              <input type="checkbox" v-model="file.continuousPlay"/>
+              次を自動再生
+            </label>
           </div>
         </nav>
       </div>
-      <nav class="level is-mobile is-size-7 py-1 m-0" style="border-bottom: 1px dashed lightgray;">
-        <div class="level-left">
-          <p class="nowrap" style="width: 4.5rem">
-            <NuxtIcon name="mdi:content-cut"/>
-            カット
-          </p>
-          <NuxtIconMinus @click="decreaseStartTrim()" class="is-clickable"/>
-          <input v-model="file.startTrimSec"
-                 class="input borderless editInput is-small px-1 py-0"
-                 type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-          <NuxtIconPlus @click="increaseStartTrim()" class="is-clickable"/>
-        </div>
-        <div class="level-right">
-          <NuxtIconMinus @click="decreaseEndTrim()" class="is-clickable"/>
-          <input v-model="file.endTrimSec"
-                 class="input borderless editInput is-small px-1 py-0"
-                 type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-          <NuxtIconPlus @click="increaseEndTrim()" class="is-clickable"/>
-        </div>
-      </nav>
-      <nav v-if="isVideo"
-           class="level is-mobile is-size-7 py-1 m-0" style="border-bottom: 1px dashed lightgray;">
-        <div class="level-left">
-          <p class="nowrap" style="width: 4.5rem">
-            <NuxtIcon name="material-symbols:transition-fade"/>
-            フェード
-          </p>
-          <NuxtIconMinus @click="decreaseStartFade()" class="is-clickable"/>
-          <input v-model="file.startFadeSec"
-                 class="input borderless editInput is-small px-1 py-0"
-                 type="number" min="0">
-          <NuxtIconPlus @click="increaseStartFade()" class="is-clickable"/>
-        </div>
-        <div class="level-right">
-          <NuxtIconMinus @click="decreaseEndFade()" class="is-clickable"/>
-          <input v-model="file.endFadeSec"
-                 class="input borderless editInput is-small px-1 py-0"
-                 type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-          <NuxtIconPlus @click="increaseEndFade()" class="is-clickable"/>
-        </div>
-      </nav>
-      <nav class="level is-mobile py-1 m-0">
-        <div class="level-left nowrap">
-          <NuxtIcon name="mdi:volume-high"/>
-          <input v-model="file.gain"
-                 type="range"
-                 class="is-size-7"
-                 style="vertical-align: middle"
-                 :style="{background: sliderBackground()}"
-                 step="0.1" :min="gainMin" :max="gainMax"
-                 @change="changeGain()"
-                 @mousemove="changeGain()"
-                 @dblclick="file.gain = 1">
-          <div class="control ml-1 is-size-7" style="font-size: inherit;">{{ file.gain }}</div>
-          <div class="has-text-grey ml-2 is-size-7">（元の音量＝1）</div>
-        </div>
-        <div class="level-right">
-          <label v-if="!isLast" class="checkbox">
-            <input type="checkbox" v-model="file.continuousPlay"/>
-            次を自動再生
-          </label>
-        </div>
-      </nav>
+      <!-- 再生編集ここまで -->
     </div>
-    <!-- 再生編集ここまで -->
-  </div>
+  </template>
 </template>
 
 <script setup lang="ts">
-import {onMounted} from 'vue'
+import {onMounted, watch} from 'vue'
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconFolder from "~/components/icon/NuxtIconFolder.vue";
@@ -158,6 +157,17 @@ const timelineApi = window.timeline
 /* -------------------- ライフサイクル -------------------- */
 onMounted(async () => {
 })
+
+/**
+ * watch
+ */
+watch(
+    file,
+    (newVal) => {
+      if (newVal.path)
+        timelineApi.storeHistory(toRaw(newVal));
+    }, {deep: true}
+);
 
 /* -------------------- computed -------------------- */
 const isVideo = computed(() => /video\/.*/.test(file.value.type))
@@ -217,7 +227,7 @@ function changeGain() {
 }
 
 function sliderBackground() {
-  const activeColor = "darkgray"
+  const activeColor = "var(--bulma-primary)"
   const inactiveColor = "transparent"
   const ratio = (file.value.gain - gainMin) / (gainMax - gainMin) * 100
   const barColor = `linear-gradient(90deg, ${activeColor} ${ratio}%, ${inactiveColor} ${ratio}%)`
@@ -226,8 +236,8 @@ function sliderBackground() {
   const defaultLine = `
     linear-gradient(to right,
       transparent ${percent - 1}%,
-      gray ${percent - 1}%,
-      gray ${percent + 1}%,
+      var(--bulma-primary-dark) ${percent - 1}%,
+      var(--bulma-primary-dark) ${percent + 1}%,
       transparent ${percent + 1}%)
   `
   return `${defaultLine}, ${barColor}`
@@ -270,6 +280,38 @@ function close() {
 </script>
 
 <style scoped>
+
+/** 音量スライダー */
+input[type="range"] {
+  appearance: none;
+  width: 110px;
+  height: 6px;
+  border-radius: 99px;
+  background: transparent;
+  cursor: pointer;
+  border: 1px solid var(--bulma-primary-light);
+}
+/* ツマミ：Chrome, Safari, Edge用 */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--bulma-primary);
+  border: 1px solid var(--bulma-primary-light);
+  box-shadow: none;
+}
+/* ツマミ：Firefox用 */
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--bulma-primary);
+  border: 1px solid var(--bulma-primary-light);
+  box-shadow: none;
+}
+
 td {
   vertical-align: middle !important;
 }

@@ -19,7 +19,7 @@
     </div>
     <div class="ml-auto mr-0">
       <button v-if="isExists(file.path) && !file.isPlaying"
-              class="button is-small is-success"
+              class="button is-small is-primary"
               @click="play()"
               :disabled="!file.exists"
       ><b>再生</b></button>

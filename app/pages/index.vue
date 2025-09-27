@@ -1,6 +1,6 @@
 <template>
   <div class="tabs is-centered is-fullwidth mb-4">
-    <ul style="background-color: #f1f5f7">
+    <ul>
       <li @click="selectSundayTab()" :class="{'is-active': selectedTab === 'sunday'}"><a>主日礼拝</a></li>
       <li @click="selectWednesdayTab()" :class="{'is-active': selectedTab === 'wednesday'}"><a>水曜礼拝</a></li>
       <li @click="selectOtherTab()" :class="{'is-active': selectedTab === 'other'}"><a>その他</a></li>
@@ -8,15 +8,7 @@
   </div>
 
   <div style="margin: auto; width: 95%; max-width: 640px">
-    <div class="dropArea"
-         @dragenter="dragDropEnter()"
-         @dragleave="dragDropLeave()"
-         @dragover.prevent
-         @drop.prevent="droppedFile($event)"
-         :class="{'enter': isEnter}"
-    >ドラッグ＆ドロップしてファイルを追加
-    </div>
-    <p class="help is-danger">{{ disallowedFileTypeMessage }}</p>
+    <FileDropInput @droppedFile="selectFile"/>
 
     <div class="buttons is-right my-2">
       <button class="button is-small" @click="reset()">表示リセット</button>
@@ -44,6 +36,7 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import MediaFileList from "~/components/file/MediaFileList.vue";
+import FileDropInput from "~/components/input/FileDropInput.vue";
 
 const mediaFileListRef = ref<InstanceType<typeof MediaFileList> | null>(null)
 
@@ -66,21 +59,17 @@ onMounted(async () => {
 /**
  * methods
  */
-const selectFile = async (file) => {
+const selectFile = async (file: File) => {
   const path = window.webUtils.getPathForFile(file);
   const checkedFile = await api.checkFilePath({
     path,
     name: file.name,
-    type: fmediaStartile.type,
+    type: file.type,
     exists: true,
   });
 
   mediaFileListRef.value?.addFile(checkedFile)  // 子のメソッドを呼び出す
 };
-
-const isVideo = (type) => type.match(/video\/.*/);
-const isAudio = (type) => type.match(/audio\/.*/);
-const allowedFileType = (type) => isVideo(type) || isAudio(type);
 
 const reset = () => {
   api.closeSubWindow();
@@ -104,47 +93,12 @@ const selectOtherTab = () => {
   selectedTab.value = "other";
 };
 
-const dragDropEnter = () => (isEnter.value = true);
-const dragDropLeave = () => (isEnter.value = false);
-
-const droppedFile = (event) => {
-  disallowedFileTypeMessage.value = "";
-  isEnter.value = false;
-
-  const file = event.dataTransfer.files[0];
-  if (!allowedFileType(file.type)) {
-    disallowedFileTypeMessage.value =
-        "動画か音源ファイルのみ追加可能です。";
-    return;
-  }
-  return selectFile(file);
-};
-
 /**
  * watch
  */
 </script>
 
 <style scoped>
-.dropArea {
-  color: gray;
-  font-weight: bold;
-  font-size: 0.8rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: auto;
-  height: 5rem;
-  border: 3px solid powderblue;
-  background-color: #f2fdff;
-  border-radius: 7px;
-}
-
-.enter {
-  color: white;
-  background-color: powderblue;
-}
-
 td {
   vertical-align: middle !important;
 }

@@ -5,8 +5,7 @@
       <button class="button is-small" @click="reset()">表示リセット</button>
     </div>
     <CgmList ref="cgmListRef" @preview="preview"/>
-    <button class="button is-link is-outlined is-fullwidth"
-            @click="addRow()">
+    <button class="button is-primary is-fullwidth" @click="addRow()">
       ＋追加
     </button>
 

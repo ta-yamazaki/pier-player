@@ -1,16 +1,8 @@
 <template>
   <div style="margin: auto; width: 95%; max-width: 640px">
     <h5 class="title is-5 mb-2 pt-3">タイムライン</h5>
-    <div
-        class="dropArea"
-        @dragenter="dragDropEnter()"
-        @dragleave="dragDropLeave()"
-        @dragover.prevent
-        @drop.prevent="droppedFile($event)"
-        :class="{'enter': isEnter}"
-    >ドラッグ＆ドロップしてファイルを追加
-    </div>
-    <p class="help is-danger">{{ disallowedFileTypeMessage }}</p>
+<!--    <NuxtLink to="/timeline/history">履歴から追加する ></NuxtLink>-->
+    <FileDropInput @droppedFile="selectFile"/>
 
     <button class="button is-small is-pulled-right mb-3"
             @click="reset()"
@@ -26,48 +18,52 @@
   </div>
 
   <!-- プレイヤー -->
-  <div v-if="playerMeta.selectedFilename" class="timelinePlayer">
-    <div class="has-text-centered">{{ playerMeta.selectedFilename }}</div>
-    <nav class="level is-mobile mb-1">
-      <p>{{ currentTimeColon }}</p>
-      <progress
-          class="mx-2 mb-0"
-          style="cursor: pointer;"
-          :value="playerMeta.currentTime"
-          :max="playerMeta.duration"
-          @mousedown="startSeek"
-      ></progress>
-      <p>{{ durationColon }}</p>
-    </nav>
+  <div v-if="playingFileExists" class="timelinePlayer">
+    <div v-if="!playerMeta.selectedFilename"
+         class="loader mx-auto my-5"
+         style="height: 40px;width: 40px;"></div>
 
-    <nav class="level is-mobile">
-      <p class="level-item"></p>
-      <p class="level-item">
-        <NuxtIconPlayer name="mdi:skip-previous" @click="restart()"/>
-      </p>
-      <p class="level-item">
-        <NuxtIconPlayer name="mdi:rewind-10" @click="rewind(10)"/>
-      </p>
-      <p class="level-item">
-        <NuxtIconPlayer v-if="!playerMeta.isPlaying"
-                        name="mdi:play-circle" size="48"
-                        :color="playerMeta.iconColor"
-                        class="playIcon"
-                        @click="play()"/>
-        <NuxtIconPlayer v-if="playerMeta.isPlaying"
-                        name="mdi:pause-circle" size="48"
-                        :color="playerMeta.iconColor"
-                        class="pauseIcon"
-                        @click="pause()"/>
-      </p>
-      <p class="level-item">
-        <NuxtIconPlayer name="mdi:fast-forward-10" @click="forward(10)"/>
-      </p>
-      <p class="level-item">
-        <NuxtIconPlayer name="mdi:skip-next" @click="toEnd()"/>
-      </p>
-      <p class="level-item"></p>
-    </nav>
+    <template v-else>
+      <div class="has-text-centered">{{ playerMeta.selectedFilename }}</div>
+      <nav class="level is-mobile mb-1">
+        <p>{{ currentTimeColon }}</p>
+        <progress
+            class="mx-2 mb-0"
+            style="cursor: pointer;"
+            :value="playerMeta.currentTime"
+            :max="playerMeta.duration"
+            @mousedown="startSeek"
+        ></progress>
+        <p>{{ durationColon }}</p>
+      </nav>
+
+      <nav class="level is-mobile">
+        <p class="level-item"></p>
+        <p class="level-item">
+          <NuxtIconPlayer name="mdi:skip-previous" @click="restart()"/>
+        </p>
+        <p class="level-item">
+          <NuxtIconPlayer name="mdi:rewind-10" @click="rewind(10)"/>
+        </p>
+        <p class="level-item">
+          <NuxtIconPlayer v-if="!playerMeta.isPlaying"
+                          name="mdi:play-circle" size="48"
+                          :color="'var(--bulma-primary-30)'"
+                          @click="play()"/>
+          <NuxtIconPlayer v-if="playerMeta.isPlaying"
+                          name="mdi:pause-circle" size="48"
+                          :color="'var(--bulma-primary-30)'"
+                          @click="pause()"/>
+        </p>
+        <p class="level-item">
+          <NuxtIconPlayer name="mdi:fast-forward-10" @click="forward(10)"/>
+        </p>
+        <p class="level-item">
+          <NuxtIconPlayer name="mdi:skip-next" @click="toEnd()"/>
+        </p>
+        <p class="level-item"></p>
+      </nav>
+    </template>
   </div>
   <!-- プレイヤーここまで -->
 </template>
@@ -77,12 +73,11 @@ import "@/assets/css/timeline.css"
 import {computed, onMounted, reactive, ref} from 'vue'
 import TimelineFileList from "~/components/timeline/TimelineFileList.vue";
 import NuxtIconPlayer from "~/components/icon/NuxtIconPlayer.vue";
+import FileDropInput from "~/components/input/FileDropInput.vue";
 
 const timelineFileListRef = ref<InstanceType<typeof TimelineFileList> | null>(null)
 
 const files = ref<any[]>([])
-const isEnter = ref(false)
-const disallowedFileTypeMessage = ref("")
 const timelineApi = window.timeline
 
 // プレイヤーメタ情報
@@ -97,9 +92,12 @@ const playerMeta = reactive({
 })
 
 /* -------------------- ライフサイクル -------------------- */
-onMounted(async () => {
+onMounted(() => {
   playerHooks()
 })
+
+/* -------------------- watch -------------------- */
+
 
 /* -------------------- computed -------------------- */
 const currentTimeColon = computed(() => minSecColonFrom(playerMeta.currentTime))
@@ -107,8 +105,13 @@ const durationColon = computed(() => minSecColonFrom(playerMeta.duration))
 const playingFileIndex = computed(() => {
   return files.value.findIndex(f => f.isPlaying)
 })
+const playingFileExists = computed(() => {
+  return playingFileIndex.value >= 0
+})
+const playLoading = computed(() => {
+  return playingFileExists.value && !playerMeta.selectedFilename
+})
 
-/* -------------------- ファイル関連 -------------------- */
 async function selectFile(file: File) {
   const path = window.webUtils.getPathForFile(file)
   const checkedFile = await timelineApi.checkFilePath({
@@ -130,19 +133,6 @@ function changeFiles(newFiles: any) {
   files.value = [...newFiles]
 }
 
-function isVideo(type: string) {
-  return /video\/.*/.test(type)
-}
-
-function isAudio(type: string) {
-  return /audio\/.*/.test(type)
-}
-
-function allowedFileType(type: string) {
-  return isVideo(type) || isAudio(type)
-}
-
-
 function continuousPlay(currentIndex: number) {
   const currentFile = files.value[currentIndex]
   const nextFile = files.value[currentIndex + 1]
@@ -153,34 +143,12 @@ function continuousPlay(currentIndex: number) {
       alert(`ファイルが開けませんでした。\n「${nextFile.name}」`)
       nextFile.isPlaying = false
     }
-    playerMeta.selectedFilename = nextFile.name
   })
 }
 
 function reset() {
   timelineFileListRef.value?.reset()
   mediaClose()
-}
-
-/* -------------------- DnD -------------------- */
-function dragDropEnter() {
-  isEnter.value = true
-}
-
-function dragDropLeave() {
-  isEnter.value = false
-}
-
-function droppedFile(e: DragEvent) {
-  disallowedFileTypeMessage.value = ""
-  isEnter.value = false
-  const file = e.dataTransfer?.files[0]
-  if (!file) return
-  if (!allowedFileType(file.type)) {
-    disallowedFileTypeMessage.value = "動画か音源ファイルのみ追加可能です。"
-    return
-  }
-  selectFile(file)
 }
 
 /* -------------------- utils -------------------- */
@@ -193,7 +161,6 @@ function minSecColonFrom(t: number | null) {
 
 /* -------------------- 個別ファイルemit受け取り -------------------- */
 function mediaStart(file: any) {
-  playerMeta.selectedFilename = file.name
 }
 
 function mediaClose() {
@@ -244,10 +211,14 @@ function playerHooks() {
     playerMeta.loadedmetadata = true
   })
   timelineApi.listener.play(() => {
-    playerMeta.isPlaying = true
+    // playerMeta.isPlaying = true
   })
   timelineApi.listener.timeupdate((_, p) => {
+    playerMeta.isPlaying = true
+
     playerMeta.currentTime = p.currentTime
+    playerMeta.duration = p.duration
+    playerMeta.selectedFilename = p.file.name
   })
   timelineApi.listener.paused(() => {
     playerMeta.isPlaying = false
@@ -271,26 +242,6 @@ function playerHooks() {
 </script>
 
 <style scoped>
-.dropArea {
-  color: gray;
-  font-weight: bold;
-  font-size: 0.8rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin: auto;
-  height: 5rem;
-  border: 3px solid powderblue;
-  background-color: #f2fdff;
-  border-radius: 7px;
-}
-
-.enter {
-  color: white;
-  background-color: powderblue;
-}
-
 td {
   vertical-align: middle !important;
 }

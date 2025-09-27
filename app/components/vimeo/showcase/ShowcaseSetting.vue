@@ -22,7 +22,7 @@
         <input type="checkbox" v-model="overrideVideoList"/>
         <small>映像一覧を上書きする</small>
       </label>
-      <button class="button is-small is-link is-outlined is-fullwidth"
+      <button class="button is-small is-primary is-outlined is-fullwidth"
               :class="{'is-loading': isGettingShowcaseVideos}"
               @click="getShowcaseVideoTitles()">
         ショーケースの映像一覧を取得
@@ -52,7 +52,7 @@ const showcase = reactive({
 })
 
 // API (Electron preload で expose 済みのやつを参照)
-const showcaseApi = window.vimeoShowcase
+const showcaseApi = window.showcaseApi
 
 // computed
 const showcaseUrlInvalid = computed(() => {

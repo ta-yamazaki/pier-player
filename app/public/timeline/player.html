@@ -140,7 +140,7 @@
             fadeOutSetting(`1`, ``, ``)
         });
         mediaEl.addEventListener('timeupdate', (event) => {
-            timelineListener.targetTimeupdate(mediaEl.currentTime);
+            timelineListener.targetTimeupdate(file, mediaEl.currentTime, mediaEl.duration);
 
             if (endTimeReached(mediaEl)) {
                 mediaEl.pause()

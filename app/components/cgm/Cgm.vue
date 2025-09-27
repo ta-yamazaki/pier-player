@@ -2,7 +2,7 @@
   <div class="field has-addons mb-1" style="white-space: nowrap;">
     <p class="control">
       <a class="button is-small label is-light"
-         :class="{'is-success': isViewedBeforePlay, 'is-danger': isPlaying}"
+         :class="{'is-primary': isViewedBeforePlay, 'is-danger': isPlaying}"
       >タイトル</a>
     </p>
     <p class="control is-expanded">
@@ -14,7 +14,7 @@
             :class="isLoading ? 'is-loading' : ''"
     ><b>表示</b></button>
     <button v-if="isViewedBeforePlay"
-            class="button is-small is-success ml-2"
+            class="button is-small is-primary ml-2"
             @click="play()"
             :class="{'is-loading': isLoading}"
     ><b>再生</b></button>
@@ -26,7 +26,7 @@
   <div class="field has-addons">
     <p class="control">
       <a class="button is-small label is-light"
-         :class="{'is-success': isViewedBeforePlay, 'is-danger': isPlaying}"
+         :class="{'is-primary': isViewedBeforePlay, 'is-danger': isPlaying}"
       >URL</a>
     </p>
     <p class="control is-expanded">

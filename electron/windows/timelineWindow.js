@@ -38,12 +38,12 @@ export const createTimelineWindow = () => {
 };
 
 export const loadTimelineWindow = async (timelineWindow, fileMeta) => {
-    // if (process.env.VITE_DEV_SERVER_URL) {
-    //     await timelineWindow.loadURL(path.join(process.env.VITE_DEV_SERVER_URL, 'timeline/player.html'))
-    //     // timelineWindow.webContents.openDevTools()
-    // } else {
+    if (process.env.VITE_DEV_SERVER_URL) {
+        await timelineWindow.loadURL(path.join(process.env.VITE_DEV_SERVER_URL, 'timeline/player.html'))
+        timelineWindow.webContents.openDevTools()
+    } else {
         await timelineWindow.loadFile(path.join(process.env.VITE_PUBLIC, 'timeline', 'player.html'))
-    // }
+    }
 
     if (fileMeta.type.match(/video\/.*/)) {
         timelineWindow.showInactive();

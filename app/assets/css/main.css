@@ -18,15 +18,18 @@ img#logo {
     vertical-align: bottom;
 }
 
-/*.tabs.is-boxed li.is-active a {*/
-/*    background-color: transparent;*/
-/*}*/
-.tabs li a {
-    border-bottom-width: 3px;
+a {
+    color: var(--bulma-primary-25);
 }
 
-.tabs li:not(:has(.is-active)) a {
-    background-color: transparent;
+.tabs {
+    --bulma-tabs-border-bottom-width: 2px;
+    --bulma-tabs-link-active-border-bottom-color: var(--bulma-primary);
+    --bulma-tabs-link-active-color: var(--bulma-primary);
+}
+
+.tabs li.is-active {
+    font-weight: bold;
 }
 
 table, th, td {
@@ -84,4 +87,39 @@ table, th, td {
 }
 .input.borderless:not(:focus) {
     border: none;
+}
+
+/*input[type="checkbox"] {*/
+/*    accent-color: var(--bulma-primary-30);*/
+/*}*/
+
+input[type="checkbox"] {
+    appearance: none; /* 標準スタイルを無効にする */
+    width: 16px; /* サイズの調整 */
+    height: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    position: relative;
+}
+
+/*input[type="checkbox"]:checked {*/
+/*    background-color: var(--bulma-primary-35);*/
+/*}*/
+
+input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--bulma-primary); /* チェックマークの色を指定 */
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+    display: none; /* 初期状態では非表示 */
+}
+
+input[type="checkbox"]:checked::before {
+    display: block; /* チェックされたら表示する */
 }

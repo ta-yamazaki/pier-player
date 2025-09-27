@@ -12,37 +12,6 @@ table.borderless td {
     border: none;
 }
 
-/** 音量スライダー */
-input[type="range"] {
-    appearance: none;
-    width: 110px;
-    height: 6px;
-    border-radius: 99px;
-    background: transparent;
-    cursor: pointer;
-    border: 1px solid lightgray;
-}
-/* ツマミ：Chrome, Safari, Edge用 */
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 4px;
-    background: darkgray;
-    box-shadow: none;
-    border: 1px solid gray;
-}
-/* ツマミ：Firefox用 */
-input[type="range"]::-moz-range-thumb {
-    border: 1px solid gray;
-    width: 12px;
-    height: 12px;
-    border-radius: 4px;
-    background: darkgray;
-    box-shadow: none;
-}
-
 input.editInput {
     text-align: center;
     width: 2.75rem;
@@ -55,11 +24,12 @@ input.editInput {
     right: 0;
     bottom: 0;
     left: 0;
+    height: 114px;
     z-index: 100;
     padding: 7px;
     background-color: #ffffff;
     box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
-    animation: SlideIN 0.4s ease-in-out;
+    animation: SlideIN 0.3s ease-in-out;
 }
 
 @keyframes SlideIN {
@@ -69,12 +39,6 @@ input.editInput {
     to {
         transform: translateY(0);
     }
-}
-
-.playIcon path, .pauseIcon path {
-    background: var(--timeline-linear-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 /* Bulmaのprogressリセット */
@@ -107,14 +71,14 @@ progress::-webkit-progress-bar {
 progress::-webkit-progress-value {
     /*background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),*/
     /*            var(--timeline-linear-gradient);*/
-    background-color: var(--theme-color);
+    background-color: var(--bulma-primary-30);
 }
 
 /* Firefox */
 progress::-moz-progress-bar {
     /*background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),*/
     /*            var(--timeline-linear-gradient);*/
-    background-color: var(--theme-color);
+    background-color: var(--bulma-primary-30);
 }
 
 
