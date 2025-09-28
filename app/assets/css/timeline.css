@@ -6,6 +6,7 @@
             rgb(151, 136, 218),
             rgb(168, 15, 137)
     );
+    --timeline-player-heght: 114px
 }
 
 table.borderless td {
@@ -16,7 +17,7 @@ input.editInput {
     text-align: center;
     width: 2.75rem;
     height: 1.75em;
-    background-color: whitesmoke;
+    background-color: var(--bulma-primary-light);
 }
 
 input[type=number]::-webkit-inner-spin-button,

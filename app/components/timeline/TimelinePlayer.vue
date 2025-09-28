@@ -207,7 +207,7 @@ function playerHooks() {
   right: 0;
   bottom: 0;
   left: var(--sidebar-width); /* サイドバーの分だけ右寄せ */
-  height: 114px;
+  height: var(--timeline-player-heght);
   z-index: 100;
   padding: 7px;
   background-color: #ffffff;

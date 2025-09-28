@@ -1,5 +1,5 @@
 <template>
-  <div style="margin: auto; width: 95%; max-width: 640px">
+  <div style="margin: auto; width: 95%; max-width: 640px;">
     <h5 class="title is-5 mb-2 pt-3">タイムライン</h5>
     <NuxtLink to="/timeline/history">履歴から追加する ></NuxtLink>
     <FileDropInput @droppedFile="selectFile"/>
@@ -12,6 +12,7 @@
         ref="timelineFileListRef"
         @changeFiles="changeFiles"
     />
+    <div style="height: var(--timeline-player-heght);"></div>
   </div>
 </template>
 

@@ -237,7 +237,7 @@ function changeGain() {
 
 function sliderBackground() {
   const activeColor = "var(--bulma-primary)"
-  const inactiveColor = "transparent"
+  const inactiveColor = "whitesmoke"
   const ratio = (file.value.gain - gainMin) / (gainMax - gainMin) * 100
   const barColor = `linear-gradient(90deg, ${activeColor} ${ratio}%, ${inactiveColor} ${ratio}%)`
 
@@ -245,8 +245,7 @@ function sliderBackground() {
   const defaultLine = `
     linear-gradient(to right,
       transparent ${percent - 1}%,
-      var(--bulma-primary-dark) ${percent - 1}%,
-      var(--bulma-primary-dark) ${percent + 1}%,
+      var(--bulma-primary-dark) ${percent}%,
       transparent ${percent + 1}%)
   `
   return `${defaultLine}, ${barColor}`
@@ -303,12 +302,11 @@ function mediaEnded() {
 /** 音量スライダー */
 input[type="range"] {
   appearance: none;
-  width: 110px;
+  width: 140px;
   height: 6px;
   border-radius: 99px;
   background: transparent;
   cursor: pointer;
-  border: 1px solid var(--bulma-primary-light);
 }
 
 /* ツマミ：Chrome, Safari, Edge用 */
@@ -320,7 +318,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 4px;
   background: var(--bulma-primary);
   border: 1px solid var(--bulma-primary-light);
-  box-shadow: none;
+  box-shadow: none
 }
 
 /* ツマミ：Firefox用 */
