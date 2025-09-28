@@ -45,8 +45,6 @@ const mediaFileListRef = ref<InstanceType<typeof MediaFileList> | null>(null)
  */
 const selectedTab = ref("sunday");
 const previewFile = ref({src: "", type: ""});
-const isEnter = ref(false);
-const disallowedFileTypeMessage = ref("");
 const videoReload = ref(0);
 const api = window.api;
 

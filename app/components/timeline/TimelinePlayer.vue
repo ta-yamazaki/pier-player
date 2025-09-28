@@ -9,14 +9,23 @@
       <nav class="level is-mobile mb-1">
         <p>{{ currentTimeColon }}</p>
         <progress
+            ref="progressBar"
             class="mx-2 mb-0"
             style="cursor: pointer;"
             :value="playerMeta.currentTime"
             :max="playerMeta.duration"
             @mousedown="startSeek"
+            @mousemove="onMouseMove"
+            @mouseleave="hideTooltip"
         ></progress>
         <p>{{ durationColon }}</p>
       </nav>
+      <!-- tooltip -->
+      <div v-if="tooltip.visible"
+           class="tooltip"
+           :style="{ left: tooltip.x + 'px' }">
+        {{ tooltip.value }}
+      </div>
 
       <nav class="level is-mobile">
         <p class="level-item"></p>
@@ -70,6 +79,16 @@ interface Props {
 
 const props = defineProps<Props>();
 
+/**
+ * state
+ */
+const progressBar = ref<HTMLElement | null>(null);
+
+const tooltip = ref({
+  visible: false,
+  x: 0,
+  value: ""
+});
 const timelineApi = window.timeline
 
 // プレイヤーメタ情報
@@ -103,7 +122,24 @@ function minSecColonFrom(t: number | null) {
   return `${('00' + min).slice(-2)}:${('00' + sec).slice(-2)}`
 }
 
-/* -------------------- 個別ファイルemit受け取り -------------------- */
+/* -------------------- tooltip -------------------- */
+function onMouseMove(e: MouseEvent) {
+  if (!progressBar.value) return;
+  if (!playerMeta.duration) return;
+
+  const rect = progressBar.value.getBoundingClientRect();
+  const offsetX = e.clientX - rect.left; // progress 内のX位置
+  const ratio = Math.min(Math.max(offsetX / rect.width, 0), 1);
+  const pointerTime = playerMeta.duration * ratio
+  tooltip.value.value = minSecColonFrom(pointerTime);
+  tooltip.value.x = offsetX + 44;
+  tooltip.value.visible = true;
+
+}
+
+function hideTooltip() {
+  tooltip.value.visible = false;
+}
 
 /* -------------------- プレイヤー操作 -------------------- */
 const restart = () => timelineApi.mainPlayer.restart()
@@ -226,5 +262,17 @@ progress::-moz-progress-bar {
   /*background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),*/
   /*            var(--timeline-linear-gradient);*/
   background-color: var(--bulma-primary-30);
+}
+
+.tooltip {
+  position: absolute;
+  top: 0; /* progressBar の上に出す */
+  padding: 4px 6px;
+  font-size: 12px;
+  background: black;
+  color: white;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
 }
 </style>
