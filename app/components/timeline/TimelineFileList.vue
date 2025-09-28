@@ -6,7 +6,7 @@
     <tr v-for="(file, i) in files"
         :key="file"
         :class="{'dragging': i === dragIndex}">
-      <td :draggable="!playerMeta.isPlaying"
+      <td :draggable="!playingFileExists"
           @dragstart="dragStart(i)"
           @dragenter="dragEnter(i)"
           @dragover.prevent
@@ -18,8 +18,8 @@
       <td class="p-1" style="font-size: 0.9rem; overflow-x: auto;">
         <TimelineFile
             :file="file"
-            @mediaStart="mediaStart(i)"
-            @mediaClose="mediaClose"
+            @mediaStart="mediaStart"
+            @mediaEnded="mediaEnded"
             :isLast="i === files.length - 1"
         />
       </td>
@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue'
+import {computed, onMounted, ref, watch} from 'vue'
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 /**
@@ -40,27 +40,8 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
  */
 type Emits = {
   (event: "changeFiles", value: any): void;
-  (event: "mediaStart", value: any): void;
-  (event: "mediaClose"): void;
 };
 const emit = defineEmits<Emits>();
-
-/**
- * props
- */
-interface Props {
-  playerMeta: {
-    selectedFilename: string,
-    currentTime: number,
-    duration: number | null,
-    loadedmetadata: boolean,
-    isPlaying: boolean,
-    seeking: boolean,
-    iconColor: string,
-  };
-}
-
-const props = defineProps<Props>();
 
 const files = ref<any[]>([])
 const dragIndex = ref<number | null>(null)
@@ -74,20 +55,39 @@ onMounted(async () => {
 watch(files, (newFiles) => {
   emit("changeFiles", newFiles)
   timelineApi.storeFiles(toRaw(newFiles))
-  timelineApi.mainPlayer.fileMetaChange(toRaw(playingFile.value))
 }, {deep: true})
 
 /* -------------------- computed -------------------- */
-const playingFile = computed(() => files.value.find(f => f.isPlaying))
+const playingFileExists = computed(() => {
+  return files.value.findIndex(f => f.isPlaying) >= 0
+})
 
 /* -------------------- 再生関連 -------------------- */
-function mediaStart(i) {
+function mediaStart() {
   reset()
-  emit("mediaStart", files.value[i])
 }
 
-function mediaClose() {
-  emit("mediaClose")
+function mediaEnded(currentFile: any) {
+  const currentIndex = files.value.indexOf(currentFile.value);
+  currentFile.value.isPlaying = false
+
+  const nextFile = files.value[currentIndex + 1]
+  continuousPlay(nextFile)
+}
+
+function continuousPlay(nextFile: any) {
+  if (!nextFile.exists) {
+    alert(`次のファイルが読み込めません。ファイルが無いか、アクセスできない場所にあります。\n\n${nextFile.name}`)
+    return;
+  }
+
+  nextFile.isPlaying = true
+  timelineApi.continuousPlay(toRaw(nextFile)).then((isExists: boolean) => {
+    if (!isExists) {
+      alert(`ファイルが開けませんでした。\n「${nextFile.name}」`)
+      nextFile.isPlaying = false
+    }
+  })
 }
 
 function reset() {
@@ -105,12 +105,12 @@ function removeRow(i: number) {
 
 /* -------------------- DnD -------------------- */
 function dragStart(i: number) {
-  if (props.playerMeta.isPlaying) return alert("再生中は順番を変えられません")
+  if (playingFileExists.value) return alert("再生中は順番を変えられません")
   dragIndex.value = i
 }
 
 function dragEnter(i: number) {
-  if (props.playerMeta.isPlaying) return alert("再生中は順番を変えられません")
+  if (playingFileExists.value) return alert("再生中は順番を変えられません")
   if (i === dragIndex.value) return
   const el = files.value.splice(dragIndex.value!, 1)[0]
   files.value.splice(i, 0, el)

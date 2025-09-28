@@ -14,7 +14,6 @@
   </div>
   <!-- ファイルが存在する-->
   <template v-else>
-
     <div class="box p-2 mb-1" :class="{'has-background-danger-light': file.isPlaying}">
       <nav class="level is-mobile mb-0">
         <div class="level-left" style="max-width: calc(100% - 55px);">
@@ -29,10 +28,12 @@
         <div class="level-right">
           <button v-if="!file.isPlaying"
                   class="button is-small is-primary"
+                  :class="{'is-loading': startLoading}"
                   @click="start()"
           ><b>再生</b></button>
           <button v-if="file.isPlaying"
                   class="button is-small is-danger"
+                  :class="{'is-loading': startLoading}"
                   @click="close()"
           ><b>停止</b></button>
         </div>
@@ -117,6 +118,11 @@
       <!-- 再生編集ここまで -->
     </div>
   </template>
+  <TimelinePlayer
+      v-if="file.isPlaying"
+      :file="file"
+      @mediaEnded="mediaEnded"
+  />
 </template>
 
 <script setup lang="ts">
@@ -133,7 +139,7 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
  */
 type Emits = {
   (event: "mediaStart"): void;
-  (event: "mediaClose"): void;
+  (event: "mediaEnded", value: any): void;
 };
 const emit = defineEmits<Emits>();
 
@@ -148,6 +154,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const file = ref(props.file)
+const startLoading = ref(false)
 const trimStep = 0.5
 const fadeStep = 0.1
 const gainMin = 0
@@ -164,6 +171,8 @@ onMounted(async () => {
 watch(
     file,
     (newVal) => {
+      if (newVal.isPlaying)
+        timelineApi.mainPlayer.fileMetaChange(toRaw(newVal))
       if (newVal.path)
         timelineApi.storeHistory(toRaw(newVal));
     }, {deep: true}
@@ -258,24 +267,34 @@ function decrease(sec: number, step: number, min = 0) {
 
 /* -------------------- 再生関連 -------------------- */
 function start() {
+  startLoading.value = true
+
   emit("mediaStart")
+
   const f = file.value
-  f.isPlaying = true
   timelineApi.openSubWindow(toRaw(f)).then((isExists: boolean) => {
     if (!isExists) {
       alert(`ファイルが開けませんでした。\n「${f.name}」`)
       f.isPlaying = false
       return
     }
+    f.isPlaying = true
+  }).catch(() => {
+    alert(`ファイルが開けませんでした。\n「${f.name}」`)
+    f.isPlaying = false
+  }).finally(() => {
+    startLoading.value = false
   })
 }
 
 function close() {
-  const f = file.value
   timelineApi.closeSubWindow()
+  const f = file.value
   f.isPlaying = false
+}
 
-  emit("mediaClose")
+function mediaEnded() {
+  emit("mediaEnded", file)
 }
 </script>
 
@@ -291,6 +310,7 @@ input[type="range"] {
   cursor: pointer;
   border: 1px solid var(--bulma-primary-light);
 }
+
 /* ツマミ：Chrome, Safari, Edge用 */
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -302,6 +322,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid var(--bulma-primary-light);
   box-shadow: none;
 }
+
 /* ツマミ：Firefox用 */
 input[type="range"]::-moz-range-thumb {
   width: 12px;
