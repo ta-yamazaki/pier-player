@@ -7,6 +7,8 @@
     </ul>
   </div>
 
+  <NuxtLink to="/convert">ファイル変換</NuxtLink>
+
   <div style="margin: auto; width: 95%; max-width: 640px">
     <FileDropInput @droppedFile="selectFile"/>
 

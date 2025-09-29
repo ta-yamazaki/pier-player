@@ -3,6 +3,8 @@
       name="mdi:minus"
       :size="size"
       :color="color"
+      class="is-clickable"
+      style="transform: scale(1.2)"
   />
 </template>
 

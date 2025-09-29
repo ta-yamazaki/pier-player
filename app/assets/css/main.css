@@ -60,7 +60,9 @@ table, th, td {
     white-space: nowrap;
 }
 
-
+.v-center {
+    vertical-align: middle;
+}
 
 /* アンダーラインスタイルInput */
 .input.underlined,

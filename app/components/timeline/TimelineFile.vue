@@ -38,22 +38,33 @@
           ><b>停止</b></button>
         </div>
       </nav>
-
-      <!-- 再生編集-->
-      <div class="mx-2 mt-2 mb-0">
-        <div class="is-flex is-align-items-center py-0">
-          <nav class="level is-mobile is-flex-grow-1 is-size-7">
-            <div class="level-left">
-              <p class="nowrap" style="width: 5.75rem"></p>
-              冒頭（秒）
-            </div>
-            <div class="level-right">
-              末尾（秒）
-              <p class="nowrap" style="width: 0.1rem"></p>
-            </div>
-          </nav>
+      <nav class="level is-mobile py-1 m-0 v-center">
+        <div class="level-left">
+          <div class="is-clickable is-size-7" @click="editorOpen = !editorOpen">
+            <NuxtIcon :name="editorOpen? 'iconamoon:arrow-up-2' : 'iconamoon:arrow-down-2'" size="14"/>
+            調整
+          </div>
         </div>
-        <nav class="level is-mobile is-size-7 py-1 m-0" style="border-bottom: 1px dashed lightgray;">
+        <div class="level-right">
+          <label v-if="!isLast" class="checkbox">
+            <input type="checkbox" v-model="file.continuousPlay"/>
+            次を自動再生
+          </label>
+        </div>
+      </nav>
+      <!-- 再生編集-->
+      <div v-if="editorOpen" class="mx-2 mt-2 mb-0 is-size-7 editor">
+        <nav class="level is-mobile is-flex-grow-1 py-0 my-0">
+          <div class="level-left">
+            <p class="nowrap" style="width: 5.75rem"></p>
+            冒頭（秒）
+          </div>
+          <div class="level-right">
+            末尾（秒）
+            <p class="nowrap" style="width: 0.1rem"></p>
+          </div>
+        </nav>
+        <nav class="level is-mobile py-1 m-0">
           <div class="level-left">
             <p class="nowrap" style="width: 4.5rem">
               <NuxtIcon name="mdi:content-cut"/>
@@ -74,45 +85,42 @@
           </div>
         </nav>
         <nav v-if="isVideo"
-             class="level is-mobile is-size-7 py-1 m-0" style="border-bottom: 1px dashed lightgray;">
+             class="level is-mobile py-1 m-0">
           <div class="level-left">
             <p class="nowrap" style="width: 4.5rem">
               <NuxtIcon name="material-symbols:transition-fade"/>
               フェード
             </p>
-            <NuxtIconMinus @click="decreaseStartFade()" class="is-clickable"/>
+            <NuxtIconMinus @click="decreaseStartFade()"/>
             <input v-model="file.startFadeSec"
                    class="input borderless editInput is-small px-1 py-0"
                    type="number" min="0">
-            <NuxtIconPlus @click="increaseStartFade()" class="is-clickable"/>
+            <NuxtIconPlus @click="increaseStartFade()"/>
           </div>
           <div class="level-right">
-            <NuxtIconMinus @click="decreaseEndFade()" class="is-clickable"/>
+            <NuxtIconMinus @click="decreaseEndFade()"/>
             <input v-model="file.endFadeSec"
                    class="input borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-            <NuxtIconPlus @click="increaseEndFade()" class="is-clickable"/>
+            <NuxtIconPlus @click="increaseEndFade()"/>
           </div>
         </nav>
         <nav class="level is-mobile py-1 m-0">
           <div class="level-left nowrap">
-            <NuxtIcon name="mdi:volume-high"/>
+            <p class="nowrap" style="width: 4.5rem">
+              <NuxtIcon name="mdi:volume-high"/>
+              音量
+            </p>
             <input v-model="file.gain"
                    type="range"
-                   class="is-size-7"
-                   style="vertical-align: middle;"
+                   class="v-center"
                    :style="{background: sliderBackground()}"
                    step="0.1" :min="gainMin" :max="gainMax"
                    @dblclick="file.gain = 1">
-            <div class="control ml-1 is-size-7" style="font-size: inherit;">{{ file.gain }}</div>
-            <div class="has-text-grey ml-2 is-size-7">（元の音量＝1）</div>
+            <div class="control ml-1" style="font-size: inherit;">{{ file.gain }}</div>
+            <div class="has-text-grey ml-2">（元の音量＝1）</div>
           </div>
-          <div class="level-right">
-            <label v-if="!isLast" class="checkbox">
-              <input type="checkbox" v-model="file.continuousPlay"/>
-              次を自動再生
-            </label>
-          </div>
+          <div class="level-right"></div>
         </nav>
       </div>
       <!-- 再生編集ここまで -->
@@ -154,6 +162,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const file = ref(props.file)
+const editorOpen = ref(false)
 const startLoading = ref(false)
 const trimStep = 0.5
 const fadeStep = 0.1
@@ -252,16 +261,16 @@ function sliderBackground() {
 }
 
 /* -------------------- 共通計算 -------------------- */
-function increase(sec: number, step: number, max: number | null = null) {
-  if (!sec) return step
-  if (max && sec >= max) return max
-  return Math.round((Number(sec) + step) * 1000) / 1000
+function increase(target: number, step: number, max: number | null = null, defaultVal: number = step) {
+  if (!target) return defaultVal
+  if (max && target >= max) return max
+  return Math.round((Number(target) + step) * 1000) / 1000
 }
 
-function decrease(sec: number, step: number, min = 0) {
-  if (!sec) return min
-  if (sec <= min) return min
-  return Math.round((Number(sec) - step) * 1000) / 1000
+function decrease(target: number, step: number, min = 0, defaultVal: number = min) {
+  if (!target) return defaultVal
+  if (target <= min) return min
+  return Math.round((Number(target) - step) * 1000) / 1000
 }
 
 /* -------------------- 再生関連 -------------------- */
@@ -329,6 +338,10 @@ input[type="range"]::-moz-range-thumb {
   background: var(--bulma-primary);
   border: 1px solid var(--bulma-primary-light);
   box-shadow: none;
+}
+
+.editor nav:not(:last-child, :first-child) {
+  border-bottom: 1px dashed lightgray;
 }
 
 td {

@@ -41,6 +41,10 @@ export const api = {
 
     getVersion: () => ipcRenderer.invoke(channels.getVersion),
     checkUpdate: () => ipcRenderer.invoke('checkUpdate'),
+
+    convertPitch: (filePath: string, semitones: number) => ipcRenderer.invoke('convertPitch', filePath, semitones),
+    onConvertProgress: (callback: any) => ipcRenderer.on("convert-progress", (event, data) => callback(data)),
+    onConvertTotalDuration: (callback: any) => ipcRenderer.on("convert-totalDuration", (event, data) => callback(data))
 };
 contextBridge.exposeInMainWorld('api', api);
 

@@ -47,6 +47,8 @@ async function selectFile(file: File) {
     startFadeSec: 0.7,
     endFadeSec: 0.7,
     gain: 1,
+    continuousPlay: true,
+    key: 0,
   })
 
   timelineFileListRef.value?.addRow(checkedFile)

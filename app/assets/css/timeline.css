@@ -17,7 +17,7 @@ input.editInput {
     text-align: center;
     width: 2.75rem;
     height: 1.75em;
-    background-color: var(--bulma-primary-light);
+    background-color: whitesmoke;
 }
 
 input[type=number]::-webkit-inner-spin-button,
