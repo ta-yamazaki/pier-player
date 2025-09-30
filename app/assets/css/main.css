@@ -3,6 +3,10 @@
     display: none;
 }
 
+:root {
+    --sidebar-width: 140px;
+}
+
 ::-webkit-scrollbar {
     display: none;
 }
@@ -12,6 +16,11 @@ html, body {
     scrollbar-width: none;     /* Firefox */
 }
 
+main {
+    margin-left: var(--sidebar-width); /* サイドバーの分だけ右寄せ */
+    flex: 1;
+}
+
 img#logo {
     height: 1.5rem;
     max-width: 100%;
@@ -19,7 +28,7 @@ img#logo {
 }
 
 a {
-    color: var(--bulma-primary-25);
+    color: var(--bulma-primary-30);
 }
 
 .tabs {

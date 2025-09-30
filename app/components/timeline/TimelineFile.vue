@@ -72,14 +72,14 @@
             </p>
             <NuxtIconMinus @click="decreaseStartTrim()" class="is-clickable"/>
             <input v-model="file.startTrimSec"
-                   class="input borderless editInput is-small px-1 py-0"
+                   class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
             <NuxtIconPlus @click="increaseStartTrim()" class="is-clickable"/>
           </div>
           <div class="level-right">
             <NuxtIconMinus @click="decreaseEndTrim()" class="is-clickable"/>
             <input v-model="file.endTrimSec"
-                   class="input borderless editInput is-small px-1 py-0"
+                   class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
             <NuxtIconPlus @click="increaseEndTrim()" class="is-clickable"/>
           </div>
@@ -93,14 +93,14 @@
             </p>
             <NuxtIconMinus @click="decreaseStartFade()"/>
             <input v-model="file.startFadeSec"
-                   class="input borderless editInput is-small px-1 py-0"
+                   class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0">
             <NuxtIconPlus @click="increaseStartFade()"/>
           </div>
           <div class="level-right">
             <NuxtIconMinus @click="decreaseEndFade()"/>
             <input v-model="file.endFadeSec"
-                   class="input borderless editInput is-small px-1 py-0"
+                   class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
             <NuxtIconPlus @click="increaseEndFade()"/>
           </div>

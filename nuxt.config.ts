@@ -49,8 +49,7 @@ export default defineNuxtConfig({
     ssr: false, // #43
     css: [
         "bulma/css/bulma.css",
-        '@/assets/css/main.css',
-        '@/assets/css/side-menu.css'
+        '@/assets/css/main.css'
     ],
     nitro: {
         compatibilityDate: '2026-12-31', // 今日以降の日付ならOK

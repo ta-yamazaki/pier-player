@@ -1,17 +1,29 @@
 <template>
-  <div class="dropArea"
-       @dragenter="dragDropEnter()"
-       @dragleave="dragDropLeave()"
-       @dragover.prevent
-       @drop.prevent="droppedFile($event)"
-       :class="{'enter': isEnter}"
-  >ドラッグ＆ドロップしてファイルを追加
-  </div>
-  <p class="help is-danger">{{ disallowedFileTypeMessage }}</p>
+  <div v-if="loading" class="dropArea loading">ドラッグ＆ドロップしてファイルを追加</div>
+  <template v-else>
+    <div class="dropArea"
+         @dragenter="dragDropEnter()"
+         @dragleave="dragDropLeave()"
+         @dragover.prevent
+         @drop.prevent="droppedFile($event)"
+         :class="{'enter': isEnter}"
+    >ドラッグ＆ドロップしてファイルを追加
+    </div>
+    <p class="help is-danger">{{ disallowedFileTypeMessage }}</p>
+  </template>
 </template>
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
+
+/**
+ * Props
+ */
+interface Props {
+  loading: false;
+}
+
+const props = defineProps<Props>();
 
 /**
  * emits
@@ -84,5 +96,9 @@ function allowedFileType(type: string) {
 .dropArea.enter {
   color: white;
   background-color: var(--bulma-primary);
+}
+
+.dropArea.loading {
+  opacity: 0.5;
 }
 </style>

@@ -29,11 +29,19 @@
             <small>タイムライン</small>
           </NuxtLink>
         </li>
+        <li>
+          <NuxtLink to="/convert/pitch" style="vertical-align: middle;"
+                    :class="{ 'router-link-active': isConvertActive }">
+            <img src="@/assets/img/ConvertPitch.webp" height="18" width="18" class="mr-2">
+            <small>ピッチ変更</small>
+          </NuxtLink>
+        </li>
       </ul>
     </div>
     <footer class="footer py-4" style="background-color: transparent">
       <div class="content has-text-centered">
-        <p>Pier Player<br>v{{ version }}</p>
+        <p>Pier Player<br>v{{ version }}
+        </p>
       </div>
     </footer>
   </aside>
@@ -45,6 +53,7 @@
   const route = useRoute()
   const isVimeoActive = computed(() => route.path.startsWith('/vimeo'))
   const isTimelineActive = computed(() => route.path.startsWith('/timeline'))
+  const isConvertActive = computed(() => route.path.startsWith('/convert'))
 
   // state
   const version = ref("");
@@ -56,6 +65,27 @@
 </script>
 
 <style scoped>
+  aside.menu {
+    position: fixed; /* サイドメニューを固定 */
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh; /* 画面の高さいっぱい */
+    overflow-y: auto; /* メニューが長ければスクロール */
+    z-index: 9999;
+    background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+    linear-gradient(
+        125deg,
+        rgb(9, 150, 175),
+        rgb(151, 136, 218),
+        rgb(168, 15, 137)
+    );
+  }
+
+  aside.menu .menu-list a {
+    border-radius: 0;
+  }
+
   li a {
     background-color: transparent;
   }
