@@ -60,7 +60,7 @@
 
   // init
   onMounted(async () => {
-    version.value = await window.api.getVersion();
+    version.value = await window.commonApi.getCurrentVersion();
   });
 </script>
 

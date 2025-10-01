@@ -169,9 +169,10 @@ const fadeStep = 0.1
 const gainMin = 0
 const gainMax = 3
 const timelineApi = window.timeline
+const commonApi = window.commonApi
 
 /* -------------------- ライフサイクル -------------------- */
-onMounted(async () => {
+onMounted(() => {
 })
 
 /**
@@ -193,8 +194,7 @@ const isAudio = computed(() => /audio\/.*/.test(file.value.type))
 
 /* -------------------- ファイル関連 -------------------- */
 function openFolder() {
-  const folderPath = file.value.path.replace(/[\\/][^\\/]+$/, "")
-  timelineApi.openFolder(toRaw(folderPath))
+  commonApi.openFolder(toRaw(file.value.path))
 }
 
 /* -------------------- トリミング -------------------- */
@@ -239,11 +239,6 @@ function decreaseEndFade() {
   f.endFadeSec = decrease(f.endFadeSec, fadeStep)
 }
 
-/* -------------------- Gain -------------------- */
-function changeGain() {
-  timelineApi.mainPlayer.fileMetaChange(toRaw(file.value))
-}
-
 function sliderBackground() {
   const activeColor = "var(--bulma-primary)"
   const inactiveColor = "whitesmoke"
@@ -280,7 +275,7 @@ function start() {
   emit("mediaStart")
 
   const f = file.value
-  timelineApi.openSubWindow(toRaw(f)).then((isExists: boolean) => {
+  timelineApi.openTimelineWindow(toRaw(f)).then((isExists: boolean) => {
     if (!isExists) {
       alert(`ファイルが開けませんでした。\n「${f.name}」`)
       f.isPlaying = false
@@ -296,7 +291,7 @@ function start() {
 }
 
 function close() {
-  timelineApi.closeSubWindow()
+  timelineApi.closeTimelineWindow()
   const f = file.value
   f.isPlaying = false
 }

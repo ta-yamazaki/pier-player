@@ -20,7 +20,7 @@ import {onMounted, ref} from 'vue'
  * Props
  */
 interface Props {
-  loading: false;
+  loading: boolean;
 }
 
 const props = defineProps<Props>();

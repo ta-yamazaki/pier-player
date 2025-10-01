@@ -91,7 +91,7 @@ function continuousPlay(nextFile: any) {
 }
 
 function reset() {
-  timelineApi.closeSubWindow()
+  timelineApi.closeTimelineWindow()
   files.value.forEach(f => f.isPlaying = false)
 }
 

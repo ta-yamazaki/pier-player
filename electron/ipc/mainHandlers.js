@@ -1,7 +1,6 @@
 import fs from 'fs';
 import {ipcMain, screen, shell} from 'electron';
 import {createSubWindow, getSubWindow, loadSubWindow} from '../windows/subWindow.js';
-import {channels} from "../utils/channels";
 
 import path from "path";
 import {execFile, spawn} from 'child_process'
@@ -10,7 +9,7 @@ const ffmpegPath = require('ffmpeg-static')
 const ffprobePath = require('ffprobe-static')
 
 export const registerMainHandlers = () => {
-    ipcMain.handle(channels.openSubWindow, async (_event, fileMeta) => {
+    ipcMain.handle("open-sub-window", async (_event, fileMeta) => {
         const currentWindow = getSubWindow();
         const subWindow = createSubWindow();
 
@@ -51,7 +50,7 @@ export const registerMainHandlers = () => {
         shell.openPath(folderPath);
     });
 
-    ipcMain.handle("convertPitch", async (event, filePath, semitones) => {
+    ipcMain.handle("convert-pitch", async (event, filePath, semitones) => {
         const totalDuration = await getDuration(filePath); // 全体秒数
         event.sender.send("convert-totalDuration", {totalDuration});
 

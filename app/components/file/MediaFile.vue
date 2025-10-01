@@ -18,7 +18,7 @@
       >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
     </div>
     <div class="ml-auto mr-0">
-      <button v-if="isExists(file.path) && !file.isPlaying"
+      <button v-if="file.path && !file.isPlaying"
               class="button is-small is-primary"
               @click="play()"
               :disabled="!file.exists"
@@ -56,6 +56,7 @@ const props = defineProps<Props>();
 // state
 const file = ref(props.file);
 const api = window.api;
+const commonApi = window.commonApi;
 
 // init
 onMounted(() => {
@@ -67,8 +68,7 @@ const isVideo = () => file.value.type.match(/video\/.*/);
 const isAudio = () => file.value.type.match(/audio\/.*/);
 
 const openFolder = () => {
-  const folderPath = file.value.path.replace(/[\\/][^\\/]+$/, "");
-  api.openFolder(folderPath);
+  commonApi.openFolder(toRaw(file.value.path));
 };
 
 const play = () => {
@@ -90,11 +90,6 @@ const close = () => {
 const preview = () => {
   emit("preview", file.value)
 };
-
-const isExists = (v) =>
-    typeof v !== "undefined" && v !== null && v !== "" && v !== {};
-
-// watch
 </script>
 
 <style scoped>

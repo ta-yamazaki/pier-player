@@ -1,5 +1,4 @@
 import {contextBridge, ipcRenderer, webUtils} from 'electron'
-import {channels} from "../utils/channels";
 //
 // // --------- Expose some API to the Renderer process ---------
 // contextBridge.exposeInMainWorld('ipcRenderer', {
@@ -29,26 +28,15 @@ import {channels} from "../utils/channels";
  */
 export const api = {
     // mainHandlers.jsの 'openSubWindow' チャンネルへ送信
-    openSubWindow: (fileMeta: any) => ipcRenderer.invoke(channels.openSubWindow, fileMeta),
+    openSubWindow: (fileMeta: any) => ipcRenderer.invoke("open-sub-window", fileMeta),
     closeSubWindow: () => ipcRenderer.invoke('close-window'),
     checkFilePath: (file: any) => ipcRenderer.invoke('checkFilePath', file),
     checkFilePaths: (files: any) => ipcRenderer.invoke('checkFilePaths', files),
 
-    openFolder: (folderPath: any) => ipcRenderer.send("open-folder", folderPath),
-
     getFiles: (target: string) => ipcRenderer.invoke("getFiles", target),
     storeFiles: (target: string, files: any) => ipcRenderer.invoke("storeFiles", target, files),
-
-    getVersion: () => ipcRenderer.invoke(channels.getVersion),
-    checkUpdate: () => ipcRenderer.invoke('checkUpdate'),
-
-    convertPitch: (filePath: string, semitones: number) => ipcRenderer.invoke('convertPitch', filePath, semitones),
-    onConvertProgress: (callback: any) => ipcRenderer.on("convert-progress", (event, data) => callback(data)),
-    onConvertTotalDuration: (callback: any) => ipcRenderer.on("convert-totalDuration", (event, data) => callback(data))
 };
 contextBridge.exposeInMainWorld('api', api);
-
-contextBridge.exposeInMainWorld('webUtils', webUtils)
 
 /**
  * CGMモード
@@ -102,13 +90,11 @@ contextBridge.exposeInMainWorld('showcaseApi', showcaseApi);
  */
 export const timelineApi = {
     // mainWindowからhandlers.jsの 'openTimelineWindow' チャンネルへ送信
-    openSubWindow: (fileMeta: any) => ipcRenderer.invoke('openTimelineWindow', fileMeta),
-    closeSubWindow: () => ipcRenderer.invoke('closeTimelineWindow'),
+    openTimelineWindow: (fileMeta: any) => ipcRenderer.invoke('openTimelineWindow', fileMeta),
+    closeTimelineWindow: () => ipcRenderer.invoke('closeTimelineWindow'),
     continuousPlay: (nextFileMeta: any) => ipcRenderer.invoke('timelineContinuousPlay', nextFileMeta),
     checkFilePath: (file: any) => ipcRenderer.invoke('checkTimelineFilePath', file),
     checkFilePaths: (files: any) => ipcRenderer.invoke('checkTimelineFilePaths', files),
-
-    openFolder: (folderPath: any) => ipcRenderer.send("openTimelineFolder", folderPath),
 
     // player from mainPage
     mainPlayer: {
@@ -139,6 +125,31 @@ export const timelineApi = {
     storeHistory: (file: any) => ipcRenderer.invoke("storeTimelineHistory", file),
 }
 contextBridge.exposeInMainWorld('timeline', timelineApi);
+
+/**
+ * 変換モード
+ */
+const convertApi = {
+    convertPitch: (filePath: string, semitones: number) => ipcRenderer.invoke('convert-pitch', filePath, semitones),
+    onConvertProgress: (callback: any) => ipcRenderer.on("convert-progress", (event, data) => callback(data)),
+    onConvertTotalDuration: (callback: any) => ipcRenderer.on("convert-totalDuration", (event, data) => callback(data))
+};
+contextBridge.exposeInMainWorld('convertApi', convertApi);
+
+/**
+ * 共通API
+ */
+const commonApi = {
+    openFolder: (path: any) => {
+        const folderPath = path.replace(/[\\/][^\\/]+$/, "")
+        ipcRenderer.send("open-folder", folderPath);
+    },
+    getCurrentVersion: () => ipcRenderer.invoke("get-version"),
+    checkUpdate: () => ipcRenderer.invoke('checkUpdate'),
+};
+contextBridge.exposeInMainWorld('commonApi', commonApi);
+
+contextBridge.exposeInMainWorld('webUtils', webUtils)
 
 // プリロードプロセスでは Node.js の全 API が利用可能です。
 // Chrome 拡張機能と同じサンドボックスも持っています。

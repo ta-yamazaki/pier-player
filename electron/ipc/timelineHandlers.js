@@ -40,12 +40,6 @@ export const registerTimelineHandlers = () => {
         }));
     });
 
-    // フォルダを開く処理
-    ipcMain.on("openTimelineFolder", (event, folderPath) => {
-        // フォルダをエクスプローラーで開く
-        shell.openPath(folderPath);
-    });
-
     // player from mainPage
     ipcMain.handle('timelineRestart', (_event) => {
         getTimelineWindow().webContents.send("timelineRestart");

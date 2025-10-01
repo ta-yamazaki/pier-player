@@ -67,7 +67,11 @@ import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 /**
  * state
  */
-const file = ref({});
+const file = ref({
+  path: "",
+  name: "",
+  type: "",
+});
 const semitones = ref(0);
 
 const totalDuration = ref(0);
@@ -75,16 +79,17 @@ const progress = ref(0);
 const percent = ref(0);
 const loading = ref(false);
 const converted = ref("");
-// const convertApi = window.convert;
+const convertApi = window.convertApi;
+const commonApi = window.commonApi;
 
 /**
  * lifecycle
  */
 onMounted(() => {
-  window.api.onConvertTotalDuration((data) => {
+  convertApi.onConvertTotalDuration((data: any) => {
     totalDuration.value = data.totalDuration;
   });
-  window.api.onConvertProgress((data) => {
+  convertApi.onConvertProgress((data: any) => {
     if (totalDuration.value <= 0) return
     const sec = data.seconds;
     progress.value = sec;
@@ -129,14 +134,14 @@ function convertFile() {
   loading.value = true
   converted.value = ""
 
-  window.api.convertPitch(file.value.path, semitones.value)
-      .then((res) => {
+  convertApi.convertPitch(file.value.path, semitones.value)
+      .then((res: any) => {
         converted.value = res.outputFile
         progress.value = toRaw(totalDuration.value);
         percent.value = 100;
         alert(`変換完了: ${res.outputFile}`);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         progress.value = 0;
         alert("変換できませんでした。");
         console.error("変換失敗:", err);
@@ -147,14 +152,11 @@ function convertFile() {
 }
 
 const openFolder = () => {
-  const folderPath = converted.value.replace(/[\\/][^\\/]+$/, "");
-  window.api.openFolder(folderPath);
+  commonApi.openFolder(toRaw(converted.value));
 };
 </script>
 
 <style scoped>
-
-
 /***********************/
 /* ピッチスライダー */
 /***********************/
