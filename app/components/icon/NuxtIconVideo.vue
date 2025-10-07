@@ -1,8 +1,9 @@
 <template>
   <NuxtIcon
-      name="material-symbols:video-camera-back-outline"
-      :size="size"
+      name="material-symbols:video-camera-back"
+      :size="size || 18"
       :color="color"
+      class="has-text-link-70"
   />
 </template>
 

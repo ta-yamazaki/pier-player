@@ -1,10 +1,10 @@
 <template>
   <p v-if="files.length === 0">履歴がありません</p>
   <template v-else>
-    <button v-if="selectedFiles.length > 0"
-            class="button is-primary is-fullwidth my-3"
+    <button class="button is-primary is-fullwidth my-3"
             style="position: sticky; top: 7px; z-index:100;"
-            @click="addTimeline">
+            @click="addTimeline"
+            :disabled="selectedFiles.length === 0">
       タイムラインに追加する
       <span class="tag is-primary-light is-rounded ml-2">{{ selectedFiles.length }}</span>
     </button>
@@ -15,7 +15,7 @@
            v-model="searchText">
 
     <div class="box py-1 px-2">
-      <table class="table is-fullwidth">
+      <table class="table is-fullwidth is-hoverable">
         <thead>
         <tr class="is-size-7">
           <td class="fitContent">
@@ -82,7 +82,7 @@ function deselectAll() {
 function toggle(i: number) {
   const file = files.value[i]
   const index = selectedFiles.value.indexOf(file)
-  if (index >= 0) selectedFiles.value.splice(index,1)
+  if (index >= 0) selectedFiles.value.splice(index, 1)
   else selectedFiles.value.push(file)
 }
 

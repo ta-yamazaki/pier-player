@@ -20,10 +20,10 @@ import {onMounted, ref} from 'vue'
  * Props
  */
 interface Props {
-  loading: boolean;
+  loading?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = defineProps<Props>()
 
 /**
  * emits

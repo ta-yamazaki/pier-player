@@ -1,8 +1,9 @@
 <template>
   <NuxtIcon
       name="solar:music-notes-bold"
-      :size="size"
+      :size="size || 18"
       :color="color"
+      class="has-text-warning-40"
   />
 </template>
 

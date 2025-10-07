@@ -48,11 +48,11 @@ table, th, td {
 .is-draggable{cursor: grab;}
 .is-draggable:active {cursor: grabbing;}
 
-.delete {
+.table .delete {
     vertical-align: middle;
     background-color: rgba(255, 69, 0, 0.4);
 }
-.delete:hover {
+.table .delete:hover {
     background-color: rgba(255, 69, 0, 0.7) !important;
 }
 

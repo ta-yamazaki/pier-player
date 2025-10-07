@@ -3,8 +3,8 @@
   <div v-if="!file.exists" class="box p-2 has-background-light">
     <nav class="level is-mobile mb-0">
       <div class="level-left" style="max-width: calc(100% - 55px);">
-        <NuxtIconVideo v-if="isVideo" class="has-text-link"/>
-        <NuxtIconAudio v-if="isAudio" style="color:#eebe3a!important"/>
+        <NuxtIconVideo v-if="isVideo"/>
+        <NuxtIconAudio v-if="isAudio"/>
         <span class="is-size-6" style="word-break: break-all;">{{ file.name }}</span>
       </div>
     </nav>
@@ -17,13 +17,15 @@
     <div class="box p-2 mb-1" :class="{'has-background-danger-light': file.isPlaying}">
       <nav class="level is-mobile mb-0">
         <div class="level-left" style="max-width: calc(100% - 55px);">
-          <NuxtIconVideo v-if="isVideo" class="has-text-link"/>
-          <NuxtIconAudio v-if="isAudio" style="color:#eebe3a!important"/>
-          <b class="is-size-6" style="word-break: break-all;">{{ file.name }}</b>
-          <NuxtIconFolder
-              v-if="file.path"
-              class="icon is-small has-text-grey is-clickable"
-              @click="openFolder()"/>
+          <div style="line-break: anywhere">
+            <NuxtIconVideo v-if="isVideo" class="mr-2"/>
+            <NuxtIconAudio v-if="isAudio" class="mr-2"/>
+            <b class="is-size-6" style="word-break: break-all;">{{ file.name }}</b>
+            <NuxtIconFolder
+                v-if="file.path"
+                class="has-text-grey ml-1 is-clickable"
+                @click="openFolder()"/>
+          </div>
         </div>
         <div class="level-right">
           <button v-if="!file.isPlaying"

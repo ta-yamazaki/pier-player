@@ -32,7 +32,7 @@
       <button class="button is-fullwidth is-primary mt-4"
               :class="{'is-loading': loading}"
               @click="convertFile"
-              :disabled="semitones == 0">
+              :disabled="semitones == 0 || loading">
         変換
       </button>
     </div>
@@ -139,7 +139,7 @@ function convertFile() {
         converted.value = res.outputFile
         progress.value = toRaw(totalDuration.value);
         percent.value = 100;
-        alert(`変換完了: ${res.outputFile}`);
+        notify("ピッチ変換が完了しました。");
       })
       .catch((err: any) => {
         progress.value = 0;

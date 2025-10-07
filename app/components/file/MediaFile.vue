@@ -2,13 +2,12 @@
   <div class="is-flex is-align-items-center">
     <div style="font-size: 0.9rem; line-break: anywhere">
       <template v-if="isVideo()">
-        <NuxtIconVideo class="mr-2 has-text-link"/>
-        <a @click="preview()">{{ file.name }}</a>
+        <NuxtIconVideo class="mr-2"/>
+        <a @click="preview()"><b>{{ file.name }}</b></a>
       </template>
       <template v-if="isAudio()">
-        <NuxtIconAudio class="mr-2"
-                       style="color:#f3b507!important"/>
-        <span>{{ file.name }}</span>
+        <NuxtIconAudio class="mr-2"/>
+        <span><b>{{ file.name }}</b></span>
       </template>
       <NuxtIconFolder
           v-if="file.exists"
