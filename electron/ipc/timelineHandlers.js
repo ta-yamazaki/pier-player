@@ -1,105 +1,106 @@
 import fs from 'fs';
-import {ipcMain, shell} from 'electron';
+import {ipcMain} from 'electron';
 import {createTimelineWindow, getTimelineWindow, loadTimelineWindow} from "../windows/timelineWindow.js";
 import {getMainWindow} from "../windows/mainWindow.js";
 
 export const registerTimelineHandlers = () => {
-    ipcMain.handle('openTimelineWindow', async (_event, fileMeta) => {
-        if (!fs.existsSync(fileMeta.path)) return false;
+        ipcMain.handle('openTimelineWindow', async (_event, fileMeta) => {
+            if (!fs.existsSync(fileMeta.path)) return false;
 
-        const timelineWindow = createTimelineWindow();
-        await loadTimelineWindow(timelineWindow, fileMeta);
-        return true;
-    });
-
-    ipcMain.handle('closeTimelineWindow', () => {
-        getTimelineWindow()?.destroy();
-    });
-
-    ipcMain.handle('timelineContinuousPlay', async (_event, nextFileMeta) => {
-        if (!fs.existsSync(nextFileMeta.path)) return false;
-
-        const currentWindow = getTimelineWindow();
-        const newWindow = createTimelineWindow();
-        await loadTimelineWindow(newWindow, nextFileMeta);
-        currentWindow.destroy();
-        return true;
-    });
-
-    ipcMain.handle('checkTimelineFilePath', async (_event, file) => {
-        return {
-            ...file,
-            exists: file.path === "" ? true : fs.existsSync(file.path)
-        }
-    });
-
-    ipcMain.handle('checkTimelineFilePaths', async (_event, files) => {
-        return files.map(file => ({
-            ...file,
-            exists: file.path === "" ? true : fs.existsSync(file.path)
-        }));
-    });
-
-    // player from mainPage
-    ipcMain.handle('timelineRestart', (_event) => {
-        getTimelineWindow().webContents.send("timelineRestart");
-    });
-    ipcMain.handle('timelineRewind', (_event, seekTime) => {
-        getTimelineWindow().webContents.send("timelineRewind", {
-            seekTime: seekTime
+            const timelineWindow = createTimelineWindow();
+            await loadTimelineWindow(timelineWindow, fileMeta);
+            return true;
         });
-    });
-    ipcMain.handle('timelinePlay', (_event) => {
-        getTimelineWindow().webContents.send("timelinePlay");
-    });
-    ipcMain.handle('timelinePause', (_event) => {
-        getTimelineWindow().webContents.send("timelinePause");
-    });
-    ipcMain.handle('timelineForward', (_event, seekTime) => {
-        getTimelineWindow().webContents.send("timelineForward", {
-            seekTime: seekTime
-        });
-    });
-    ipcMain.handle('timelineToEnd', (_event) => {
-        getTimelineWindow().webContents.send("timelineToEnd");
-    });
-    ipcMain.handle('timelineSeek', (_event, newTime) => {
-        getTimelineWindow().webContents.send("timelineSeek", {
-            newTime: newTime
-        });
-    });
-    ipcMain.handle('timelineFileMetaChange', (_event, fileMeta) => {
-        const timelineWindow = getTimelineWindow();
-        if (!timelineWindow) return
-        timelineWindow.webContents.send("timelineFileMetaChange", {
-            file: fileMeta
-        });
-    });
 
-    // player from playerPage
-    ipcMain.on("targetTimelineReady", (event) => {
-        getMainWindow().webContents.send("timelineReady");
-    });
-    ipcMain.on("targetTimelineDuration", (event, duration) => {
-        getMainWindow().webContents.send("timelineDuration", {
-            duration: duration
+        ipcMain.handle('closeTimelineWindow', () => {
+            getTimelineWindow()?.destroy();
         });
-    });
-    ipcMain.on("targetTimelinePlay", (event) => {
-        getMainWindow().webContents.send("timelinePlay");
-    });
-    ipcMain.on("targetTimelineTimeupdate", (event, file, currentTime, duration) => {
-        getMainWindow().webContents.send("timelineTimeupdate", {
-            file: file,
-            currentTime: currentTime,
-            duration: duration
-        });
-    });
-    ipcMain.on("targetTimelinePaused", (event) => {
-        getMainWindow().webContents.send("timelinePaused");
-    });
-    ipcMain.on("targetTimelineEnded", (event) => {
-        getMainWindow().webContents.send("timelineEnded");
-    });
 
-};
+        ipcMain.handle('timelineContinuousPlay', async (_event, nextFileMeta) => {
+            if (!fs.existsSync(nextFileMeta.path)) return false;
+
+            const currentWindow = getTimelineWindow();
+            const newWindow = createTimelineWindow();
+            await loadTimelineWindow(newWindow, nextFileMeta);
+            currentWindow.destroy();
+            return true;
+        });
+
+        ipcMain.handle('checkTimelineFilePath', async (_event, file) => {
+            return {
+                ...file,
+                exists: file.path === "" ? true : fs.existsSync(file.path)
+            }
+        });
+
+        ipcMain.handle('checkTimelineFilePaths', async (_event, files) => {
+            return files.map(file => ({
+                ...file,
+                exists: file.path === "" ? true : fs.existsSync(file.path)
+            }));
+        });
+
+// player from mainPage
+        ipcMain.handle('timelineRestart', (_event) => {
+            getTimelineWindow().webContents.send("timelineRestart");
+        });
+        ipcMain.handle('timelineRewind', (_event, seekTime) => {
+            getTimelineWindow().webContents.send("timelineRewind", {
+                seekTime: seekTime
+            });
+        });
+        ipcMain.handle('timelinePlay', (_event) => {
+            getTimelineWindow().webContents.send("timelinePlay");
+        });
+        ipcMain.handle('timelinePause', (_event) => {
+            getTimelineWindow().webContents.send("timelinePause");
+        });
+        ipcMain.handle('timelineForward', (_event, seekTime) => {
+            getTimelineWindow().webContents.send("timelineForward", {
+                seekTime: seekTime
+            });
+        });
+        ipcMain.handle('timelineToEnd', (_event) => {
+            getTimelineWindow().webContents.send("timelineToEnd");
+        });
+        ipcMain.handle('timelineSeek', (_event, newTime) => {
+            getTimelineWindow().webContents.send("timelineSeek", {
+                newTime: newTime
+            });
+        });
+        ipcMain.handle('timelineFileMetaChange', (_event, fileMeta) => {
+            const timelineWindow = getTimelineWindow();
+            if (!timelineWindow) return
+            timelineWindow.webContents.send("timelineFileMetaChange", {
+                file: fileMeta
+            });
+        });
+
+// player from playerPage
+        ipcMain.on("targetTimelineReady", (event) => {
+            getMainWindow().webContents.send("timelineReady");
+        });
+        ipcMain.on("targetTimelineDuration", (event, duration) => {
+            getMainWindow().webContents.send("timelineDuration", {
+                duration: duration
+            });
+        });
+        ipcMain.on("targetTimelinePlay", (event) => {
+            getMainWindow().webContents.send("timelinePlay");
+        });
+        ipcMain.on("targetTimelineTimeupdate", (event, file, currentTime, duration) => {
+            getMainWindow().webContents.send("timelineTimeupdate", {
+                file: file,
+                currentTime: currentTime,
+                duration: duration
+            });
+        });
+        ipcMain.on("targetTimelinePaused", (event) => {
+            getMainWindow().webContents.send("timelinePaused");
+        });
+        ipcMain.on("targetTimelineEnded", (event) => {
+            getMainWindow().webContents.send("timelineEnded");
+        });
+
+    }
+;

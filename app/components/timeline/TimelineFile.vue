@@ -120,9 +120,21 @@
                    step="0.1" :min="gainMin" :max="gainMax"
                    @dblclick="file.gain = 1">
             <div class="control ml-1" style="font-size: inherit;">{{ file.gain }}</div>
-            <div class="has-text-grey ml-2">（元の音量＝1）</div>
+            <div class="has-text-grey ml-0">（元の音量＝1）</div>
           </div>
-          <div class="level-right"></div>
+          <div class="level-right">
+            <span>LUFS: {{ loudness || "" }}</span>
+            <button class="button is-small"
+                    :class="{'is-loading': loudnessLoading}"
+                    @click="getLoudness()"
+            >取得
+            </button>
+            <button class="button is-small"
+                    :class="{'is-loading': loudnessLoading}"
+                    @click="normalize()"
+            >ノーマライズ
+            </button>
+          </div>
         </nav>
       </div>
       <!-- 再生編集ここまで -->
@@ -136,7 +148,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, watch} from 'vue'
+import {onMounted, toRaw, watch} from 'vue'
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconFolder from "~/components/icon/NuxtIconFolder.vue";
@@ -166,11 +178,14 @@ const props = defineProps<Props>();
 const file = ref(props.file)
 const editorOpen = ref(false)
 const startLoading = ref(false)
+const loudness = ref(0)
+const loudnessLoading = ref(false)
 const trimStep = 0.5
 const fadeStep = 0.1
 const gainMin = 0
 const gainMax = 3
 const timelineApi = window.timeline
+const convertApi = window.convertApi
 const commonApi = window.commonApi
 
 /* -------------------- ライフサイクル -------------------- */
@@ -300,6 +315,39 @@ function close() {
 
 function mediaEnded() {
   emit("mediaEnded", file)
+}
+
+function getLoudness() {
+  loudnessLoading.value = true
+  convertApi.getLoudness(toRaw(file.value.path))
+      .then((result: number) => {
+        loudness.value = result
+      })
+      .catch((e: any) => {
+        console.error(e)
+      })
+      .finally(() => {
+        loudnessLoading.value = false
+      });
+}
+
+async function normalize() {
+  loudnessLoading.value = true
+
+  try {
+    convertApi.onNormalizeProgress((data: any) => {
+      console.log("進捗:", data.seconds, "秒");
+    });
+
+    const result = await convertApi.normalize(
+        file.value.path, isAudio.value, isVideo.value
+    );
+    console.log("完了:", result.outputFile);
+  } catch (e: any) {
+    console.error("エラー:", e.message);
+  } finally {
+    loudnessLoading.value = false
+  }
 }
 </script>
 

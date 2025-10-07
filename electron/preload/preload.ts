@@ -132,7 +132,10 @@ contextBridge.exposeInMainWorld('timeline', timelineApi);
 const convertApi = {
     convertPitch: (filePath: string, semitones: number) => ipcRenderer.invoke('convert-pitch', filePath, semitones),
     onConvertProgress: (callback: any) => ipcRenderer.on("convert-progress", (event, data) => callback(data)),
-    onConvertTotalDuration: (callback: any) => ipcRenderer.on("convert-totalDuration", (event, data) => callback(data))
+
+    getLoudness: (filePath: string) => ipcRenderer.invoke('getLoudness', filePath),
+    normalize: (filePath: string, isVideo: boolean, isAudio: boolean) => ipcRenderer.invoke('normalize-loudness', filePath, isVideo, isAudio),
+    onNormalizeProgress: (callback: any) => ipcRenderer.on("normalize-progress", (event, data) => callback(data)),
 };
 contextBridge.exposeInMainWorld('convertApi', convertApi);
 
@@ -146,6 +149,8 @@ const commonApi = {
     },
     getCurrentVersion: () => ipcRenderer.invoke("get-version"),
     checkUpdate: () => ipcRenderer.invoke('checkUpdate'),
+
+    getTotalDuration: (callback: any) => ipcRenderer.on("get-totalDuration", (event, data) => callback(data)),
 };
 contextBridge.exposeInMainWorld('commonApi', commonApi);
 

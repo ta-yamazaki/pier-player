@@ -63,6 +63,9 @@ import {onMounted} from "vue";
 import FileDropInput from "~/components/input/FileDropInput.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
+import {useNotification} from "~/composables/useNotification";
+
+const {notify} = useNotification()
 
 /**
  * state
@@ -86,7 +89,7 @@ const commonApi = window.commonApi;
  * lifecycle
  */
 onMounted(() => {
-  convertApi.onConvertTotalDuration((data: any) => {
+  commonApi.getTotalDuration((data: any) => {
     totalDuration.value = data.totalDuration;
   });
   convertApi.onConvertProgress((data: any) => {

@@ -134,7 +134,6 @@ function onMouseMove(e: MouseEvent) {
   tooltip.value.value = minSecColonFrom(pointerTime);
   tooltip.value.x = offsetX + 44;
   tooltip.value.visible = true;
-
 }
 
 function hideTooltip() {
