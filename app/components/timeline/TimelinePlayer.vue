@@ -1,9 +1,6 @@
 <template>
   <div class="timelinePlayer">
-    <div v-if="!playerMeta.selectedFilename"
-         class="loader mx-auto my-5"
-         style="height: 40px;width: 40px;"></div>
-
+    <Loader v-if="!playerMeta.selectedFilename"></Loader>
     <template v-else>
       <div class="has-text-centered">{{ playerMeta.selectedFilename }}</div>
       <nav class="level is-mobile mb-1">
@@ -61,6 +58,7 @@
 import "@/assets/css/timeline.css"
 import {computed, onMounted, ref} from 'vue'
 import NuxtIconPlayer from "~/components/icon/NuxtIconPlayer.vue";
+import Loader from "~/components/common/Loader.vue";
 
 /**
  * emits
@@ -117,9 +115,9 @@ const durationColon = computed(() => minSecColonFrom(playerMeta.duration))
 /* -------------------- utils -------------------- */
 function minSecColonFrom(t: number | null) {
   if (typeof t !== "number") return ""
-  let min = Math.floor(t / 60)
-  let sec = Math.floor(t % 60)
-  return `${('00' + min).slice(-2)}:${('00' + sec).slice(-2)}`
+  return [t / 60, t % 60]
+      .map((v) => `0${Math.floor(v)}`.slice(-2))
+      .join(':');
 }
 
 /* -------------------- tooltip -------------------- */

@@ -1,19 +1,6 @@
 <template>
-  <!-- ファイルが存在しない-->
-  <div v-if="!file.exists" class="box p-2 has-background-light">
-    <nav class="level is-mobile mb-0">
-      <div class="level-left" style="max-width: calc(100% - 55px);">
-        <NuxtIconVideo v-if="isVideo"/>
-        <NuxtIconAudio v-if="isAudio"/>
-        <span class="is-size-6" style="word-break: break-all;">{{ file.name }}</span>
-      </div>
-    </nav>
-    <p class="has-text-danger mb-0">
-      ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。
-    </p>
-  </div>
   <!-- ファイルが存在する-->
-  <template v-else>
+  <template v-if="file.exists">
     <div class="box p-2 mb-1" :class="{'has-background-danger-light': file.isPlaying}">
       <nav class="level is-mobile mb-0">
         <div class="level-left" style="max-width: calc(100% - 55px);">
@@ -56,7 +43,7 @@
       </nav>
       <!-- 再生編集-->
       <div v-if="editorOpen" class="mx-2 mt-2 mb-0 is-size-7 editor">
-        <nav class="level is-mobile is-flex-grow-1 py-0 my-0">
+        <nav class="level is-mobile py-0 my-0 border-bottom">
           <div class="level-left">
             <p class="nowrap" style="width: 5.75rem"></p>
             冒頭（秒）
@@ -66,7 +53,7 @@
             <p class="nowrap" style="width: 0.1rem"></p>
           </div>
         </nav>
-        <nav class="level is-mobile py-1 m-0">
+        <nav class="level is-mobile py-1 m-0 border-bottom">
           <div class="level-left">
             <p class="nowrap" style="width: 4.5rem">
               <NuxtIcon name="mdi:content-cut"/>
@@ -86,8 +73,7 @@
             <NuxtIconPlus @click="increaseEndTrim()" class="is-clickable"/>
           </div>
         </nav>
-        <nav v-if="isVideo"
-             class="level is-mobile py-1 m-0">
+        <nav v-if="isVideo" class="level is-mobile py-1 m-0 border-bottom">
           <div class="level-left">
             <p class="nowrap" style="width: 4.5rem">
               <NuxtIcon name="material-symbols:transition-fade"/>
@@ -122,39 +108,72 @@
             <div class="control ml-1" style="font-size: inherit;">{{ file.gain }}</div>
             <div class="has-text-grey ml-0">（元の音量＝1）</div>
           </div>
-          <div class="level-right">
-            <span>LUFS: {{ loudness || "" }}</span>
-            <button class="button is-small"
-                    :class="{'is-loading': loudnessLoading}"
-                    @click="getLoudness()"
-            >取得
-            </button>
-            <button class="button is-small"
-                    :class="{'is-loading': loudnessLoading}"
-                    @click="normalize()"
-            >ノーマライズ
-            </button>
-          </div>
+          <div class="level-right"></div>
         </nav>
+        <nav class="py-1 m-0" style="padding-left: 5rem">
+          <TimelineWaveform
+              :key="waveformKey"
+              :file-path="file.path"
+              @ready="(duration) => totalDuration = duration"
+          />
+        </nav>
+<!--        ノーマライズ後に音源がぷつることがあるのでいったん機能非表示-->
+<!--        <nav class="level is-mobile py-1 m-0">-->
+<!--          <div class="level-left nowrap">-->
+<!--            <p style="width: 4.5rem"></p>-->
+<!--            <span>ラウドネス: </span>-->
+<!--            <span v-if="!loudnessLoading">{{ loudness || "" }}（目安: -14 ~ -16）</span>-->
+<!--            <span v-else>取得中...</span>-->
+<!--            &lt;!&ndash;            <button class="button is-small"&ndash;&gt;-->
+<!--            &lt;!&ndash;                    :class="{'is-loading': loudnessLoading}"&ndash;&gt;-->
+<!--            &lt;!&ndash;                    @click="getLoudness()"&ndash;&gt;-->
+<!--            &lt;!&ndash;            >取得&ndash;&gt;-->
+<!--            &lt;!&ndash;            </button>&ndash;&gt;-->
+<!--          </div>-->
+<!--          <div class="level-right">-->
+<!--            <template v-if="!loudnessLoading">-->
+<!--              <button class="button is-small is-white"-->
+<!--                      :class="{'is-loading': normalizeLoading}"-->
+<!--                      @click="normalize()"-->
+<!--              >ノーマライズ-->
+<!--              </button>-->
+<!--              <span v-if="normalizeLoading">{{ normalizeProgress + "%" }}</span>-->
+<!--            </template>-->
+<!--          </div>-->
+<!--        </nav>-->
       </div>
       <!-- 再生編集ここまで -->
     </div>
+    <TimelinePlayer
+        v-if="file.isPlaying"
+        :file="file"
+        @mediaEnded="mediaEnded"
+    />
   </template>
-  <TimelinePlayer
-      v-if="file.isPlaying"
-      :file="file"
-      @mediaEnded="mediaEnded"
-  />
+  <!-- ファイルが存在しない-->
+  <div v-else class="box p-2 has-background-light">
+    <nav class="level is-mobile mb-0">
+      <div class="level-left" style="max-width: calc(100% - 55px);">
+        <NuxtIconVideo v-if="isVideo"/>
+        <NuxtIconAudio v-if="isAudio"/>
+        <span class="is-size-6" style="word-break: break-all;">{{ file.name }}</span>
+      </div>
+    </nav>
+    <p class="has-text-danger mb-0">
+      ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。
+    </p>
+  </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, toRaw, watch} from 'vue'
+import {onMounted, ref, toRaw, watch} from 'vue'
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconFolder from "~/components/icon/NuxtIconFolder.vue";
 import NuxtIconMinus from "~/components/icon/NuxtIconMinus.vue";
 import NuxtIconPlus from "~/components/icon/NuxtIconPlus.vue";
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
+import TimelineWaveform from "~/components/timeline/TimelineWaveform.vue";
 
 /**
  * emits
@@ -176,10 +195,16 @@ interface Props {
 const props = defineProps<Props>();
 
 const file = ref(props.file)
+const totalDuration = ref<number>()
+const waveformKey = ref<number>(0)
 const editorOpen = ref(false)
 const startLoading = ref(false)
+
 const loudness = ref(0)
 const loudnessLoading = ref(false)
+const normalizeProgress = ref("0")
+const normalizeLoading = ref(false)
+
 const trimStep = 0.5
 const fadeStep = 0.1
 const gainMin = 0
@@ -190,6 +215,7 @@ const commonApi = window.commonApi
 
 /* -------------------- ライフサイクル -------------------- */
 onMounted(() => {
+  if (file.value.exists) getLoudness()
 })
 
 /**
@@ -324,6 +350,7 @@ function getLoudness() {
         loudness.value = result
       })
       .catch((e: any) => {
+        console.error(file.value.path)
         console.error(e)
       })
       .finally(() => {
@@ -332,21 +359,26 @@ function getLoudness() {
 }
 
 async function normalize() {
-  loudnessLoading.value = true
+  normalizeLoading.value = true
 
   try {
     convertApi.onNormalizeProgress((data: any) => {
-      console.log("進捗:", data.seconds, "秒");
+      // console.log("進捗:", data.seconds, "秒");
+      if (data.seconds < 0) return
+      if (!totalDuration.value) return
+      normalizeProgress.value = (data.seconds / totalDuration.value * 100).toFixed(0)
     });
 
     const result = await convertApi.normalize(
         file.value.path, isAudio.value, isVideo.value
     );
-    console.log("完了:", result.outputFile);
+    waveformKey.value++
+    getLoudness()
+    // console.log("完了:", result.outputFile);
   } catch (e: any) {
     console.error("エラー:", e.message);
   } finally {
-    loudnessLoading.value = false
+    normalizeLoading.value = false
   }
 }
 </script>
@@ -385,7 +417,7 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: none;
 }
 
-.editor nav:not(:last-child, :first-child) {
+.editor nav.border-bottom {
   border-bottom: 1px dashed lightgray;
 }
 
