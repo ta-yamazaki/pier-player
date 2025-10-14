@@ -215,7 +215,7 @@ const commonApi = window.commonApi
 
 /* -------------------- ライフサイクル -------------------- */
 onMounted(() => {
-  if (file.value.exists) getLoudness()
+  // if (file.value.exists) getLoudness()
 })
 
 /**
