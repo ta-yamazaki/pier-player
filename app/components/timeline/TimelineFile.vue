@@ -180,7 +180,7 @@ import TimelineWaveform from "~/components/timeline/TimelineWaveform.vue";
  */
 type Emits = {
   (event: "mediaStart"): void;
-  (event: "mediaEnded", value: any): void;
+  (event: "mediaEnded"): void;
 };
 const emit = defineEmits<Emits>();
 
@@ -340,7 +340,7 @@ function close() {
 }
 
 function mediaEnded() {
-  emit("mediaEnded", file)
+  emit("mediaEnded")
 }
 
 function getLoudness() {

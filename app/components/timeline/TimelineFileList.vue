@@ -19,7 +19,7 @@
         <TimelineFile
             :file="file"
             @mediaStart="mediaStart"
-            @mediaEnded="mediaEnded"
+            @mediaEnded="mediaEnded(i)"
             :isLast="i === files.length - 1"
         />
       </td>
@@ -67,11 +67,12 @@ function mediaStart() {
   reset()
 }
 
-function mediaEnded(currentFile: any) {
-  const currentIndex = files.value.indexOf(currentFile.value);
-  currentFile.value.isPlaying = false
+function mediaEnded(i: number) {
+  const currentFile = files.value[i]
+  if (!currentFile.continuousPlay) return
 
-  const nextFile = files.value[currentIndex + 1]
+  currentFile.isPlaying = false
+  const nextFile = files.value[i + 1]
   continuousPlay(nextFile)
 }
 
@@ -84,8 +85,8 @@ function continuousPlay(nextFile: any) {
   nextFile.isPlaying = true
   timelineApi.continuousPlay(toRaw(nextFile)).then((isExists: boolean) => {
     if (!isExists) {
-      alert(`ファイルが開けませんでした。\n「${nextFile.name}」`)
       nextFile.isPlaying = false
+      alert(`ファイルが開けませんでした。\n「${nextFile.name}」`)
     }
   })
 }

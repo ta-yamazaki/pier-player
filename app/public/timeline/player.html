@@ -211,7 +211,7 @@
     mainCallback.seek((event, param) => element().currentTime = param.newTime)
     mainCallback.fileMetaChange((event, param) => {
         file = {...param.file}
-        gainNode().gain.value = file.gain;
+        if(gainNode()) gainNode().gain.value = file.gain;
     })
 </script>
 
