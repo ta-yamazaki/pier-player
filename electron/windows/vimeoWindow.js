@@ -33,6 +33,7 @@ export const createVimeoWindow = () => {
         html { opacity: 0 }
     
         [class^="PlaylistWrapper_"],
+        [class^="PlaylistWrapper-"],
         [class^="ControlBarButtonsAndMenus_"],
         [class^="Outro_module_outroWrapper"],
         [class*="SideDock_module_root"] {

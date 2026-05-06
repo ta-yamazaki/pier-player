@@ -88,10 +88,12 @@ function showcaseTitleSelect(title) {
       const html = document.getElementsByTagName("html")[0];
 
       const interval_click = setInterval(() => {
-        const selected = document.querySelector('li[class*="PlaylistTrack_selected"] div[class*="PlaylistTrack_playlistTrackClipTitle"]');
-        const selectedTitle = selected.getAttribute("title")
+        const selected = document.querySelector('ul#playlist-tracklist li[aria-selected="true"] div[class*="playlistTrackClipTitle"]');
+        if (!selected) return;
+
+        const selectedTitle = selected.getAttribute("title");
         if (selectedTitle !== "${title}") {
-            const el = document.querySelector('div[class^="PlaylistTrack_playlistTrack"]:has([title="${title}"])');
+            const el = document.querySelector('div[class^="PlaylistTrack-module-scss-module__"]:has([title="${title}"])');
             if (!el) return clearInterval(interval_click);
            
             if (!el.className.includes("PlaylistTrack_selected"))
@@ -104,5 +106,11 @@ function showcaseTitleSelect(title) {
         
         clearInterval(interval_click);
       }, 50);
+
+      // タイトル不一致や要素未検出の場合でも必ず表示する
+      setTimeout(() => {
+        html.style.opacity = 1;
+        clearInterval(interval_click);
+      }, 1000);
     `;
 }
