@@ -2,9 +2,10 @@ import fs from 'fs';
 import {ipcMain, screen, shell} from 'electron';
 import {createSubWindow, getSubWindow, loadSubWindow} from '../windows/subWindow.js';
 import {withExists} from "../utils/fileCheck.js";
+import {CommonChannels, FileChannels} from "./channels";
 
 export const registerMainHandlers = () => {
-    ipcMain.handle("open-sub-window", async (_event, fileMeta) => {
+    ipcMain.handle(FileChannels.openSubWindow, async (_event, fileMeta) => {
         if (!fs.existsSync(fileMeta.path)) return false;
 
         // セカンダリモニターが無い場合は何も表示しない（従来動作を維持）
@@ -19,16 +20,14 @@ export const registerMainHandlers = () => {
         return true;
     });
 
-    ipcMain.handle('close-window', () => {
+    ipcMain.handle(FileChannels.closeSubWindow, () => {
         getSubWindow()?.destroy();
     });
 
-    ipcMain.handle('checkFilePath', async (_event, file) => withExists(file));
+    ipcMain.handle(FileChannels.checkFilePath, async (_event, file) => withExists(file));
 
-
-    // フォルダを開く処理
-    ipcMain.on("open-folder", (event, folderPath) => {
-        // フォルダをエクスプローラーで開く
+    // フォルダをエクスプローラーで開く
+    ipcMain.on(CommonChannels.openFolder, (event, folderPath) => {
         shell.openPath(folderPath);
     });
 };

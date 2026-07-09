@@ -2,6 +2,7 @@ import {BrowserWindow, screen} from 'electron';
 import path from 'node:path';
 import {iconPath} from "../utils/path.js";
 import {MAIN_DIST} from "./mainWindow";
+import {FileChannels} from "../ipc/channels";
 
 let subWindow;
 
@@ -49,16 +50,10 @@ export const loadSubWindow = async (subWindow, fileMeta) => {
     }
     subWindow.setTitle(fileMeta.name);
     subWindow.setOpacity(1);
-    subWindow.webContents.send("subWindowShow", {
+    subWindow.webContents.send(FileChannels.subWindowShow, {
         path: fileMeta.path,
         type: fileMeta.type,
     });
-};
-
-export const hideSubWindow = () => {
-    subWindow.setOpacity(0);
-    subWindow.webContents.send("subWindowHide");
-    subWindow.hide();
 };
 
 export const getSubWindow = () => subWindow;

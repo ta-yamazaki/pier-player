@@ -1,11 +1,12 @@
 import {app, ipcMain} from 'electron';
 import pkg from 'electron-updater';
+import {CommonChannels} from './channels';
 
 const {autoUpdater} = pkg;
 
 export const registerCommonHandlers = () => {
-    ipcMain.handle("get-version", () => app.getVersion());
-    ipcMain.handle('checkUpdate', async () => {
+    ipcMain.handle(CommonChannels.getVersion, () => app.getVersion());
+    ipcMain.handle(CommonChannels.checkUpdate, async () => {
         const result = await autoUpdater.checkForUpdates();
         if (!result || !result.updateInfo) {
             return {updateAvailable: false};

@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from "path";
 import {ipcMain} from 'electron';
 import {execFile, spawn} from "child_process";
+import {ConvertChannels} from "./channels";
 const ffprobePath = require('ffprobe-static');
 const ffmpegPath = require('ffmpeg-static');
 
@@ -20,11 +21,11 @@ export const registerConvertHandlers = () => {
         });
     }
 
-    ipcMain.handle("convert-pitch", async (event, originalPath, semitones) => {
+    ipcMain.handle(ConvertChannels.convertPitch, async (event, originalPath, semitones) => {
         const filePath = originalPath;
 
         const totalDuration = await getDuration(filePath); // 全体秒数
-        event.sender.send("get-totalDuration", {totalDuration});
+        event.sender.send(ConvertChannels.totalDuration, {totalDuration});
 
         return new Promise((resolve, reject) => {
             const ext = path.extname(filePath);
@@ -55,7 +56,7 @@ export const registerConvertHandlers = () => {
                     const ms = parseInt(line.split("=")[1].trim());
                     const sec = ms / 1_000_000;
                     if (sec < 0) return
-                    event.sender.send("convert-progress", {
+                    event.sender.send(ConvertChannels.convertProgress, {
                         seconds: sec
                     });
                 });
@@ -79,7 +80,7 @@ export const registerConvertHandlers = () => {
         });
     });
 
-    ipcMain.handle('getLoudness', (_event, originalPath) => {
+    ipcMain.handle(ConvertChannels.getLoudness, (_event, originalPath) => {
         const filePath = originalPath;
 
         const args = [
@@ -123,7 +124,7 @@ export const registerConvertHandlers = () => {
         });
     });
 
-    ipcMain.handle("normalize-loudness", async (event, originalPath, isVideo, isAudio) => {
+    ipcMain.handle(ConvertChannels.normalize, async (event, originalPath, isVideo, isAudio) => {
         const filePath = `${originalPath}`;
         const ext = path.extname(originalPath);
         const outputPath = filePath.replace(ext, `_temp${ext}`);
@@ -155,7 +156,7 @@ export const registerConvertHandlers = () => {
                     if (!line.startsWith("out_time_ms")) return
                     const ms = parseInt(line.split("=")[1].trim());
                     const sec = ms / 1_000_000;
-                    event.sender.send("normalize-progress", {seconds: sec});
+                    event.sender.send(ConvertChannels.normalizeProgress, {seconds: sec});
                 });
                 console.log("FFmpeg stdout:", data.toString());
             });

@@ -1,6 +1,7 @@
 import Store from 'electron-store';
 import {ipcMain} from "electron";
 import {withExistsAll} from "../utils/fileCheck.js";
+import {CgmChannels, FileChannels, ShowcaseChannels, TimelineChannels, VimeoChannels} from "./channels";
 
 const store = new Store();
 
@@ -20,68 +21,68 @@ export const registerStoreHandlers = () => {
     /**
      * メイン画面 ファイルモード
      */
-    ipcMain.handle('getFiles', (_event, target) => {
+    ipcMain.handle(FileChannels.getFiles, (_event, target) => {
         return withExistsAll(store.get(target, []));
     });
-    ipcMain.handle("storeFiles", (_event, target, files) => {
+    ipcMain.handle(FileChannels.storeFiles, (_event, target, files) => {
         store.set(target, files);
     });
 
     /**
      * メイン画面 CGMモード
      */
-    ipcMain.handle("getCgmList", () => {
+    ipcMain.handle(CgmChannels.getList, () => {
         return store.get(keys.cgmList, [{path: "", title: "", isViewed: false, isPlaying: false}]);
     });
-    ipcMain.handle("storeCgmList", (_event, cgmList) => {
+    ipcMain.handle(CgmChannels.storeList, (_event, cgmList) => {
         store.set(keys.cgmList, cgmList);
     });
 
     /**
      * メイン画面 Vimeoモード（個別動画）
      */
-    ipcMain.handle("getVimeoList", (event) => {
+    ipcMain.handle(VimeoChannels.getList, (event) => {
         return store.get(keys.vimeoList, [{url: "", title: "", password: "", isViewed: false, isPlaying: false}]);
     });
-    ipcMain.handle("storeVimeoList", (event, vimeoList) => {
+    ipcMain.handle(VimeoChannels.storeList, (event, vimeoList) => {
         store.set(keys.vimeoList, vimeoList);
     });
 
     /**
      * メイン画面 Vimeoモード（ショーケース）
      */
-    ipcMain.handle("getShowcase", (event) => {
+    ipcMain.handle(ShowcaseChannels.getShowcase, (event) => {
         return store.get(keys.vimeoShowcase, {rawUrl: "", password: ""});
     });
-    ipcMain.handle("storeShowcase", (event, showcase) => {
+    ipcMain.handle(ShowcaseChannels.storeShowcase, (event, showcase) => {
         store.set(keys.vimeoShowcase, showcase);
     });
 
-    ipcMain.handle("getShowcasePlayList", (event) => {
+    ipcMain.handle(ShowcaseChannels.getPlayList, (event) => {
         return store.get(keys.vimeoShowcasePlayList, [{title: "", isViewed: false, isPlaying: false}]);
     });
-    ipcMain.handle("storeShowcasePlayList", (event, vimeoList) => {
+    ipcMain.handle(ShowcaseChannels.storePlayList, (event, vimeoList) => {
         store.set(keys.vimeoShowcasePlayList, vimeoList);
     });
 
     /**
      * メイン画面 タイムラインモード
      */
-    ipcMain.handle('getTimelineFiles', (_event) => {
+    ipcMain.handle(TimelineChannels.getFiles, (_event) => {
         return withExistsAll(store.get(keys.timelineList, []));
     });
-    ipcMain.handle("storeTimelineFiles", (_event, files) => {
+    ipcMain.handle(TimelineChannels.storeFiles, (_event, files) => {
         store.set(keys.timelineList, files);
     });
-    ipcMain.handle("storeAdditionalTimelineFiles", (_event, files) => {
+    ipcMain.handle(TimelineChannels.storeAdditionalFiles, (_event, files) => {
         const currentFiles = store.get(keys.timelineList, []);
         const added = currentFiles.concat(files)
         store.set(keys.timelineList, added);
     });
-    ipcMain.handle("getTimelineHistory", (_event) => {
+    ipcMain.handle(TimelineChannels.getHistory, (_event) => {
         return loadMap(keys.timelineHistory);
     });
-    ipcMain.handle("storeTimelineHistory", (_event, file) => {
+    ipcMain.handle(TimelineChannels.storeHistory, (_event, file) => {
         file.updatedAt = new Date()
         saveMap(keys.timelineHistory, file.name, file);
     });

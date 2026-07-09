@@ -2,6 +2,7 @@ import {BrowserWindow, screen} from 'electron';
 import path from 'node:path';
 import {iconPath} from "../utils/path.js";
 import {MAIN_DIST} from "./mainWindow";
+import {TimelineChannels} from "../ipc/channels";
 
 let timelineWindow;
 
@@ -52,15 +53,9 @@ export const loadTimelineWindow = async (timelineWindow, fileMeta) => {
 
     timelineWindow.setTitle(fileMeta.name);
     timelineWindow.setOpacity(1);
-    timelineWindow.webContents.send("timelineWindowShow", {
+    timelineWindow.webContents.send(TimelineChannels.windowShow, {
         file: fileMeta
     });
-};
-
-export const hideTimelineWindow = () => {
-    timelineWindow.setOpacity(0);
-    timelineWindow.webContents.send("timelineWindowHide");
-    timelineWindow.hide();
 };
 
 export const getTimelineWindow = () => timelineWindow;

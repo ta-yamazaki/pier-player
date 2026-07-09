@@ -1,11 +1,12 @@
 import {ipcMain} from 'electron';
 import {createVimeoWindow, getVimeoWindow} from "../windows/vimeoWindow.js";
+import {ShowcaseChannels, VimeoChannels} from "./channels";
 
 export const registerVimeoHandlers = () => {
     /**
      * 個別動画
      */
-    ipcMain.handle("openVimeo", async (event, url, password) => {
+    ipcMain.handle(VimeoChannels.open, async (event, url, password) => {
         const vimeoWindow = createVimeoWindow()
         try {
             await vimeoWindow.loadURL(url);
@@ -19,12 +20,12 @@ export const registerVimeoHandlers = () => {
             return false;
         }
     });
-    ipcMain.handle("playVimeo", (event) => {
+    ipcMain.handle(VimeoChannels.play, (event) => {
         getVimeoWindow()?.webContents.executeJavaScript(`
         document.querySelector('div[class^="PlayButton_"] > button').click();
         `, true)
     });
-    ipcMain.handle("closeVimeo", (event) => {
+    ipcMain.handle(VimeoChannels.close, (event) => {
         const vimeoWindow = getVimeoWindow()
         if (vimeoWindow && !vimeoWindow.isDestroyed()) vimeoWindow.close();
     });
@@ -32,7 +33,7 @@ export const registerVimeoHandlers = () => {
     /**
      * ショーケース
      */
-    ipcMain.handle("openShowcaseVimeo", async (event, vimeo, showcaseUrl) => {
+    ipcMain.handle(ShowcaseChannels.open, async (event, vimeo, showcaseUrl) => {
         const vimeoWindow = createVimeoWindow()
         try {
             await vimeoWindow.loadURL(showcaseUrl);
@@ -45,12 +46,12 @@ export const registerVimeoHandlers = () => {
             return false;
         }
     });
-    ipcMain.handle("playShowcaseVimeo", (event) => {
+    ipcMain.handle(ShowcaseChannels.play, (event) => {
         getVimeoWindow()?.webContents.executeJavaScript(`
         document.querySelector('div[class^="PlayButton_"] > button').click();
         `, true)
     });
-    ipcMain.handle("closeShowcaseVimeo", (event) => {
+    ipcMain.handle(ShowcaseChannels.close, (event) => {
         const vimeoWindow = getVimeoWindow()
         if (vimeoWindow && !vimeoWindow.isDestroyed()) vimeoWindow.close();
     });

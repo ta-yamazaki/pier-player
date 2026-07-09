@@ -1,4 +1,13 @@
 import {contextBridge, ipcRenderer, webUtils} from 'electron'
+import {
+    CgmChannels,
+    CommonChannels,
+    ConvertChannels,
+    FileChannels,
+    ShowcaseChannels,
+    TimelineChannels,
+    VimeoChannels,
+} from '../ipc/channels'
 
 // on登録した際に解除関数を返す（コンポーネント再マウント時のリスナー蓄積防止）
 const listen = (channel: string) => (callback: any) => {
@@ -18,13 +27,12 @@ const listenData = (channel: string) => (callback: any) => {
  * ファイル再生モード
  */
 export const api = {
-    // mainHandlers.jsの 'openSubWindow' チャンネルへ送信
-    openSubWindow: (fileMeta: any) => ipcRenderer.invoke("open-sub-window", fileMeta),
-    closeSubWindow: () => ipcRenderer.invoke('close-window'),
-    checkFilePath: (file: any) => ipcRenderer.invoke('checkFilePath', file),
+    openSubWindow: (fileMeta: any) => ipcRenderer.invoke(FileChannels.openSubWindow, fileMeta),
+    closeSubWindow: () => ipcRenderer.invoke(FileChannels.closeSubWindow),
+    checkFilePath: (file: any) => ipcRenderer.invoke(FileChannels.checkFilePath, file),
 
-    getFiles: (target: string) => ipcRenderer.invoke("getFiles", target),
-    storeFiles: (target: string, files: any) => ipcRenderer.invoke("storeFiles", target, files),
+    getFiles: (target: string) => ipcRenderer.invoke(FileChannels.getFiles, target),
+    storeFiles: (target: string, files: any) => ipcRenderer.invoke(FileChannels.storeFiles, target, files),
 };
 contextBridge.exposeInMainWorld('api', api);
 
@@ -32,15 +40,14 @@ contextBridge.exposeInMainWorld('api', api);
  * CGMモード
  */
 export const cgmApi = {
-    // cgmHandlers.jsの 'openCgm' チャンネルへ送信
-    openCgm: (cgm: any) => ipcRenderer.invoke('openCgm', cgm),
-    playCgm: () => ipcRenderer.invoke('playCgm'),
-    closeCgm: () => ipcRenderer.invoke('closeCgm'),
-    getCgmList: () => ipcRenderer.invoke("getCgmList"),
-    storeCgmList: (cgmList: any) => ipcRenderer.invoke("storeCgmList", cgmList),
+    openCgm: (cgm: any) => ipcRenderer.invoke(CgmChannels.open, cgm),
+    playCgm: () => ipcRenderer.invoke(CgmChannels.play),
+    closeCgm: () => ipcRenderer.invoke(CgmChannels.close),
+    getCgmList: () => ipcRenderer.invoke(CgmChannels.getList),
+    storeCgmList: (cgmList: any) => ipcRenderer.invoke(CgmChannels.storeList, cgmList),
 
     // CGM windowからイベントを受け取る
-    errorCgmOpen: listen('errorCgmOpen'),
+    errorCgmOpen: listen(CgmChannels.errorOpen),
 }
 contextBridge.exposeInMainWorld('cgm', cgmApi);
 
@@ -48,15 +55,12 @@ contextBridge.exposeInMainWorld('cgm', cgmApi);
  * Vimeoモード（個別動画）
  */
 export const vimeoApi = {
-    openVimeo: (url: string, password: string) => ipcRenderer.invoke('openVimeo', url, password),
-    playVimeo: () => ipcRenderer.invoke('playVimeo'),
-    closeVimeo: () => ipcRenderer.invoke('closeVimeo'),
+    openVimeo: (url: string, password: string) => ipcRenderer.invoke(VimeoChannels.open, url, password),
+    playVimeo: () => ipcRenderer.invoke(VimeoChannels.play),
+    closeVimeo: () => ipcRenderer.invoke(VimeoChannels.close),
 
-    getVimeoList: () => ipcRenderer.invoke("getVimeoList"),
-    storeVimeoList: (vimeoList: any[]) => ipcRenderer.invoke("storeVimeoList", vimeoList),
-
-    //Vimeo画面から受け取る
-    errorVimeoOpen: listen("errorVimeoOpen"),
+    getVimeoList: () => ipcRenderer.invoke(VimeoChannels.getList),
+    storeVimeoList: (vimeoList: any[]) => ipcRenderer.invoke(VimeoChannels.storeList, vimeoList),
 };
 contextBridge.exposeInMainWorld('vimeo', vimeoApi);
 
@@ -64,14 +68,14 @@ contextBridge.exposeInMainWorld('vimeo', vimeoApi);
  * Vimeoモード（ショーケース）
  */
 export const showcaseApi = {
-    openVimeoShowcase: (vimeo: any, showcaseUrl: string) => ipcRenderer.invoke('openShowcaseVimeo', vimeo, showcaseUrl),
-    playVimeoShowcase: () => ipcRenderer.invoke('playShowcaseVimeo'),
-    closeVimeoShowcase: () => ipcRenderer.invoke('closeShowcaseVimeo'),
+    openVimeoShowcase: (vimeo: any, showcaseUrl: string) => ipcRenderer.invoke(ShowcaseChannels.open, vimeo, showcaseUrl),
+    playVimeoShowcase: () => ipcRenderer.invoke(ShowcaseChannels.play),
+    closeVimeoShowcase: () => ipcRenderer.invoke(ShowcaseChannels.close),
 
-    getPlayList: () => ipcRenderer.invoke("getShowcasePlayList"),
-    storePlayList: (vimeoList: any) => ipcRenderer.invoke("storeShowcasePlayList", vimeoList),
-    getShowcase: () => ipcRenderer.invoke("getShowcase"),
-    storeShowcase: (showcase: any) => ipcRenderer.invoke("storeShowcase", showcase),
+    getPlayList: () => ipcRenderer.invoke(ShowcaseChannels.getPlayList),
+    storePlayList: (vimeoList: any) => ipcRenderer.invoke(ShowcaseChannels.storePlayList, vimeoList),
+    getShowcase: () => ipcRenderer.invoke(ShowcaseChannels.getShowcase),
+    storeShowcase: (showcase: any) => ipcRenderer.invoke(ShowcaseChannels.storeShowcase, showcase),
 }
 contextBridge.exposeInMainWorld('showcaseApi', showcaseApi);
 
@@ -79,76 +83,67 @@ contextBridge.exposeInMainWorld('showcaseApi', showcaseApi);
  * タイムラインモード
  */
 export const timelineApi = {
-    // mainWindowからhandlers.jsの 'openTimelineWindow' チャンネルへ送信
-    openTimelineWindow: (fileMeta: any) => ipcRenderer.invoke('openTimelineWindow', fileMeta),
-    closeTimelineWindow: () => ipcRenderer.invoke('closeTimelineWindow'),
-    continuousPlay: (nextFileMeta: any) => ipcRenderer.invoke('timelineContinuousPlay', nextFileMeta),
-    checkFilePath: (file: any) => ipcRenderer.invoke('checkFilePath', file),
+    openTimelineWindow: (fileMeta: any) => ipcRenderer.invoke(TimelineChannels.openWindow, fileMeta),
+    closeTimelineWindow: () => ipcRenderer.invoke(TimelineChannels.closeWindow),
+    continuousPlay: (nextFileMeta: any) => ipcRenderer.invoke(TimelineChannels.continuousPlay, nextFileMeta),
+    checkFilePath: (file: any) => ipcRenderer.invoke(FileChannels.checkFilePath, file),
 
     // player from mainPage
     mainPlayer: {
-        restart: () => ipcRenderer.invoke('timelineRestart'),
-        rewind: (seekTime: any) => ipcRenderer.invoke('timelineRewind', seekTime),
-        play: () => ipcRenderer.invoke('timelinePlay'),
-        pause: () => ipcRenderer.invoke('timelinePause'),
-        forward: (seekTime: any) => ipcRenderer.invoke('timelineForward', seekTime),
-        toEnd: () => ipcRenderer.invoke('timelineToEnd'),
-        seek: (newTime: any) => ipcRenderer.invoke('timelineSeek', newTime),
-        fileMetaChange: (fileMeta: any) => ipcRenderer.invoke('timelineFileMetaChange', fileMeta),
+        restart: () => ipcRenderer.invoke(TimelineChannels.restart),
+        rewind: (seekTime: any) => ipcRenderer.invoke(TimelineChannels.rewind, seekTime),
+        play: () => ipcRenderer.invoke(TimelineChannels.play),
+        pause: () => ipcRenderer.invoke(TimelineChannels.pause),
+        forward: (seekTime: any) => ipcRenderer.invoke(TimelineChannels.forward, seekTime),
+        toEnd: () => ipcRenderer.invoke(TimelineChannels.toEnd),
+        seek: (newTime: any) => ipcRenderer.invoke(TimelineChannels.seek, newTime),
+        fileMetaChange: (fileMeta: any) => ipcRenderer.invoke(TimelineChannels.fileMetaChange, fileMeta),
     },
     // player from playerPage
     listener: {
-        ready: listen("timelineReady"),
-        duration: listen("timelineDuration"),
-        play: listen("timelinePlay"),
-        timeupdate: listen('timelineTimeupdate'),
-        paused: listen("timelinePaused"),
-        ended: listen("timelineEnded"),
+        ready: listen(TimelineChannels.ready),
+        duration: listen(TimelineChannels.duration),
+        play: listen(TimelineChannels.play),
+        timeupdate: listen(TimelineChannels.timeupdate),
+        paused: listen(TimelineChannels.paused),
+        ended: listen(TimelineChannels.ended),
     },
 
-    getFiles: () => ipcRenderer.invoke("getTimelineFiles"),
-    storeFiles: (files: any) => ipcRenderer.invoke("storeTimelineFiles", files),
-    storeAdditionalFiles: (files: any[]) => ipcRenderer.invoke("storeAdditionalTimelineFiles", files),
+    getFiles: () => ipcRenderer.invoke(TimelineChannels.getFiles),
+    storeFiles: (files: any) => ipcRenderer.invoke(TimelineChannels.storeFiles, files),
+    storeAdditionalFiles: (files: any[]) => ipcRenderer.invoke(TimelineChannels.storeAdditionalFiles, files),
 
-    getHistory: () => ipcRenderer.invoke("getTimelineHistory"),
-    storeHistory: (file: any) => ipcRenderer.invoke("storeTimelineHistory", file),
+    getHistory: () => ipcRenderer.invoke(TimelineChannels.getHistory),
+    storeHistory: (file: any) => ipcRenderer.invoke(TimelineChannels.storeHistory, file),
 }
 contextBridge.exposeInMainWorld('timeline', timelineApi);
 
 /**
  * 変換モード
  */
-const convertApi = {
-    convertPitch: (filePath: string, semitones: number) => ipcRenderer.invoke('convert-pitch', filePath, semitones),
-    onConvertProgress: listenData("convert-progress"),
+export const convertApi = {
+    convertPitch: (filePath: string, semitones: number) => ipcRenderer.invoke(ConvertChannels.convertPitch, filePath, semitones),
+    onConvertProgress: listenData(ConvertChannels.convertProgress),
 
-    getLoudness: (filePath: string) => ipcRenderer.invoke('getLoudness', filePath),
-    normalize: (filePath: string, isVideo: boolean, isAudio: boolean) => ipcRenderer.invoke('normalize-loudness', filePath, isVideo, isAudio),
-    onNormalizeProgress: listenData("normalize-progress"),
+    getLoudness: (filePath: string) => ipcRenderer.invoke(ConvertChannels.getLoudness, filePath),
+    normalize: (filePath: string, isVideo: boolean, isAudio: boolean) => ipcRenderer.invoke(ConvertChannels.normalize, filePath, isVideo, isAudio),
+    onNormalizeProgress: listenData(ConvertChannels.normalizeProgress),
 };
 contextBridge.exposeInMainWorld('convertApi', convertApi);
 
 /**
  * 共通API
  */
-const commonApi = {
+export const commonApi = {
     openFolder: (path: any) => {
         const folderPath = path.replace(/[\\/][^\\/]+$/, "")
-        ipcRenderer.send("open-folder", folderPath);
+        ipcRenderer.send(CommonChannels.openFolder, folderPath);
     },
-    getCurrentVersion: () => ipcRenderer.invoke("get-version"),
-    checkUpdate: () => ipcRenderer.invoke('checkUpdate'),
+    getCurrentVersion: () => ipcRenderer.invoke(CommonChannels.getVersion),
+    checkUpdate: () => ipcRenderer.invoke(CommonChannels.checkUpdate),
 
-    getTotalDuration: listenData("get-totalDuration"),
+    getTotalDuration: listenData(ConvertChannels.totalDuration),
 };
 contextBridge.exposeInMainWorld('commonApi', commonApi);
 
 contextBridge.exposeInMainWorld('webUtils', webUtils)
-
-// プリロードプロセスでは Node.js の全 API が利用可能です。
-// Chrome 拡張機能と同じサンドボックスも持っています。
-window.addEventListener('DOMContentLoaded', () => {
-
-})
-
-
