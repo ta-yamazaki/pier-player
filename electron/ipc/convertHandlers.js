@@ -43,7 +43,7 @@ export const registerConvertHandlers = () => {
                 outputFile
             ];
 
-            const ff = spawn(ffmpegPath, args, {shell: true});
+            const ff = spawn(ffmpegPath, args);
 
             ff.stdout.setEncoding("utf8");
             ff.stdout.on("data", (data) => {
@@ -80,7 +80,7 @@ export const registerConvertHandlers = () => {
     });
 
     ipcMain.handle('getLoudness', (_event, originalPath) => {
-        const filePath = `"${originalPath}"`;
+        const filePath = originalPath;
 
         const args = [
             '-hide_banner',
@@ -91,7 +91,7 @@ export const registerConvertHandlers = () => {
         ];
 
         return new Promise((resolve, reject) => {
-            const ffmpeg = spawn(ffmpegPath, args, {shell: true});
+            const ffmpeg = spawn(ffmpegPath, args);
             // ラウドネスはエラー出力に出てくる
             let stderr = "";
 
@@ -145,7 +145,7 @@ export const registerConvertHandlers = () => {
             args.push("-c:a", "libmp3lame"); // MP3 エンコード
 
         return new Promise((resolve, reject) => {
-            const ff = spawn(ffmpegPath, args, {shell: true});
+            const ff = spawn(ffmpegPath, args);
 
             ff.stdout.setEncoding("utf8");
             ff.stdout.on("data", (data) => {
