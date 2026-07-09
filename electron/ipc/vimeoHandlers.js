@@ -1,22 +1,23 @@
 import {ipcMain} from 'electron';
 import {createVimeoWindow, getVimeoWindow} from "../windows/vimeoWindow.js";
-import {getMainWindow} from "../windows/mainWindow.js";
 
 export const registerVimeoHandlers = () => {
     /**
      * 個別動画
      */
-    ipcMain.handle("openVimeo", (event, url, password) => {
+    ipcMain.handle("openVimeo", async (event, url, password) => {
         const vimeoWindow = createVimeoWindow()
-        vimeoWindow.loadURL(url).then(async () => {
-            await vimeoWindow.webContents.executeJavaScript(verifyVimeoPassword(password), true)
+        try {
+            await vimeoWindow.loadURL(url);
+            await vimeoWindow.webContents.executeJavaScript(verifyVimeoPassword(password), true);
             vimeoWindow.setTitle("Vimeo Player");
             vimeoWindow.showInactive();
-        }).catch((e) => {
-            console.error(e)
+            return true;
+        } catch (e) {
+            console.error(e);
             vimeoWindow.close();
-            getMainWindow().webContents.send("errorVimeoOpen");
-        });
+            return false;
+        }
     });
     ipcMain.handle("playVimeo", (event) => {
         getVimeoWindow()?.webContents.executeJavaScript(`
@@ -31,16 +32,18 @@ export const registerVimeoHandlers = () => {
     /**
      * ショーケース
      */
-    ipcMain.handle("openShowcaseVimeo", (event, vimeo, showcaseUrl) => {
+    ipcMain.handle("openShowcaseVimeo", async (event, vimeo, showcaseUrl) => {
         const vimeoWindow = createVimeoWindow()
-        vimeoWindow.loadURL(showcaseUrl).then(() => {
-            vimeoWindow.webContents.executeJavaScript(showcaseTitleSelect(vimeo.title), true)
+        try {
+            await vimeoWindow.loadURL(showcaseUrl);
+            await vimeoWindow.webContents.executeJavaScript(showcaseTitleSelect(vimeo.title), true);
             vimeoWindow.showInactive();
-        }).catch((e) => {
-            console.error(e)
+            return true;
+        } catch (e) {
+            console.error(e);
             vimeoWindow.close();
-            getMainWindow().webContents.send("errorVimeoOpen");
-        });
+            return false;
+        }
     });
     ipcMain.handle("playShowcaseVimeo", (event) => {
         getVimeoWindow()?.webContents.executeJavaScript(`

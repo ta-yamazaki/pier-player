@@ -67,8 +67,9 @@ const isPlaying = computed(() => vimeo.value.isPlaying)
 const view = () => {
   emit("view")
   isLoading.value = true
-  showcaseApi.openVimeoShowcase(toRaw(vimeo.value), unref(props.showcaseUrlWithPassword)).then(() => {
-    vimeo.value.isViewed = true
+  showcaseApi.openVimeoShowcase(toRaw(vimeo.value), unref(props.showcaseUrlWithPassword)).then((opened: boolean) => {
+    if (opened) vimeo.value.isViewed = true
+    else alert("ショーケース映像の表示に失敗しました。URLやタイトルが間違っている可能性があります。")
   }).catch((e: any) => {
     alert("ショーケース映像の表示に失敗しました。URLやタイトルが間違っている可能性があります。")
     console.error(e)
