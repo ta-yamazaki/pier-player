@@ -50,9 +50,6 @@ const reset = () => {
 const addRow = () => {
   vimeoListRef.value?.addVimeo()  // 子のメソッドを呼び出す
 }
-
-const isExists = (v: any) =>
-    typeof v !== "undefined" && v !== null && v !== "" && v !== {}
 </script>
 
 <style scoped>

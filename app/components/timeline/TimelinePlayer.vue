@@ -119,14 +119,6 @@ onUnmounted(() => {
 const currentTimeColon = computed(() => minSecColonFrom(playerMeta.currentTime))
 const durationColon = computed(() => minSecColonFrom(playerMeta.duration))
 
-/* -------------------- utils -------------------- */
-function minSecColonFrom(t: number | null) {
-  if (typeof t !== "number") return ""
-  return [t / 60, t % 60]
-      .map((v) => `0${Math.floor(v)}`.slice(-2))
-      .join(':');
-}
-
 /* -------------------- tooltip -------------------- */
 function onMouseMove(e: MouseEvent) {
   if (!progressBar.value) return;

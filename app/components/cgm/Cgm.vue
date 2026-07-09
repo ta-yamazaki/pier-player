@@ -73,7 +73,7 @@ const cgmApi = window.cgm
 // --------------------------------------------------
 const isViewedBeforePlay = computed(() => cgm.value.isViewed && !cgm.value.isPlaying)
 const isPlaying = computed(() => cgm.value.isPlaying)
-const cgmPathExists = computed(() => isExists(cgm.value.path))
+const cgmPathExists = computed(() => isPresent(cgm.value.path))
 
 // --------------------------------------------------
 // lifecycle
@@ -110,10 +110,6 @@ function close() {
 
 function preview() {
   emit("preview")
-}
-
-function isExists(v: any) {
-  return v !== undefined && v !== null && v !== "" && v !== {}
 }
 </script>
 

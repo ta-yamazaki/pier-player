@@ -81,9 +81,6 @@ watch(showcase, (newVal) => {
 }, {deep: true})
 
 // methods
-const isExists = (v: any) =>
-    typeof v !== 'undefined' && v !== null && v !== '' && v !== {}
-
 const getShowcaseVideoTitles = async () => {
   if (overrideVideoList.value) {
     const ok = confirm('映像一覧を取得し、上書きしてもよいですか？')

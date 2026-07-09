@@ -70,10 +70,6 @@ function preview(cgm: any) {
   previewCgm.value = cgm
   videoReload.value++
 }
-
-function isExists(v: any) {
-  return v !== undefined && v !== null && v !== "" && v !== {}
-}
 </script>
 
 

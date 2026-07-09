@@ -232,8 +232,8 @@ watch(
 );
 
 /* -------------------- computed -------------------- */
-const isVideo = computed(() => /video\/.*/.test(file.value.type))
-const isAudio = computed(() => /audio\/.*/.test(file.value.type))
+const isVideo = computed(() => isVideoType(file.value.type))
+const isAudio = computed(() => isAudioType(file.value.type))
 
 /* -------------------- ファイル関連 -------------------- */
 function openFolder() {

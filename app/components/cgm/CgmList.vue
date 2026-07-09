@@ -122,10 +122,6 @@ const dragEnter = (index) => {
 };
 const dragEnd = () => (dragIndex.value = null);
 
-function isExists(v: any) {
-  return v !== undefined && v !== null && v !== "" && v !== {}
-}
-
 defineExpose({addCgm, closeStatusAll})
 </script>
 

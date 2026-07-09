@@ -67,27 +67,6 @@ watch(
 /**
  * methods
  */
-const view = async (i: number) => {
-  closeAll()
-  const vimeo = vimeoList.value[i]
-  await vimeoApi.openVimeo(toRaw(vimeo.playerUrl), toRaw(vimeo.password))
-  vimeo.isViewed = true
-}
-
-const play = (i: number) => {
-  const vimeo = vimeoList.value[i]
-  vimeoApi.playVimeo()
-  vimeo.isPlaying = true
-}
-
-const close = (i: number) => {
-  const vimeo = vimeoList.value[i]
-  vimeoApi.closeVimeo()
-  vimeo.isViewed = false
-  vimeo.isPlaying = false
-}
-
-const isBeforeViewing = (vimeo: any) => !vimeo.isViewed && !vimeo.isPlaying
 const isViewedBeforePlay = (vimeo: any) => vimeo.isViewed && !vimeo.isPlaying
 const isPlaying = (vimeo: any) => vimeo.isPlaying
 
@@ -108,7 +87,10 @@ const addVimeo = () => {
 }
 
 const removeRow = (i: number) => {
-  close(i)
+  const vimeo = vimeoList.value[i]
+  vimeoApi.closeVimeo()
+  vimeo.isViewed = false
+  vimeo.isPlaying = false
   vimeoList.value.splice(i, 1)
 }
 
@@ -125,21 +107,6 @@ const dragEnter = (index: number) => {
 
 const dragEnd = () => {
   dragIndex.value = null
-}
-
-const isExists = (v: any) =>
-    typeof v !== "undefined" && v !== null && v !== "" && v !== {}
-
-const generatePlayerUrl = (vimeo: any) => {
-  const url = vimeo.url
-  if (!url) return (vimeo.playerUrl = "")
-
-  // https://vimeo.com/[videoId] または https://vimeo.com/[videoId]?share=copy
-  const match = url.match(/^https:\/\/vimeo\.com\/(.+)/)
-  if (!match) return (vimeo.playerUrl = "")
-
-  const videoId = match[1].replace(/\?.*$/, "")
-  vimeo.playerUrl = `https://player.vimeo.com/video/${videoId}?title=0&byline=0&badge=0&portrait=0&preload=auto`
 }
 
 defineExpose({addVimeo, closeAll})

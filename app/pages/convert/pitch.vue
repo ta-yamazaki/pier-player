@@ -112,13 +112,9 @@ onUnmounted(() => {
 /**
  * computed
  */
-const isVideo = computed(() => {
-  return /video\/.*/.test(file.value.type)
-})
+const isVideo = computed(() => isVideoType(file.value.type))
 
-const isAudio = computed(() => {
-  return /audio\/.*/.test(file.value.type)
-})
+const isAudio = computed(() => isAudioType(file.value.type))
 
 const semitonesText = computed(() => {
   if (semitones.value > 0) return "+" + semitones.value;

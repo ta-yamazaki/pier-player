@@ -7,7 +7,7 @@
              placeholder="映像タイトル（完全一致）">
     </p>
     <p>
-      <button v-if="isExists(vimeo.title) && !vimeo.isViewed"
+      <button v-if="isPresent(vimeo.title) && !vimeo.isViewed"
               class="button is-link is-outlined ml-2"
               @click="view()"
               :class="{'is-loading': isLoading}"
@@ -88,9 +88,6 @@ const close = () => {
   vimeo.value.isViewed = false
   vimeo.value.isPlaying = false
 }
-
-const isExists = (v: any) =>
-    typeof v !== 'undefined' && v !== null && v !== '' && v !== {}
 </script>
 
 <style scoped>

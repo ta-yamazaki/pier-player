@@ -57,23 +57,11 @@ function droppedFile(e: DragEvent) {
   isEnter.value = false
   const file = e.dataTransfer?.files[0]
   if (!file) return
-  if (!allowedFileType(file.type)) {
+  if (!isAllowedMediaType(file.type)) {
     disallowedFileTypeMessage.value = "動画か音源ファイルのみ追加可能です。"
     return
   }
   emit("droppedFile", file)
-}
-
-function isVideo(type: string) {
-  return /video\/.*/.test(type)
-}
-
-function isAudio(type: string) {
-  return /audio\/.*/.test(type)
-}
-
-function allowedFileType(type: string) {
-  return isVideo(type) || isAudio(type)
 }
 </script>
 

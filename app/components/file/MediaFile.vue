@@ -63,8 +63,8 @@ onMounted(() => {
 });
 
 // methods
-const isVideo = () => file.value.type.match(/video\/.*/);
-const isAudio = () => file.value.type.match(/audio\/.*/);
+const isVideo = () => isVideoType(file.value.type);
+const isAudio = () => isAudioType(file.value.type);
 
 const openFolder = () => {
   commonApi.openFolder(toRaw(file.value.path));

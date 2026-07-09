@@ -127,10 +127,6 @@ const dragEnd = () => {
   dragIndex.value = null
 }
 
-const isExists = (v: any) =>
-    typeof v !== 'undefined' && v !== null && v !== '' && v !== {}
-
-
 const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {
   if (isOverride) vimeoList.value = toRaw(titles)
   else vimeoList.value = [...toRaw(vimeoList.value), ...titles]

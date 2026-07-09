@@ -14,7 +14,7 @@
               class="button is-small is-link is-outlined ml-2"
               @click="view()"
               :class="{'is-loading': isLoading}"
-              :disabled="!isExists(vimeo.playerUrl)"
+              :disabled="!isPresent(vimeo.playerUrl)"
       ><b>表示</b></button>
       <button v-if="isViewedBeforePlay"
               class="button is-small is-primary ml-2"
@@ -96,7 +96,7 @@ const vimeoApi = window.vimeo
 const isBeforeViewing = computed(() => !vimeo.value.isViewed && !vimeo.value.isPlaying)
 const isViewedBeforePlay = computed(() => vimeo.value.isViewed && !vimeo.value.isPlaying)
 const isPlaying = computed(() => vimeo.value.isPlaying)
-const invalidUrl = computed(() => isExists(vimeo.value.url) && !isExists(vimeo.value.playerUrl))
+const invalidUrl = computed(() => isPresent(vimeo.value.url) && !isPresent(vimeo.value.playerUrl))
 
 /**
  * lifecycle
@@ -130,9 +130,6 @@ const close = () => {
   vimeo.value.isViewed = false
   vimeo.value.isPlaying = false
 }
-
-const isExists = (v: any) =>
-    typeof v !== "undefined" && v !== null && v !== "" && v !== {}
 
 const generatePlayerUrl = () => {
   const url = vimeo.value.url
