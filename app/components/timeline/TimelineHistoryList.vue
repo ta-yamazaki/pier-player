@@ -30,13 +30,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(file, i) in filteredFiles" :key="file"
+        <tr v-for="file in filteredFiles" :key="file.name"
             class="is-clickable"
-            @click="toggle(i)">
+            @click="toggle(file)">
           <td class="fitContent is-size-7">
             <input type="checkbox"
                    class="is-clickable"
-                   :checked="isSelected(i)">
+                   :checked="isSelected(file)">
           </td>
           <td style="line-break: anywhere">{{ file.name }}</td>
           <td>{{ new Date(file.updatedAt).toLocaleDateString() }}</td>
@@ -69,7 +69,7 @@ onMounted(async () => {
 
 /* -------------------- computed -------------------- */
 const filteredFiles = computed(() => {
-      if (!searchText) return files
+      if (!searchText.value) return files.value
       return files.value.filter((file) => file.name.includes(searchText.value));
     }
 );
@@ -79,15 +79,13 @@ function deselectAll() {
   selectedFiles.value = []
 }
 
-function toggle(i: number) {
-  const file = files.value[i]
+function toggle(file: any) {
   const index = selectedFiles.value.indexOf(file)
   if (index >= 0) selectedFiles.value.splice(index, 1)
   else selectedFiles.value.push(file)
 }
 
-function isSelected(i: number) {
-  const file = files.value[i]
+function isSelected(file: any) {
   return selectedFiles.value.includes(file)
 }
 
