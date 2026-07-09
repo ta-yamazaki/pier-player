@@ -13,10 +13,10 @@ export const createVimeoWindow = () => {
         backgroundColor: 'black',
         // opacity: 0,
         alwaysOnTop: false,
+        // 外部サイトをロードするためNode権限を渡さず、webSecurityも有効のまま
         webPreferences: {
-            nodeIntegration: true,
+            nodeIntegration: false,
             contextIsolation: true,
-            webSecurity: false,
             preload: path.join(MAIN_DIST, '/vimeoReceiver.js')
         },
     });

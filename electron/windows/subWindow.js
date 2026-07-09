@@ -17,9 +17,9 @@ export const createSubWindow = () => {
         opacity: 0,
         alwaysOnTop: false,
         webPreferences: {
-            nodeIntegration: true,
+            nodeIntegration: false,
             contextIsolation: true,
-            webSecurity: false,
+            webSecurity: false, // ローカルファイルの再生に必要
             preload: path.join(MAIN_DIST, '/subReceiver.js')
         },
     });

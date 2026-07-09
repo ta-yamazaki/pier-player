@@ -14,9 +14,9 @@ export const createMainWindow = () => {
         height: 700,
         icon: iconPath,
         webPreferences: {
-            nodeIntegration: true,
+            nodeIntegration: false,
             contextIsolation: true,
-            webSecurity: false,
+            webSecurity: false, // ローカルファイルのプレビュー再生に必要
             preload: path.join(MAIN_DIST, '/preload.js'),
         },
         titleBarStyle: 'customButtonsOnHover',
