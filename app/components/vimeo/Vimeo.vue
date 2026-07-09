@@ -90,6 +90,7 @@ const isLoading = ref(false)
 const vimeo = ref(props.vimeo)
 
 const vimeoApi = window.vimeo
+const {notifyError} = useNotification()
 
 /**
  * computed
@@ -107,7 +108,7 @@ const view = async () => {
   isLoading.value = true
   const opened = await vimeoApi.openVimeo(toRaw(vimeo.value.playerUrl), toRaw(vimeo.value.password))
   if (opened) vimeo.value.isViewed = true
-  else alert("Vimeo映像の表示に失敗しました。URLやパスワードが間違っている可能性があります。")
+  else notifyError("Vimeo映像の表示に失敗しました。URLやパスワードが間違っている可能性があります。")
   isLoading.value = false
 }
 

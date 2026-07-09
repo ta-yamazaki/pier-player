@@ -177,6 +177,7 @@ const gainMin = 0
 const gainMax = 3
 const timelineApi = window.timeline
 const commonApi = window.commonApi
+const {notifyError} = useNotification()
 
 /**
  * watch
@@ -280,13 +281,13 @@ function start() {
   const f = file.value
   timelineApi.openTimelineWindow(toRaw(f)).then((isExists: boolean) => {
     if (!isExists) {
-      alert(`ファイルが開けませんでした。\n「${f.name}」`)
+      notifyError(`ファイルが開けませんでした。「${f.name}」`)
       f.isPlaying = false
       return
     }
     f.isPlaying = true
   }).catch(() => {
-    alert(`ファイルが開けませんでした。\n「${f.name}」`)
+    notifyError(`ファイルが開けませんでした。「${f.name}」`)
     f.isPlaying = false
   }).finally(() => {
     startLoading.value = false

@@ -54,6 +54,7 @@ const files = ref<any[]>([])
 const selectedFiles = ref<any[]>([])
 const searchText = ref("")
 const timelineApi = window.timeline
+const {notify, notifyError} = useNotification()
 
 /* -------------------- ライフサイクル -------------------- */
 onMounted(async () => {
@@ -90,9 +91,9 @@ function isSelected(file: any) {
 async function addTimeline() {
   try {
     await timelineApi.storeAdditionalFiles(JSON.parse(JSON.stringify(selectedFiles.value)))
-    alert(`タイムラインに ${selectedFiles.value.length}件 追加しました`)
+    notify(`タイムラインに ${selectedFiles.value.length}件 追加しました`)
   } catch (e) {
-    alert("追加に失敗しました")
+    notifyError("追加に失敗しました")
   }
 }
 

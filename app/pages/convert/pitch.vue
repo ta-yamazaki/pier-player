@@ -65,7 +65,7 @@ import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import {useNotification} from "~/composables/useNotification";
 
-const {notify} = useNotification()
+const {notify, notifyError} = useNotification()
 
 /**
  * state
@@ -151,7 +151,7 @@ function convertFile() {
       })
       .catch((err: any) => {
         progress.value = 0;
-        alert("変換できませんでした。");
+        notifyError("変換できませんでした。");
         console.error("変換失敗:", err);
       })
       .finally(() => {

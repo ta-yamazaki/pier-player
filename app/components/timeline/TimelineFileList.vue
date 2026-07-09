@@ -44,6 +44,7 @@ type Emits = {
 const emit = defineEmits<Emits>();
 
 const timelineApi = window.timeline
+const {notifyError} = useNotification()
 
 const files = useStoredList<any>(
     () => timelineApi.getFiles(),
@@ -51,7 +52,7 @@ const files = useStoredList<any>(
 )
 const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(files, () => {
   if (playingFileExists.value) {
-    alert("再生中は順番を変えられません")
+    notifyError("再生中は順番を変えられません")
     return false
   }
   return true
@@ -82,7 +83,7 @@ function mediaEnded(i: number) {
 
 function continuousPlay(nextFile: any) {
   if (!nextFile.exists) {
-    alert(`次のファイルが読み込めません。ファイルが無いか、アクセスできない場所にあります。\n\n${nextFile.name}`)
+    notifyError(`次のファイルが読み込めません。ファイルが無いか、アクセスできない場所にあります。「${nextFile.name}」`)
     return;
   }
 
@@ -90,7 +91,7 @@ function continuousPlay(nextFile: any) {
   timelineApi.continuousPlay(toRaw(nextFile)).then((isExists: boolean) => {
     if (!isExists) {
       nextFile.isPlaying = false
-      alert(`ファイルが開けませんでした。\n「${nextFile.name}」`)
+      notifyError(`ファイルが開けませんでした。「${nextFile.name}」`)
     }
   })
 }

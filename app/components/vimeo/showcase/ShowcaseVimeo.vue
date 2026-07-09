@@ -53,6 +53,7 @@ const vimeo = ref(props.vimeo)
 
 // API (Electron preload で expose 済みのやつを参照)
 const showcaseApi = window.showcaseApi
+const {notifyError} = useNotification()
 
 // computed
 const isViewedBeforePlay = computed(() => vimeo.value.isViewed && !vimeo.value.isPlaying)
@@ -64,9 +65,9 @@ const view = () => {
   isLoading.value = true
   showcaseApi.openVimeoShowcase(toRaw(vimeo.value), unref(props.showcaseUrlWithPassword)).then((opened: boolean) => {
     if (opened) vimeo.value.isViewed = true
-    else alert("ショーケース映像の表示に失敗しました。URLやタイトルが間違っている可能性があります。")
+    else notifyError("ショーケース映像の表示に失敗しました。URLやタイトルが間違っている可能性があります。")
   }).catch((e: any) => {
-    alert("ショーケース映像の表示に失敗しました。URLやタイトルが間違っている可能性があります。")
+    notifyError("ショーケース映像の表示に失敗しました。URLやタイトルが間違っている可能性があります。")
     console.error(e)
   }).finally(() => {
     isLoading.value = false

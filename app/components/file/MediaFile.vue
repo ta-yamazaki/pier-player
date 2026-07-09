@@ -57,6 +57,7 @@ const props = defineProps<Props>();
 const file = ref(props.file);
 const api = window.api;
 const commonApi = window.commonApi;
+const {notifyError} = useNotification();
 
 // init
 onMounted(() => {
@@ -76,7 +77,7 @@ const play = () => {
   file.value.isPlaying = true;
   api.openSubWindow(toRaw(file.value)).then((isExists) => {
     if (!isExists) {
-      alert(`ファイルが開けませんでした。\n「${file.value.name}」`);
+      notifyError(`ファイルが開けませんでした。「${file.value.name}」`);
       file.value.isPlaying = false;
     }
   });

@@ -34,6 +34,7 @@ const previewCgm = ref({title: "", path: ""})
 const videoReload = ref(0)
 
 const cgmApi = window.cgm
+const {notifyError} = useNotification()
 
 // --------------------------------------------------
 // lifecycle
@@ -42,7 +43,7 @@ let offErrorCgmOpen: (() => void) | null = null
 
 onMounted(async () => {
   offErrorCgmOpen = cgmApi.errorCgmOpen(() => {
-    alert("CGM映像の表示に失敗しました。")
+    notifyError("CGM映像の表示に失敗しました。")
   })
 })
 

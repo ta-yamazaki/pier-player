@@ -53,6 +53,7 @@ const showcase = reactive({
 
 // API (Electron preload で expose 済みのやつを参照)
 const showcaseApi = window.showcaseApi
+const {notify, notifyError} = useNotification()
 
 // computed
 const showcaseUrlInvalid = computed(() => {
@@ -93,7 +94,7 @@ const getShowcaseVideoTitles = async () => {
     const html = await res.text()
     const match = html.match(/"clips"\s*:\s*(\[[\s\S]*?])/)
     if (!match) {
-      alert('映像一覧を取得できませんでした。URLとパスワードを確認してください。\n\n何度試しても取得できない場合は手動で追加してください。')
+      notifyError('映像一覧を取得できませんでした。URLとパスワードを確認してください。何度試しても取得できない場合は手動で追加してください。')
       return
     }
 
@@ -105,10 +106,10 @@ const getShowcaseVideoTitles = async () => {
     }))
     emit('getShowcaseVideoTitles', overrideVideoList.value, titles)
 
-    alert('映像一覧を取得しました。')
+    notify('映像一覧を取得しました。')
   } catch (e) {
     console.error(e)
-    alert('映像一覧の取得に失敗しました。手動で追加してください。')
+    notifyError('映像一覧の取得に失敗しました。手動で追加してください。')
   } finally {
     isGettingShowcaseVideos.value = false
   }
