@@ -2,20 +2,22 @@
   <div v-if="vimeoList.length > 0" class="box py-1 px-2">
     <table class="table my-2 is-fullwidth">
       <tbody>
-      <tr v-for="(vimeo, i) in vimeoList"
+      <tr
+v-for="(vimeo, i) in vimeoList"
           :key="vimeo"
           :class="{
               'dragging': i === dragIndex,
               'has-background-primary-light': isViewedBeforePlay(vimeo),
               'has-background-danger-light': isPlaying(vimeo)
             }">
-        <td :draggable="true"
+        <td
+:draggable="true"
+            style="vertical-align: middle"
+            class="px-0 is-draggable fitContent"
             @dragstart="dragStart(i)"
             @dragenter="dragEnter(i)"
             @dragover.prevent
-            @dragend="dragEnd()"
-            style="vertical-align: middle"
-            class="px-0 is-draggable fitContent">
+            @dragend="dragEnd()">
           <NuxtIcon name="ic:baseline-drag-indicator"/>
         </td>
         <td>
@@ -25,7 +27,7 @@
           />
         </td>
         <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
-          <button class="delete" @click="removeRow(i)"></button>
+          <button class="delete" @click="removeRow(i)"/>
         </td>
       </tr>
 
@@ -35,7 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue"
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 /**

@@ -10,12 +10,12 @@
 
   <div style="margin: auto; width: 95%; max-width: 640px">
     <ShowcaseSetting
-        @updateUrlWithPassword="(val) => showcaseUrlWithPassword = val"
-        @getShowcaseVideoTitles="getShowcaseVideoTitles"
+        @update-url-with-password="(val) => showcaseUrlWithPassword = val"
+        @get-showcase-video-titles="getShowcaseVideoTitles"
     />
     <ShowcaseVimeoList
         ref="showcaseVimeoListRef"
-        :showcaseUrlWithPassword="showcaseUrlWithPassword"
+        :showcase-url-with-password="showcaseUrlWithPassword"
     />
   </div>
 </template>

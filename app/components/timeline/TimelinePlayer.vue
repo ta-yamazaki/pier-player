@@ -1,6 +1,6 @@
 <template>
   <div class="timelinePlayer">
-    <Loader v-if="!playerMeta.selectedFilename"></Loader>
+    <Loader v-if="!playerMeta.selectedFilename"/>
     <template v-else>
       <div class="has-text-centered">{{ playerMeta.selectedFilename }}</div>
       <nav class="level is-mobile mb-1">
@@ -14,18 +14,19 @@
             @mousedown="startSeek"
             @mousemove="onMouseMove"
             @mouseleave="hideTooltip"
-        ></progress>
+        />
         <p>{{ durationColon }}</p>
       </nav>
       <!-- tooltip -->
-      <div v-if="tooltip.visible"
+      <div
+v-if="tooltip.visible"
            class="tooltip"
            :style="{ left: tooltip.x + 'px' }">
         {{ tooltip.value }}
       </div>
 
       <nav class="level is-mobile">
-        <p class="level-item"></p>
+        <p class="level-item"/>
         <p class="level-item">
           <NuxtIconPlayer name="mdi:skip-previous" @click="restart()"/>
         </p>
@@ -33,11 +34,13 @@
           <NuxtIconPlayer name="mdi:rewind-10" @click="rewind(10)"/>
         </p>
         <p class="level-item">
-          <NuxtIconPlayer v-if="!playerMeta.isPlaying"
+          <NuxtIconPlayer
+v-if="!playerMeta.isPlaying"
                           name="mdi:play-circle" size="48"
                           :color="'var(--bulma-primary-30)'"
                           @click="play()"/>
-          <NuxtIconPlayer v-if="playerMeta.isPlaying"
+          <NuxtIconPlayer
+v-if="playerMeta.isPlaying"
                           name="mdi:pause-circle" size="48"
                           :color="'var(--bulma-primary-30)'"
                           @click="pause()"/>
@@ -48,7 +51,7 @@
         <p class="level-item">
           <NuxtIconPlayer name="mdi:skip-next" @click="toEnd()"/>
         </p>
-        <p class="level-item"></p>
+        <p class="level-item"/>
       </nav>
     </template>
   </div>
@@ -75,7 +78,7 @@ interface Props {
   file: any,
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 /**
  * state

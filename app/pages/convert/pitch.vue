@@ -1,7 +1,7 @@
 <template>
   <div style="margin: auto; width: 95%; max-width: 640px">
     <h5 class="title is-5 mb-2 pt-3">ピッチ変更</h5>
-    <FileDropInput @droppedFile="selectFile" :loading="loading"/>
+    <FileDropInput :loading="loading" @dropped-file="selectFile"/>
     <div v-if="file.path" class="my-6">
       <div>
         <small>ピッチ変更するファイル</small>
@@ -17,30 +17,33 @@
             <p class="nowrap">
               <small>ピッチ変更</small>
             </p>
-            <input v-model="semitones"
+            <input
+v-model="semitones"
                    type="range"
                    class="v-center"
                    step="1" min="-12" max="12"
-                   @dblclick="semitones = 0"
-                   :disabled="loading">
+                   :disabled="loading"
+                   @dblclick="semitones = 0">
             <div class="control ml-1" style="font-size: inherit;">{{ semitonesText }}</div>
           </div>
-          <div class="level-right"></div>
+          <div class="level-right"/>
         </nav>
       </div>
 
-      <button class="button is-fullwidth is-primary mt-4"
+      <button
+class="button is-fullwidth is-primary mt-4"
               :class="{'is-loading': loading}"
-              @click="convertFile"
-              :disabled="semitones == 0 || loading">
+              :disabled="semitones == 0 || loading"
+              @click="convertFile">
         変換
       </button>
     </div>
     <div class="my-6">
       <div v-if="!converted && totalDuration">
-        <progress class="progress is-primary"
+        <progress
+class="progress is-primary"
                   :value="progress"
-                  :max="totalDuration"></progress>
+                  :max="totalDuration"/>
         <span>{{ percent.toFixed(0) }} %</span>
       </div>
       <template v-if="converted">

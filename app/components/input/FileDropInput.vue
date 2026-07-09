@@ -1,12 +1,13 @@
 <template>
   <div v-if="loading" class="dropArea loading">ドラッグ＆ドロップしてファイルを追加</div>
   <template v-else>
-    <div class="dropArea"
+    <div
+class="dropArea"
+         :class="{'enter': isEnter}"
          @dragenter="dragDropEnter()"
          @dragleave="dragDropLeave()"
          @dragover.prevent
          @drop.prevent="droppedFile($event)"
-         :class="{'enter': isEnter}"
     >ドラッグ＆ドロップしてファイルを追加
     </div>
     <p class="help is-danger">{{ disallowedFileTypeMessage }}</p>
@@ -23,7 +24,7 @@ interface Props {
   loading?: boolean;
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 /**
  * emits

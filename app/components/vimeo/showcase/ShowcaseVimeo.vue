@@ -1,23 +1,27 @@
 <template>
   <div class="field has-addons" style="white-space: nowrap;">
     <p class="control is-expanded">
-      <input type="text"
-             v-model="vimeo.title"
+      <input
+v-model="vimeo.title"
+             type="text"
              class="input"
              placeholder="映像タイトル（完全一致）">
     </p>
     <p>
-      <button v-if="isPresent(vimeo.title) && !vimeo.isViewed"
+      <button
+v-if="isPresent(vimeo.title) && !vimeo.isViewed"
               class="button is-link is-outlined ml-2"
+              :class="{'is-loading': isLoading}"
               @click="view()"
-              :class="{'is-loading': isLoading}"
       ><b>表示</b></button>
-      <button v-if="isViewedBeforePlay"
+      <button
+v-if="isViewedBeforePlay"
               class="button is-primary ml-2"
-              @click="play()"
               :class="{'is-loading': isLoading}"
+              @click="play()"
       ><b>再生</b></button>
-      <button v-if="isPlaying"
+      <button
+v-if="isPlaying"
               class="button is-danger ml-2"
               @click="close()"
       ><b>閉じる</b></button>

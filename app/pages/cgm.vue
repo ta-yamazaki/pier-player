@@ -14,8 +14,9 @@
       <small class="mt-4 mb-1">映像プレビュー ※再生すると音が出ます</small>
       <h6 class="title is-6 mb-2">{{ previewCgm.title }}</h6>
       <div style="aspect-ratio: 16/9">
-        <iframe :src="previewCgm.path" :key="videoReload"
-                width="100%" height="100%"></iframe>
+        <iframe
+:key="videoReload" :src="previewCgm.path"
+                width="100%" height="100%"/>
       </div>
     </div>
   </div>

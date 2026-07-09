@@ -17,7 +17,7 @@ interface Props {
 }
 
 // withDefaults を使って default 値を指定
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   size: "24",
   color: "'var(--bulma-primary-dark)'"
 });

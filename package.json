@@ -12,7 +12,9 @@
     "generate": "nuxi generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "release": "node release.js"
+    "release": "node release.js",
+    "test": "vitest run",
+    "lint": "eslint ."
   },
   "dependencies": {
     "ffmpeg-static": "^5.2.0",
@@ -32,6 +34,7 @@
     "nuxt-electron": "^0.7.0",
     "vite-plugin-electron": "^0.28.4",
     "vite-plugin-electron-renderer": "^0.14.5",
+    "vitest": "^4.1.10",
     "vue": "^3.4.27",
     "vue-router": "^4.3.2"
   }

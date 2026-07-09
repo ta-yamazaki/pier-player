@@ -38,7 +38,7 @@ function checkForUpdatesDialog() {
     autoUpdater.checkForUpdatesAndNotify();
 
     // ダウンロード完了時
-    autoUpdater.on('update-downloaded', (info) => {
+    autoUpdater.on('update-downloaded', () => {
         dialog.showMessageBox({
             type: 'info',
             title: 'アップデートがあります',

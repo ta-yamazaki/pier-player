@@ -9,39 +9,41 @@
     <table class="table my-2 is-narrow is-fullwidth">
       <thead>
       <tr class="is-size-7" style="white-space: nowrap;">
-        <th></th>
+        <th/>
         <th>
           <span>タイトル（完全一致）</span>
         </th>
-        <th></th>
+        <th/>
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(vimeo, i) in vimeoList"
+      <tr
+v-for="(vimeo, i) in vimeoList"
           :key="vimeo"
           :class="{
               'dragging': i === dragIndex,
               'has-background-primary-light': isViewedBeforePlay(vimeo),
               'has-background-danger-light': isPlaying(vimeo)
             }">
-        <td :draggable="true"
+        <td
+:draggable="true"
+            style="vertical-align: middle"
+            class="px-0 is-draggable fitContent"
             @dragstart="dragStart(i)"
             @dragenter="dragEnter(i)"
             @dragover.prevent
-            @dragend="dragEnd()"
-            style="vertical-align: middle"
-            class="px-0 is-draggable fitContent">
+            @dragend="dragEnd()">
           <NuxtIcon name="ic:baseline-drag-indicator"/>
         </td>
         <td style="width: 30rem;">
           <ShowcaseVimeo
               :vimeo="vimeo"
-              :showcaseUrlWithPassword="showcaseUrlWithPassword"
+              :showcase-url-with-password="showcaseUrlWithPassword"
               @view="closeAll"
           />
         </td>
         <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
-          <button class="delete" @click="removeRow(i)"></button>
+          <button class="delete" @click="removeRow(i)"/>
         </td>
       </tr>
 
@@ -55,7 +57,6 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue'
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 import ShowcaseVimeo from "~/components/vimeo/showcase/ShowcaseVimeo.vue";
 
@@ -63,10 +64,10 @@ import ShowcaseVimeo from "~/components/vimeo/showcase/ShowcaseVimeo.vue";
  * Props
  */
 interface Props {
-  showcaseUrlWithPassword: String,
+  showcaseUrlWithPassword: string,
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 // API (Electron preload で expose 済みのやつを参照)
 const showcaseApi = window.showcaseApi

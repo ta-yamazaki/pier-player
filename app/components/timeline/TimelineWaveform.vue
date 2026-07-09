@@ -1,6 +1,6 @@
 <template>
   <p v-if="!isReady" style="height: 0">波形読み込み中...</p>
-  <div ref="containerRef"></div>
+  <div ref="containerRef"/>
 </template>
 
 <script setup lang="ts">
@@ -39,7 +39,7 @@ const {waveSurfer, totalDuration, isReady} = useWaveSurfer({
   }
 })
 
-const {hoverPlugin} = useWaveSurferHover({
+useWaveSurferHover({
   waveSurfer,
   hoverOptions: {
     labelSize: 16,

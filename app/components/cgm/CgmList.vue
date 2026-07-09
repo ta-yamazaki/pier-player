@@ -7,19 +7,21 @@
           <small>※表示に少し時間がかかる場合があります。</small>
         </td>
       </tr>
-      <tr v-for="(cgm, i) in cgmList" :key="cgm"
+      <tr
+v-for="(cgm, i) in cgmList" :key="cgm"
           :class="{
               'dragging': i === dragIndex,
               'has-background-primary-light': isViewedBeforePlay(cgm),
               'has-background-danger-light': isPlaying(cgm)
             }">
-        <td :draggable="true"
+        <td
+:draggable="true"
+            style="vertical-align: middle"
+            class="px-0 is-draggable fitContent"
             @dragstart="dragStart(i)"
             @dragenter="dragEnter(i)"
             @dragover.prevent
-            @dragend="dragEnd()"
-            style="vertical-align: middle"
-            class="px-0 is-draggable fitContent">
+            @dragend="dragEnd()">
           <NuxtIcon name="ic:baseline-drag-indicator"/>
         </td>
         <td>
@@ -30,7 +32,7 @@
           />
         </td>
         <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
-          <button class="delete" @click="removeRow(i)"></button>
+          <button class="delete" @click="removeRow(i)"/>
         </td>
       </tr>
       </tbody>
@@ -39,7 +41,6 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue"
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 // --------------------------------------------------

@@ -113,7 +113,7 @@ export const registerConvertHandlers = () => {
                 reject(err);
             });
 
-            ffmpeg.on("close", (code) => {
+            ffmpeg.on("close", () => {
                 const match = stderr.match(/I:\s*(-?\d+(\.\d+)?)\s*LUFS/i);
                 if (match) {
                     resolve(parseFloat(match[1]));

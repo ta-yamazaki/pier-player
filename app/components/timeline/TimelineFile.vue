@@ -15,12 +15,14 @@
           </div>
         </div>
         <div class="level-right">
-          <button v-if="!file.isPlaying"
+          <button
+v-if="!file.isPlaying"
                   class="button is-small is-primary"
                   :class="{'is-loading': startLoading}"
                   @click="start()"
           ><b>再生</b></button>
-          <button v-if="file.isPlaying"
+          <button
+v-if="file.isPlaying"
                   class="button is-small is-danger"
                   :class="{'is-loading': startLoading}"
                   @click="close()"
@@ -36,7 +38,7 @@
         </div>
         <div class="level-right">
           <label v-if="!isLast" class="checkbox">
-            <input type="checkbox" v-model="file.continuousPlay"/>
+            <input v-model="file.continuousPlay" type="checkbox">
             次を自動再生
           </label>
         </div>
@@ -45,12 +47,12 @@
       <div v-if="editorOpen" class="mx-2 mt-2 mb-0 is-size-7 editor">
         <nav class="level is-mobile py-0 my-0 border-bottom">
           <div class="level-left">
-            <p class="nowrap" style="width: 5.75rem"></p>
+            <p class="nowrap" style="width: 5.75rem"/>
             冒頭（秒）
           </div>
           <div class="level-right">
             末尾（秒）
-            <p class="nowrap" style="width: 0.1rem"></p>
+            <p class="nowrap" style="width: 0.1rem"/>
           </div>
         </nav>
         <nav class="level is-mobile py-1 m-0 border-bottom">
@@ -59,18 +61,20 @@
               <NuxtIcon name="mdi:content-cut"/>
               カット
             </p>
-            <NuxtIconMinus @click="decreaseStartTrim()" class="is-clickable"/>
-            <input v-model="file.startTrimSec"
+            <NuxtIconMinus class="is-clickable" @click="decreaseStartTrim()"/>
+            <input
+v-model="file.startTrimSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-            <NuxtIconPlus @click="increaseStartTrim()" class="is-clickable"/>
+            <NuxtIconPlus class="is-clickable" @click="increaseStartTrim()"/>
           </div>
           <div class="level-right">
-            <NuxtIconMinus @click="decreaseEndTrim()" class="is-clickable"/>
-            <input v-model="file.endTrimSec"
+            <NuxtIconMinus class="is-clickable" @click="decreaseEndTrim()"/>
+            <input
+v-model="file.endTrimSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-            <NuxtIconPlus @click="increaseEndTrim()" class="is-clickable"/>
+            <NuxtIconPlus class="is-clickable" @click="increaseEndTrim()"/>
           </div>
         </nav>
         <nav v-if="isVideo" class="level is-mobile py-1 m-0 border-bottom">
@@ -80,14 +84,16 @@
               フェード
             </p>
             <NuxtIconMinus @click="decreaseStartFade()"/>
-            <input v-model="file.startFadeSec"
+            <input
+v-model="file.startFadeSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0">
             <NuxtIconPlus @click="increaseStartFade()"/>
           </div>
           <div class="level-right">
             <NuxtIconMinus @click="decreaseEndFade()"/>
-            <input v-model="file.endFadeSec"
+            <input
+v-model="file.endFadeSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
             <NuxtIconPlus @click="increaseEndFade()"/>
@@ -99,7 +105,8 @@
               <NuxtIcon name="mdi:volume-high"/>
               音量
             </p>
-            <input v-model="file.gain"
+            <input
+v-model="file.gain"
                    type="range"
                    class="v-center"
                    :style="{background: sliderBackground()}"
@@ -108,7 +115,7 @@
             <div class="control ml-1" style="font-size: inherit;">{{ file.gain }}</div>
             <div class="has-text-grey ml-0">（元の音量＝1）</div>
           </div>
-          <div class="level-right"></div>
+          <div class="level-right"/>
         </nav>
         <nav class="py-1 m-0" style="padding-left: 5rem">
           <TimelineWaveform :file-path="file.path"/>
@@ -119,7 +126,7 @@
     <TimelinePlayer
         v-if="file.isPlaying"
         :file="file"
-        @mediaEnded="mediaEnded"
+        @media-ended="mediaEnded"
     />
   </template>
   <!-- ファイルが存在しない-->
@@ -151,11 +158,10 @@ import type {TimelineFileMeta} from "~/types/models";
 /**
  * emits
  */
-type Emits = {
-  (event: "mediaStart"): void;
-  (event: "mediaEnded"): void;
-};
-const emit = defineEmits<Emits>();
+const emit = defineEmits<{
+  mediaStart: [];
+  mediaEnded: [];
+}>();
 
 /**
  * props

@@ -41,27 +41,27 @@ export const registerStoreHandlers = () => {
     /**
      * メイン画面 Vimeoモード（個別動画）
      */
-    ipcMain.handle(VimeoChannels.getList, (event) => {
+    ipcMain.handle(VimeoChannels.getList, () => {
         return store.get(keys.vimeoList, [{url: "", title: "", password: "", isViewed: false, isPlaying: false}]);
     });
-    ipcMain.handle(VimeoChannels.storeList, (event, vimeoList) => {
+    ipcMain.handle(VimeoChannels.storeList, (_event, vimeoList) => {
         store.set(keys.vimeoList, vimeoList);
     });
 
     /**
      * メイン画面 Vimeoモード（ショーケース）
      */
-    ipcMain.handle(ShowcaseChannels.getShowcase, (event) => {
+    ipcMain.handle(ShowcaseChannels.getShowcase, () => {
         return store.get(keys.vimeoShowcase, {rawUrl: "", password: ""});
     });
-    ipcMain.handle(ShowcaseChannels.storeShowcase, (event, showcase) => {
+    ipcMain.handle(ShowcaseChannels.storeShowcase, (_event, showcase) => {
         store.set(keys.vimeoShowcase, showcase);
     });
 
-    ipcMain.handle(ShowcaseChannels.getPlayList, (event) => {
+    ipcMain.handle(ShowcaseChannels.getPlayList, () => {
         return store.get(keys.vimeoShowcasePlayList, [{title: "", isViewed: false, isPlaying: false}]);
     });
-    ipcMain.handle(ShowcaseChannels.storePlayList, (event, vimeoList) => {
+    ipcMain.handle(ShowcaseChannels.storePlayList, (_event, vimeoList) => {
         store.set(keys.vimeoShowcasePlayList, vimeoList);
     });
 

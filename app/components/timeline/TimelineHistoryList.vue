@@ -1,25 +1,28 @@
 <template>
   <p v-if="files.length === 0">履歴がありません</p>
   <template v-else>
-    <button class="button is-primary is-fullwidth my-3"
+    <button
+class="button is-primary is-fullwidth my-3"
             style="position: sticky; top: 7px; z-index:100;"
-            @click="addTimeline"
-            :disabled="selectedFiles.length === 0">
+            :disabled="selectedFiles.length === 0"
+            @click="addTimeline">
       タイムラインに追加する
       <span class="tag is-primary-light is-rounded ml-2">{{ selectedFiles.length }}</span>
     </button>
 
-    <input type="text"
+    <input
+v-model="searchText"
+           type="text"
            class="input is-light is-fullwidth my-3"
-           placeholder="検索..."
-           v-model="searchText">
+           placeholder="検索...">
 
     <div class="box py-1 px-2">
       <table class="table is-fullwidth is-hoverable">
         <thead>
         <tr class="is-size-7">
           <td class="fitContent">
-            <input type="checkbox"
+            <input
+type="checkbox"
                    class="is-clickable"
                    :checked="selectedFiles.length > 0"
                    :disabled="selectedFiles.length === 0"
@@ -30,11 +33,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="file in filteredFiles" :key="file.name"
+        <tr
+v-for="file in filteredFiles" :key="file.name"
             class="is-clickable"
             @click="toggle(file)">
           <td class="fitContent is-size-7">
-            <input type="checkbox"
+            <input
+type="checkbox"
                    class="is-clickable"
                    :checked="isSelected(file)">
           </td>
@@ -92,7 +97,7 @@ async function addTimeline() {
   try {
     await timelineApi.storeAdditionalFiles(JSON.parse(JSON.stringify(selectedFiles.value)))
     notify(`タイムラインに ${selectedFiles.value.length}件 追加しました`)
-  } catch (e) {
+  } catch {
     notifyError("追加に失敗しました")
   }
 }

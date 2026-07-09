@@ -1,14 +1,14 @@
 <template>
   <div class="tabs is-centered is-fullwidth mb-4">
     <ul>
-      <li @click="selectSundayTab()" :class="{'is-active': selectedTab === 'sunday'}"><a>主日礼拝</a></li>
-      <li @click="selectWednesdayTab()" :class="{'is-active': selectedTab === 'wednesday'}"><a>水曜礼拝</a></li>
-      <li @click="selectOtherTab()" :class="{'is-active': selectedTab === 'other'}"><a>その他</a></li>
+      <li :class="{'is-active': selectedTab === 'sunday'}" @click="selectSundayTab()"><a>主日礼拝</a></li>
+      <li :class="{'is-active': selectedTab === 'wednesday'}" @click="selectWednesdayTab()"><a>水曜礼拝</a></li>
+      <li :class="{'is-active': selectedTab === 'other'}" @click="selectOtherTab()"><a>その他</a></li>
     </ul>
   </div>
 
   <div style="margin: auto; width: 95%; max-width: 640px">
-    <FileDropInput @droppedFile="selectFile"/>
+    <FileDropInput @dropped-file="selectFile"/>
 
     <div class="buttons is-right my-2">
       <button class="button is-small" @click="reset()">表示リセット</button>
@@ -24,8 +24,8 @@
       <small class="mt-4 mb-1">映像プレビュー</small>
       <h6 class="title is-6 mb-2">{{ previewFile.name }}</h6>
       <div style="aspect-ratio: 16/9">
-        <video controls autoplay muted :key="videoReload">
-          <source :src="previewFile.path" :type="previewFile.type"/>
+        <video :key="videoReload" controls autoplay muted>
+          <source :src="previewFile.path" :type="previewFile.type">
         </video>
         <br>
         <small>※サブモニターでは再生バーは表示されません。</small>

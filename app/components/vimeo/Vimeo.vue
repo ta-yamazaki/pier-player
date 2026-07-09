@@ -1,27 +1,32 @@
 <template>
   <div class="field has-addons mb-1" style="white-space: nowrap;">
     <p class="control">
-      <a class="button is-small label is-light"
+      <a
+class="button is-small label is-light"
          :class="{'is-primary': isViewedBeforePlay, 'is-danger': isPlaying}"
       >タイトル</a>
     </p>
     <p class="control is-expanded">
-      <input type="text" v-model="vimeo.title" class="input is-small" placeholder="映像タイトル（任意）"
+      <input
+v-model="vimeo.title" type="text" class="input is-small" placeholder="映像タイトル（任意）"
              :readonly="!isBeforeViewing">
     </p>
     <p>
-      <button v-if="isBeforeViewing"
+      <button
+v-if="isBeforeViewing"
               class="button is-small is-link is-outlined ml-2"
-              @click="view()"
               :class="{'is-loading': isLoading}"
               :disabled="!isPresent(vimeo.playerUrl)"
+              @click="view()"
       ><b>表示</b></button>
-      <button v-if="isViewedBeforePlay"
+      <button
+v-if="isViewedBeforePlay"
               class="button is-small is-primary ml-2"
-              @click="play()"
               :class="{'is-loading': isLoading}"
+              @click="play()"
       ><b>再生</b></button>
-      <button v-if="isPlaying"
+      <button
+v-if="isPlaying"
               class="button is-small is-danger ml-2"
               @click="close()"
       ><b>閉じる</b></button>
@@ -31,13 +36,15 @@
   <div class="is-flex">
     <div class="field has-addons mb-1 is-flex-grow-1">
       <p class="control">
-        <a class="button is-small label is-light"
+        <a
+class="button is-small label is-light"
            :class="{'is-primary': isViewedBeforePlay, 'is-danger': isPlaying}"
         >URL<small class="required">*</small></a>
       </p>
       <p class="control is-expanded">
-        <input type="url"
-               v-model="vimeo.url"
+        <input
+v-model="vimeo.url"
+               type="url"
                class="input is-small"
                :class="{'is-danger': invalidUrl}"
                :readonly="!isBeforeViewing"
@@ -47,17 +54,20 @@
     </div>
     <div class="field has-addons mb-1 ml-2">
       <p class="control">
-        <a class="button is-small label is-light"
+        <a
+class="button is-small label is-light"
            :class="{'is-primary': isViewedBeforePlay, 'is-danger': isPlaying}"
         >パスワード</a>
       </p>
       <p class="control" style="width: 6rem">
-        <input type="text" v-model="vimeo.password" class="input is-small"
+        <input
+v-model="vimeo.password" type="text" class="input is-small"
                :readonly="!isBeforeViewing">
       </p>
     </div>
   </div>
-  <small v-if="invalidUrl"
+  <small
+v-if="invalidUrl"
          class="has-text-danger">URLの形式が正しくありません</small>
 </template>
 

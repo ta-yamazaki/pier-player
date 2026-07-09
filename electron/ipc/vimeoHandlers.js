@@ -6,7 +6,7 @@ export const registerVimeoHandlers = () => {
     /**
      * 個別動画
      */
-    ipcMain.handle(VimeoChannels.open, async (event, url, password) => {
+    ipcMain.handle(VimeoChannels.open, async (_event, url, password) => {
         const vimeoWindow = createVimeoWindow()
         try {
             await vimeoWindow.loadURL(url);
@@ -20,12 +20,12 @@ export const registerVimeoHandlers = () => {
             return false;
         }
     });
-    ipcMain.handle(VimeoChannels.play, (event) => {
+    ipcMain.handle(VimeoChannels.play, () => {
         getVimeoWindow()?.webContents.executeJavaScript(`
         document.querySelector('div[class^="PlayButton_"] > button').click();
         `, true)
     });
-    ipcMain.handle(VimeoChannels.close, (event) => {
+    ipcMain.handle(VimeoChannels.close, () => {
         const vimeoWindow = getVimeoWindow()
         if (vimeoWindow && !vimeoWindow.isDestroyed()) vimeoWindow.close();
     });
@@ -33,7 +33,7 @@ export const registerVimeoHandlers = () => {
     /**
      * ショーケース
      */
-    ipcMain.handle(ShowcaseChannels.open, async (event, vimeo, showcaseUrl) => {
+    ipcMain.handle(ShowcaseChannels.open, async (_event, vimeo, showcaseUrl) => {
         const vimeoWindow = createVimeoWindow()
         try {
             await vimeoWindow.loadURL(showcaseUrl);
@@ -46,12 +46,12 @@ export const registerVimeoHandlers = () => {
             return false;
         }
     });
-    ipcMain.handle(ShowcaseChannels.play, (event) => {
+    ipcMain.handle(ShowcaseChannels.play, () => {
         getVimeoWindow()?.webContents.executeJavaScript(`
         document.querySelector('div[class^="PlayButton_"] > button').click();
         `, true)
     });
-    ipcMain.handle(ShowcaseChannels.close, (event) => {
+    ipcMain.handle(ShowcaseChannels.close, () => {
         const vimeoWindow = getVimeoWindow()
         if (vimeoWindow && !vimeoWindow.isDestroyed()) vimeoWindow.close();
     });

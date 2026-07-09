@@ -64,28 +64,28 @@ export const registerTimelineHandlers = () => {
     });
 
     // player from playerPage
-    ipcMain.on(TimelineChannels.targetReady, (event) => {
+    ipcMain.on(TimelineChannels.targetReady, () => {
         getMainWindow().webContents.send(TimelineChannels.ready);
     });
-    ipcMain.on(TimelineChannels.targetDuration, (event, duration) => {
+    ipcMain.on(TimelineChannels.targetDuration, (_event, duration) => {
         getMainWindow().webContents.send(TimelineChannels.duration, {
             duration: duration
         });
     });
-    ipcMain.on(TimelineChannels.targetPlay, (event) => {
+    ipcMain.on(TimelineChannels.targetPlay, () => {
         getMainWindow().webContents.send(TimelineChannels.play);
     });
-    ipcMain.on(TimelineChannels.targetTimeupdate, (event, file, currentTime, duration) => {
+    ipcMain.on(TimelineChannels.targetTimeupdate, (_event, file, currentTime, duration) => {
         getMainWindow().webContents.send(TimelineChannels.timeupdate, {
             file: file,
             currentTime: currentTime,
             duration: duration
         });
     });
-    ipcMain.on(TimelineChannels.targetPaused, (event) => {
+    ipcMain.on(TimelineChannels.targetPaused, () => {
         getMainWindow().webContents.send(TimelineChannels.paused);
     });
-    ipcMain.on(TimelineChannels.targetEnded, (event) => {
+    ipcMain.on(TimelineChannels.targetEnded, () => {
         getMainWindow().webContents.send(TimelineChannels.ended);
     });
 };

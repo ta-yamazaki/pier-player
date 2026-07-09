@@ -4,7 +4,7 @@
     <div class="field">
       <label class="label is-size-7">ショーケースURL</label>
       <p class="control">
-        <input type="url" v-model="showcase.rawUrl" class="input is-small" placeholder="VimeoショーケースURL">
+        <input v-model="showcase.rawUrl" type="url" class="input is-small" placeholder="VimeoショーケースURL">
       </p>
       <p v-if="showcaseRawUrlExists && showcaseUrlInvalid" class="has-text-danger"
       >VimeoショーケースURLの形式が正しくありません。</p>
@@ -13,16 +13,17 @@
     <div class="field">
       <label class="label is-size-7">パスワード</label>
       <p class="control">
-        <input type="text" v-model="showcase.password" class="input is-small" placeholder="パスワード">
+        <input v-model="showcase.password" type="text" class="input is-small" placeholder="パスワード">
       </p>
     </div>
 
     <div v-if="canGetTitles">
       <label class="checkbox">
-        <input type="checkbox" v-model="overrideVideoList"/>
+        <input v-model="overrideVideoList" type="checkbox">
         <small>映像一覧を上書きする</small>
       </label>
-      <button class="button is-small is-primary is-outlined is-fullwidth"
+      <button
+class="button is-small is-primary is-outlined is-fullwidth"
               :class="{'is-loading': isGettingShowcaseVideos}"
               @click="getShowcaseVideoTitles()">
         ショーケースの映像一覧を取得
@@ -78,7 +79,7 @@ onMounted(async () => {
 // watchers
 watch(showcase, (newVal) => {
   showcaseApi.storeShowcase(toRaw(newVal))
-  emit('updateUrlWithPassword', showcaseUrlWithPassword) // 親に変更を通知
+  emit('updateUrlWithPassword', showcaseUrlWithPassword.value) // 親に変更を通知
 }, {deep: true})
 
 // methods

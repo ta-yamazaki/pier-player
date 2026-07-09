@@ -3,9 +3,10 @@
     <article v-if="message" class="message m-0 is-success">
       <div class="message-body is-flex is-align-items-center">
         <b class="is-flex-grow-1">{{ message }}</b>
-        <button class="delete has-background-success-dark"
+        <button
+class="delete has-background-success-dark"
                 style="opacity: 0.5"
-                @click="message = null"></button>
+                @click="message = null"/>
       </div>
     </article>
   </transition>
@@ -13,9 +14,10 @@
     <article v-if="errorMessage" class="message m-0 is-danger">
       <div class="message-body is-flex is-align-items-center">
         <b class="is-flex-grow-1">{{ errorMessage }}</b>
-        <button class="delete has-background-danger-dark"
+        <button
+class="delete has-background-danger-dark"
                 style="opacity: 0.5"
-                @click="errorMessage = null"></button>
+                @click="errorMessage = null"/>
       </div>
     </article>
   </transition>

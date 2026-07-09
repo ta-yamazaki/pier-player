@@ -16,21 +16,24 @@
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/vimeo/showcase" style="vertical-align: middle;"
+          <NuxtLink
+to="/vimeo/showcase" style="vertical-align: middle;"
                     :class="{ 'router-link-active': isVimeoActive }">
             <img src="@/assets/img/Vimeo.webp" height="18" width="18" class="mr-2">
             <small>Vimeo</small>
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/timeline" style="vertical-align: middle;"
+          <NuxtLink
+to="/timeline" style="vertical-align: middle;"
                     :class="{ 'router-link-active': isTimelineActive }">
             <img src="@/assets/img/Timeline.webp" height="18" width="18" class="mr-2">
             <small>タイムライン</small>
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/convert/pitch" style="vertical-align: middle;"
+          <NuxtLink
+to="/convert/pitch" style="vertical-align: middle;"
                     :class="{ 'router-link-active': isConvertActive }">
             <img src="@/assets/img/ConvertPitch.webp" height="18" width="18" class="mr-2">
             <small>ピッチ変更</small>

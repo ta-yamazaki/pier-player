@@ -2,24 +2,26 @@
   <div v-if="targetFiles.length > 0" class="box py-1 px-2">
   <table class="table my-2 is-fullwidth">
     <tbody>
-    <tr v-for="(file, i) in targetFiles" :key="file"
+    <tr
+v-for="(file, i) in targetFiles" :key="file"
         :class="{
               'dragging': i === dragIndex,
               'has-background-primary-light has-text-weight-bold': file.isPlaying
             }">
-      <td :draggable="true"
+      <td
+:draggable="true"
+          class="px-0 fitContent"
           @dragstart="dragStart(i)"
           @dragenter="dragEnter(i)"
           @dragover.prevent
-          @dragend="dragEnd()"
-          class="px-0 fitContent">
+          @dragend="dragEnd()">
         <NuxtIcon name="ic:baseline-drag-indicator" class="m-0 is-draggable"/>
       </td>
       <td class="pr-0 py-0">
         <MediaFile :file="file" @play="reset" @preview="preview"/>
       </td>
       <td class="mx-2 fitContent">
-        <button class="delete" @click="removeRow(i)"></button>
+        <button class="delete" @click="removeRow(i)"/>
       </td>
     </tr>
     </tbody>

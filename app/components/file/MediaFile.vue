@@ -13,16 +13,18 @@
           v-if="file.exists"
           class="has-text-grey ml-1 is-clickable"
           @click="openFolder()"/>
-      <p class="has-text-danger" v-if="!file.exists"
+      <p v-if="!file.exists" class="has-text-danger"
       >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
     </div>
     <div class="ml-auto mr-0">
-      <button v-if="file.path && !file.isPlaying"
+      <button
+v-if="file.path && !file.isPlaying"
               class="button is-small is-primary"
-              @click="play()"
               :disabled="!file.exists"
+              @click="play()"
       ><b>再生</b></button>
-      <button v-if="file.isPlaying"
+      <button
+v-if="file.isPlaying"
               class="button is-small is-danger"
               @click="close()"
       ><b>停止</b></button>

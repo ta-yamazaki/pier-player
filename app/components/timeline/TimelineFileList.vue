@@ -1,30 +1,33 @@
 <template>
-  <table v-if="files.length > 0"
+  <table
+v-if="files.length > 0"
          class="table my-2 is-fullwidth borderless"
          style="background-color: transparent">
     <tbody>
-    <tr v-for="(file, i) in files"
+    <tr
+v-for="(file, i) in files"
         :key="file"
         :class="{'dragging': i === dragIndex}">
-      <td :draggable="!playingFileExists"
+      <td
+:draggable="!playingFileExists"
+          class="pl-1 pr-0 fitContent"
+          style="white-space: nowrap;"
           @dragstart="dragStart(i)"
           @dragenter="dragEnter(i)"
           @dragover.prevent
-          @dragend="dragEnd()"
-          class="pl-1 pr-0 fitContent"
-          style="white-space: nowrap;">
+          @dragend="dragEnd()">
         <NuxtIcon name="ic:baseline-drag-indicator" class="m-0 is-draggable"/>
       </td>
       <td class="p-1" style="font-size: 0.9rem; overflow-x: auto;">
         <TimelineFile
             :file="file"
-            @mediaStart="mediaStart"
-            @mediaEnded="mediaEnded(i)"
-            :isLast="i === files.length - 1"
+            :is-last="i === files.length - 1"
+            @media-start="mediaStart"
+            @media-ended="mediaEnded(i)"
         />
       </td>
       <td class="mx-0 px-1 fitContent">
-        <button class="delete" @click="removeRow(i)"></button>
+        <button class="delete" @click="removeRow(i)"/>
       </td>
     </tr>
     </tbody>
@@ -32,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from 'vue'
+import {computed, watch} from 'vue'
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 /**
