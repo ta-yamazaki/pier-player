@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
+import type {ShowcaseItem} from "~/types/models";
 
 /**
  * emits
@@ -40,8 +41,8 @@ const emit = defineEmits<Emits>();
  * Props
  */
 interface Props {
-  vimeo: any,
-  showcaseUrlWithPassword: String,
+  vimeo: ShowcaseItem,
+  showcaseUrlWithPassword: string,
 }
 
 const props = defineProps<Props>();

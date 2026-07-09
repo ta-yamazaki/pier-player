@@ -40,6 +40,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from "vue"
+import type {CgmItem} from "~/types/models";
 
 /**
  * emits
@@ -55,7 +56,7 @@ const emit = defineEmits<Emits>();
  * Props
  */
 interface Props {
-  cgm: any;
+  cgm: CgmItem;
 }
 
 const props = defineProps<Props>();

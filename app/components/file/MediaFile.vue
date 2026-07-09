@@ -35,11 +35,12 @@ import {onMounted, ref} from "vue";
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconFolder from "~/components/icon/NuxtIconFolder.vue";
+import type {FileMeta} from "~/types/models";
 
 // 1つめにイベント名, ２つ目にemitする値の型
 type Emits = {
   (event: "play"): void;
-  (event: "preview", value: any): void;
+  (event: "preview", value: FileMeta): void;
 };
 const emit = defineEmits<Emits>();
 
@@ -47,7 +48,7 @@ const emit = defineEmits<Emits>();
  * Props
  */
 interface Props {
-  file: any;
+  file: FileMeta;
 }
 
 const props = defineProps<Props>();

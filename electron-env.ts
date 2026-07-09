@@ -21,7 +21,4 @@ declare namespace NodeJS {
     }
 }
 
-// Used in Renderer process, expose in `preload.ts`
-interface Window {
-    ipcRenderer: import('electron').IpcRenderer
-}
+// レンダラーに expose される API の型は app/types/window.d.ts を参照

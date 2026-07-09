@@ -174,6 +174,7 @@ import NuxtIconMinus from "~/components/icon/NuxtIconMinus.vue";
 import NuxtIconPlus from "~/components/icon/NuxtIconPlus.vue";
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 import TimelineWaveform from "~/components/timeline/TimelineWaveform.vue";
+import type {TimelineFileMeta} from "~/types/models";
 
 /**
  * emits
@@ -188,7 +189,7 @@ const emit = defineEmits<Emits>();
  * props
  */
 interface Props {
-  file: any,
+  file: TimelineFileMeta,
   isLast: boolean,
 }
 

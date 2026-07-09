@@ -63,6 +63,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from "vue"
+import type {VimeoItem} from "~/types/models";
 
 /**
  * emits
@@ -77,7 +78,7 @@ const emit = defineEmits<Emits>();
  * Props
  */
 interface Props {
-  vimeo: any;
+  vimeo: VimeoItem;
 }
 
 const props = defineProps<Props>();
