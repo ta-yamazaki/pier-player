@@ -1,13 +1,18 @@
 // @see - https://www.electron.build/configuration/configuration
+// ビルド設定はこのファイルに一本化する（package.json の build キーは使わない）
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  "appId": "pier-player",
+  "productName": "PierPlayer",
+  // ffmpeg/ffprobe のバイナリを実行するため非ASAR（asarUnpack 相当）
   "asar": false,
   "directories": {
     "output": "release/${version}"
   },
   "files": [
     ".output/**/*",
-    "dist-electron"
+    "dist-electron/**/*",
+    "package.json"
   ],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
@@ -16,6 +21,7 @@
     ]
   },
   "win": {
+    "icon": "electron/assets/img/icon.png",
     "target": [
       {
         "target": "nsis",
@@ -31,5 +37,12 @@
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
-  }
+  },
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "ta-yamazaki",
+      "repo": "pier-player"
+    }
+  ]
 }
