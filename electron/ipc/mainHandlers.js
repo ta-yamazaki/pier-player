@@ -1,6 +1,7 @@
 import fs from 'fs';
 import {ipcMain, screen, shell} from 'electron';
 import {createSubWindow, getSubWindow, loadSubWindow} from '../windows/subWindow.js';
+import {withExists} from "../utils/fileCheck.js";
 
 export const registerMainHandlers = () => {
     ipcMain.handle("open-sub-window", async (_event, fileMeta) => {
@@ -22,19 +23,7 @@ export const registerMainHandlers = () => {
         getSubWindow()?.destroy();
     });
 
-    ipcMain.handle('checkFilePath', async (_event, file) => {
-        return {
-            ...file,
-            exists: file.path === "" ? true : fs.existsSync(file.path)
-        }
-    });
-
-    ipcMain.handle('checkFilePaths', async (_event, files) => {
-        return files.map(file => ({
-            ...file,
-            exists: file.path === "" ? true : fs.existsSync(file.path)
-        }));
-    });
+    ipcMain.handle('checkFilePath', async (_event, file) => withExists(file));
 
 
     // フォルダを開く処理

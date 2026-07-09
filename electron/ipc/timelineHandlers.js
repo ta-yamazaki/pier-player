@@ -26,20 +26,6 @@ export const registerTimelineHandlers = () => {
             return true;
         });
 
-        ipcMain.handle('checkTimelineFilePath', async (_event, file) => {
-            return {
-                ...file,
-                exists: file.path === "" ? true : fs.existsSync(file.path)
-            }
-        });
-
-        ipcMain.handle('checkTimelineFilePaths', async (_event, files) => {
-            return files.map(file => ({
-                ...file,
-                exists: file.path === "" ? true : fs.existsSync(file.path)
-            }));
-        });
-
 // player from mainPage
         ipcMain.handle('timelineRestart', (_event) => {
             getTimelineWindow().webContents.send("timelineRestart");

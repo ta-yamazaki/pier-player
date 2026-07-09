@@ -22,7 +22,6 @@ export const api = {
     openSubWindow: (fileMeta: any) => ipcRenderer.invoke("open-sub-window", fileMeta),
     closeSubWindow: () => ipcRenderer.invoke('close-window'),
     checkFilePath: (file: any) => ipcRenderer.invoke('checkFilePath', file),
-    checkFilePaths: (files: any) => ipcRenderer.invoke('checkFilePaths', files),
 
     getFiles: (target: string) => ipcRenderer.invoke("getFiles", target),
     storeFiles: (target: string, files: any) => ipcRenderer.invoke("storeFiles", target, files),
@@ -84,8 +83,7 @@ export const timelineApi = {
     openTimelineWindow: (fileMeta: any) => ipcRenderer.invoke('openTimelineWindow', fileMeta),
     closeTimelineWindow: () => ipcRenderer.invoke('closeTimelineWindow'),
     continuousPlay: (nextFileMeta: any) => ipcRenderer.invoke('timelineContinuousPlay', nextFileMeta),
-    checkFilePath: (file: any) => ipcRenderer.invoke('checkTimelineFilePath', file),
-    checkFilePaths: (files: any) => ipcRenderer.invoke('checkTimelineFilePaths', files),
+    checkFilePath: (file: any) => ipcRenderer.invoke('checkFilePath', file),
 
     // player from mainPage
     mainPlayer: {
