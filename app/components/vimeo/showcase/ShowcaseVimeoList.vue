@@ -68,22 +68,15 @@ interface Props {
 
 const props = defineProps<Props>();
 
-// state
-const vimeoList = ref<any[]>([])
-const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(vimeoList)
-
 // API (Electron preload で expose 済みのやつを参照)
 const showcaseApi = window.showcaseApi
 
-// init
-onMounted(async () => {
-  vimeoList.value = await showcaseApi.getPlayList()
-})
-
-// watchers
-watch(vimeoList, (newVal) => {
-  showcaseApi.storePlayList(toRaw(newVal))
-}, {deep: true})
+// state
+const vimeoList = useStoredList<any>(
+    () => showcaseApi.getPlayList(),
+    (list) => showcaseApi.storePlayList(list),
+)
+const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(vimeoList)
 
 // computed
 

@@ -45,9 +45,13 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 // --------------------------------------------------
 // state
 // --------------------------------------------------
-const cgmList = ref<any[]>([])
-const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(cgmList)
 const cgmApi = window.cgm
+
+const cgmList = useStoredList<any>(
+    () => cgmApi.getCgmList(),
+    (list) => cgmApi.storeCgmList(list),
+)
+const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(cgmList)
 
 /**
  * emits
@@ -57,24 +61,6 @@ type Emits = {
   (event: "preview", value: any): void;
 };
 const emit = defineEmits<Emits>();
-
-// --------------------------------------------------
-// lifecycle
-// --------------------------------------------------
-onMounted(async () => {
-  cgmList.value = await cgmApi.getCgmList()
-})
-
-// --------------------------------------------------
-// watchers
-// --------------------------------------------------
-watch(
-    cgmList,
-    (newVal) => {
-      cgmApi.storeCgmList(toRaw(newVal))
-    },
-    {deep: true}
-)
 
 // --------------------------------------------------
 // methods

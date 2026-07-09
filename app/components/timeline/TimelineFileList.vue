@@ -43,7 +43,12 @@ type Emits = {
 };
 const emit = defineEmits<Emits>();
 
-const files = ref<any[]>([])
+const timelineApi = window.timeline
+
+const files = useStoredList<any>(
+    () => timelineApi.getFiles(),
+    (list) => timelineApi.storeFiles(list),
+)
 const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(files, () => {
   if (playingFileExists.value) {
     alert("再生中は順番を変えられません")
@@ -51,16 +56,9 @@ const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(files, () => {
   }
   return true
 })
-const timelineApi = window.timeline
-
-/* -------------------- ライフサイクル -------------------- */
-onMounted(async () => {
-  files.value = await timelineApi.getFiles()
-})
 
 watch(files, (newFiles) => {
   emit("changeFiles", newFiles)
-  timelineApi.storeFiles(toRaw(newFiles))
 }, {deep: true})
 
 /* -------------------- computed -------------------- */

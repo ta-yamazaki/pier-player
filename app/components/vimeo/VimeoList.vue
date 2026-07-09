@@ -41,28 +41,13 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 /**
  * state
  */
-const vimeoList = ref<any[]>([])
-const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(vimeoList)
-
 const vimeoApi = window.vimeo
 
-/**
- * lifecycle
- */
-onMounted(async () => {
-  vimeoList.value = await vimeoApi.getVimeoList()
-})
-
-/**
- * watch
- */
-watch(
-    vimeoList,
-    (newVal) => {
-      vimeoApi.storeVimeoList(toRaw(newVal))
-    },
-    {deep: true}
+const vimeoList = useStoredList<any>(
+    () => vimeoApi.getVimeoList(),
+    (list) => vimeoApi.storeVimeoList(list),
 )
+const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(vimeoList)
 
 /**
  * methods
