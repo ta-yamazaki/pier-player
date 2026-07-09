@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue"
+import {onMounted, onUnmounted, ref} from "vue"
 import CgmList from "~/components/cgm/CgmList.vue";
 
 const cgmListRef = ref<InstanceType<typeof CgmList> | null>(null)
@@ -38,10 +38,16 @@ const cgmApi = window.cgm
 // --------------------------------------------------
 // lifecycle
 // --------------------------------------------------
+let offErrorCgmOpen: (() => void) | null = null
+
 onMounted(async () => {
-  cgmApi.errorCgmOpen(() => {
+  offErrorCgmOpen = cgmApi.errorCgmOpen(() => {
     alert("CGM映像の表示に失敗しました。")
   })
+})
+
+onUnmounted(() => {
+  offErrorCgmOpen?.()
 })
 
 // --------------------------------------------------

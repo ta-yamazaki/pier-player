@@ -59,7 +59,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import {onMounted} from "vue";
+import {onMounted, onUnmounted} from "vue";
 import FileDropInput from "~/components/input/FileDropInput.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
@@ -88,16 +88,25 @@ const commonApi = window.commonApi;
 /**
  * lifecycle
  */
+let unsubscribes: (() => void)[] = [];
+
 onMounted(() => {
-  commonApi.getTotalDuration((data: any) => {
-    totalDuration.value = data.totalDuration;
-  });
-  convertApi.onConvertProgress((data: any) => {
-    if (totalDuration.value <= 0) return
-    const sec = data.seconds;
-    progress.value = sec;
-    percent.value = ((sec / totalDuration.value) * 100);
-  });
+  unsubscribes = [
+    commonApi.getTotalDuration((data: any) => {
+      totalDuration.value = data.totalDuration;
+    }),
+    convertApi.onConvertProgress((data: any) => {
+      if (totalDuration.value <= 0) return
+      const sec = data.seconds;
+      progress.value = sec;
+      percent.value = ((sec / totalDuration.value) * 100);
+    }),
+  ];
+});
+
+onUnmounted(() => {
+  unsubscribes.forEach((off) => off());
+  unsubscribes = [];
 });
 
 /**

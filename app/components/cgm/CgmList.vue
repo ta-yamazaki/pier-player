@@ -63,10 +63,6 @@ const emit = defineEmits<Emits>();
 // --------------------------------------------------
 onMounted(async () => {
   cgmList.value = await cgmApi.getCgmList()
-
-  cgmApi.errorCgmOpen(() => {
-    alert("CGM映像の表示に失敗しました。")
-  })
 })
 
 // --------------------------------------------------

@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import "@/assets/css/timeline.css"
-import {computed, onMounted, ref} from 'vue'
+import {computed, onMounted, onUnmounted, ref} from 'vue'
 import NuxtIconPlayer from "~/components/icon/NuxtIconPlayer.vue";
 import Loader from "~/components/common/Loader.vue";
 
@@ -101,8 +101,15 @@ const playerMeta = reactive({
 })
 
 /* -------------------- ライフサイクル -------------------- */
+let unsubscribes: (() => void)[] = []
+
 onMounted(() => {
   playerHooks()
+})
+
+onUnmounted(() => {
+  unsubscribes.forEach((off) => off())
+  unsubscribes = []
 })
 
 /* -------------------- watch -------------------- */
@@ -173,28 +180,25 @@ function stopSeek() {
 }
 
 function playerHooks() {
-  timelineApi.listener.ready(() => {
-  })
-  timelineApi.listener.duration((_, p) => {
-    playerMeta.duration = p.duration
-    playerMeta.loadedmetadata = true
-  })
-  timelineApi.listener.play(() => {
-    // playerMeta.isPlaying = true
-  })
-  timelineApi.listener.timeupdate((_, p) => {
-    playerMeta.isPlaying = true
+  unsubscribes = [
+    timelineApi.listener.duration((_, p) => {
+      playerMeta.duration = p.duration
+      playerMeta.loadedmetadata = true
+    }),
+    timelineApi.listener.timeupdate((_, p) => {
+      playerMeta.isPlaying = true
 
-    playerMeta.currentTime = p.currentTime
-    playerMeta.duration = p.duration
-    playerMeta.selectedFilename = p.file.name
-  })
-  timelineApi.listener.paused(() => {
-    playerMeta.isPlaying = false
-  })
-  timelineApi.listener.ended(() => {
-    emit("mediaEnded")
-  })
+      playerMeta.currentTime = p.currentTime
+      playerMeta.duration = p.duration
+      playerMeta.selectedFilename = p.file.name
+    }),
+    timelineApi.listener.paused(() => {
+      playerMeta.isPlaying = false
+    }),
+    timelineApi.listener.ended(() => {
+      emit("mediaEnded")
+    }),
+  ]
 }
 </script>
 

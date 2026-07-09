@@ -361,23 +361,22 @@ function getLoudness() {
 async function normalize() {
   normalizeLoading.value = true
 
-  try {
-    convertApi.onNormalizeProgress((data: any) => {
-      // console.log("進捗:", data.seconds, "秒");
-      if (data.seconds < 0) return
-      if (!totalDuration.value) return
-      normalizeProgress.value = (data.seconds / totalDuration.value * 100).toFixed(0)
-    });
+  const offProgress = convertApi.onNormalizeProgress((data: any) => {
+    if (data.seconds < 0) return
+    if (!totalDuration.value) return
+    normalizeProgress.value = (data.seconds / totalDuration.value * 100).toFixed(0)
+  });
 
-    const result = await convertApi.normalize(
+  try {
+    await convertApi.normalize(
         file.value.path, isAudio.value, isVideo.value
     );
     waveformKey.value++
     getLoudness()
-    // console.log("完了:", result.outputFile);
   } catch (e: any) {
     console.error("エラー:", e.message);
   } finally {
+    offProgress()
     normalizeLoading.value = false
   }
 }

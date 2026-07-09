@@ -1,27 +1,18 @@
 import {contextBridge, ipcRenderer, webUtils} from 'electron'
-//
-// // --------- Expose some API to the Renderer process ---------
-// contextBridge.exposeInMainWorld('ipcRenderer', {
-//     on(...args: Parameters<typeof ipcRenderer.on>) {
-//         const [channel, listener] = args
-//         return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args))
-//     },
-//     off(...args: Parameters<typeof ipcRenderer.off>) {
-//         const [channel, ...omit] = args
-//         return ipcRenderer.off(channel, ...omit)
-//     },
-//     send(...args: Parameters<typeof ipcRenderer.send>) {
-//         const [channel, ...omit] = args
-//         return ipcRenderer.send(channel, ...omit)
-//     },
-//     invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
-//         const [channel, ...omit] = args
-//         return ipcRenderer.invoke(channel, ...omit)
-//     },
-//
-//     // You can expose other APTs you need here.
-//     // ...
-// })
+
+// on登録した際に解除関数を返す（コンポーネント再マウント時のリスナー蓄積防止）
+const listen = (channel: string) => (callback: any) => {
+    const listener = (event: any, ...args: any[]) => callback(event, ...args)
+    ipcRenderer.on(channel, listener)
+    return () => ipcRenderer.removeListener(channel, listener)
+}
+
+// callbackにdataのみ渡す版
+const listenData = (channel: string) => (callback: any) => {
+    const listener = (_event: any, data: any) => callback(data)
+    ipcRenderer.on(channel, listener)
+    return () => ipcRenderer.removeListener(channel, listener)
+}
 
 /**
  * ファイル再生モード
@@ -50,7 +41,7 @@ export const cgmApi = {
     storeCgmList: (cgmList: any) => ipcRenderer.invoke("storeCgmList", cgmList),
 
     // CGM windowからイベントを受け取る
-    errorCgmOpen: (callback: any) => ipcRenderer.on('errorCgmOpen', callback),
+    errorCgmOpen: listen('errorCgmOpen'),
 }
 contextBridge.exposeInMainWorld('cgm', cgmApi);
 
@@ -66,7 +57,7 @@ export const vimeoApi = {
     storeVimeoList: (vimeoList: any[]) => ipcRenderer.invoke("storeVimeoList", vimeoList),
 
     //Vimeo画面から受け取る
-    errorVimeoOpen: (callback: any) => ipcRenderer.on("errorVimeoOpen", callback),
+    errorVimeoOpen: listen("errorVimeoOpen"),
 };
 contextBridge.exposeInMainWorld('vimeo', vimeoApi);
 
@@ -109,12 +100,12 @@ export const timelineApi = {
     },
     // player from playerPage
     listener: {
-        ready: (callback: any) => ipcRenderer.on("timelineReady", callback),
-        duration: (callback: any) => ipcRenderer.on("timelineDuration", callback),
-        play: (callback: any) => ipcRenderer.on("timelinePlay", callback),
-        timeupdate: (callback: any) => ipcRenderer.on('timelineTimeupdate', callback),
-        paused: (callback: any) => ipcRenderer.on("timelinePaused", callback),
-        ended: (callback: any) => ipcRenderer.on("timelineEnded", callback),
+        ready: listen("timelineReady"),
+        duration: listen("timelineDuration"),
+        play: listen("timelinePlay"),
+        timeupdate: listen('timelineTimeupdate'),
+        paused: listen("timelinePaused"),
+        ended: listen("timelineEnded"),
     },
 
     getFiles: () => ipcRenderer.invoke("getTimelineFiles"),
@@ -131,11 +122,11 @@ contextBridge.exposeInMainWorld('timeline', timelineApi);
  */
 const convertApi = {
     convertPitch: (filePath: string, semitones: number) => ipcRenderer.invoke('convert-pitch', filePath, semitones),
-    onConvertProgress: (callback: any) => ipcRenderer.on("convert-progress", (event, data) => callback(data)),
+    onConvertProgress: listenData("convert-progress"),
 
     getLoudness: (filePath: string) => ipcRenderer.invoke('getLoudness', filePath),
     normalize: (filePath: string, isVideo: boolean, isAudio: boolean) => ipcRenderer.invoke('normalize-loudness', filePath, isVideo, isAudio),
-    onNormalizeProgress: (callback: any) => ipcRenderer.on("normalize-progress", (event, data) => callback(data)),
+    onNormalizeProgress: listenData("normalize-progress"),
 };
 contextBridge.exposeInMainWorld('convertApi', convertApi);
 
@@ -150,7 +141,7 @@ const commonApi = {
     getCurrentVersion: () => ipcRenderer.invoke("get-version"),
     checkUpdate: () => ipcRenderer.invoke('checkUpdate'),
 
-    getTotalDuration: (callback: any) => ipcRenderer.on("get-totalDuration", (event, data) => callback(data)),
+    getTotalDuration: listenData("get-totalDuration"),
 };
 contextBridge.exposeInMainWorld('commonApi', commonApi);
 
