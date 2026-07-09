@@ -46,7 +46,7 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 // state
 // --------------------------------------------------
 const cgmList = ref<any[]>([])
-const dragIndex = ref(null);
+const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(cgmList)
 const cgmApi = window.cgm
 
 /**
@@ -112,15 +112,6 @@ function removeRow(i: number) {
 function preview(cgm: any) {
   emit("preview", cgm)
 }
-
-const dragStart = (index) => (dragIndex.value = index);
-const dragEnter = (index) => {
-  if (index === dragIndex.value) return;
-  const deleteElement = cgmList.value.splice(dragIndex.value, 1)[0];
-  cgmList.value.splice(index, 0, deleteElement);
-  dragIndex.value = index;
-};
-const dragEnd = () => (dragIndex.value = null);
 
 defineExpose({addCgm, closeStatusAll})
 </script>

@@ -54,13 +54,13 @@ const props = defineProps<Props>();
  * state
  */
 const files = {
-  sunday: ref([]),
-  wednesday: ref([]),
-  other: ref([]),
+  sunday: ref<any[]>([]),
+  wednesday: ref<any[]>([]),
+  other: ref<any[]>([]),
 };
 
-const targetFiles = ref([]);
-const dragIndex = ref(null);
+const targetFiles = ref<any[]>([]);
+const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(targetFiles);
 const api = window.api;
 
 /**
@@ -101,15 +101,6 @@ const removeRow = (i) => {
 const preview = (file) => {
   emit("preview", file)
 };
-
-const dragStart = (index) => (dragIndex.value = index);
-const dragEnter = (index) => {
-  if (index === dragIndex.value) return;
-  const deleteElement = targetFiles.value.splice(dragIndex.value, 1)[0];
-  targetFiles.value.splice(index, 0, deleteElement);
-  dragIndex.value = index;
-};
-const dragEnd = () => (dragIndex.value = null);
 
 defineExpose({addFile, reset})
 

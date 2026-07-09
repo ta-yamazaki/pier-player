@@ -42,7 +42,7 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
  * state
  */
 const vimeoList = ref<any[]>([])
-const dragIndex = ref<number | null>(null)
+const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(vimeoList)
 
 const vimeoApi = window.vimeo
 
@@ -92,21 +92,6 @@ const removeRow = (i: number) => {
   vimeo.isViewed = false
   vimeo.isPlaying = false
   vimeoList.value.splice(i, 1)
-}
-
-const dragStart = (index: number) => {
-  dragIndex.value = index
-}
-
-const dragEnter = (index: number) => {
-  if (index === dragIndex.value) return
-  const deleteElement = vimeoList.value.splice(dragIndex.value!, 1)[0]
-  vimeoList.value.splice(index, 0, deleteElement)
-  dragIndex.value = index
-}
-
-const dragEnd = () => {
-  dragIndex.value = null
 }
 
 defineExpose({addVimeo, closeAll})

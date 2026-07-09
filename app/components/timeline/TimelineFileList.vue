@@ -44,7 +44,13 @@ type Emits = {
 const emit = defineEmits<Emits>();
 
 const files = ref<any[]>([])
-const dragIndex = ref<number | null>(null)
+const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(files, () => {
+  if (playingFileExists.value) {
+    alert("再生中は順番を変えられません")
+    return false
+  }
+  return true
+})
 const timelineApi = window.timeline
 
 /* -------------------- ライフサイクル -------------------- */
@@ -102,24 +108,6 @@ function addRow(file) {
 
 function removeRow(i: number) {
   files.value.splice(i, 1)
-}
-
-/* -------------------- DnD -------------------- */
-function dragStart(i: number) {
-  if (playingFileExists.value) return alert("再生中は順番を変えられません")
-  dragIndex.value = i
-}
-
-function dragEnter(i: number) {
-  if (playingFileExists.value) return alert("再生中は順番を変えられません")
-  if (i === dragIndex.value) return
-  const el = files.value.splice(dragIndex.value!, 1)[0]
-  files.value.splice(i, 0, el)
-  dragIndex.value = i
-}
-
-function dragEnd() {
-  dragIndex.value = null
 }
 
 defineExpose({addRow, reset})

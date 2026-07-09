@@ -70,7 +70,7 @@ const props = defineProps<Props>();
 
 // state
 const vimeoList = ref<any[]>([])
-const dragIndex = ref<number | null>(null)
+const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(vimeoList)
 
 // API (Electron preload で expose 済みのやつを参照)
 const showcaseApi = window.showcaseApi
@@ -110,21 +110,6 @@ const addShowcaseVimeo = () => {
 const removeRow = (i: number) => {
   showcaseApi.closeVimeoShowcase()
   vimeoList.value.splice(i, 1)
-}
-
-const dragStart = (index: number) => {
-  dragIndex.value = index
-}
-
-const dragEnter = (index: number) => {
-  if (index === dragIndex.value) return
-  const deleteElement = vimeoList.value.splice(dragIndex.value!, 1)[0]
-  vimeoList.value.splice(index, 0, deleteElement)
-  dragIndex.value = index
-}
-
-const dragEnd = () => {
-  dragIndex.value = null
 }
 
 const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {
