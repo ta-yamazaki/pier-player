@@ -4,18 +4,17 @@ import {createSubWindow, getSubWindow, loadSubWindow} from '../windows/subWindow
 
 export const registerMainHandlers = () => {
     ipcMain.handle("open-sub-window", async (_event, fileMeta) => {
-        const currentWindow = getSubWindow();
-        const subWindow = createSubWindow();
-
         if (!fs.existsSync(fileMeta.path)) return false;
 
-        const displays = screen.getAllDisplays();
-        for (const display of displays) {
-            if (display.bounds.x === 0 && display.bounds.y === 0) continue;
-            loadSubWindow(subWindow, fileMeta);
-            currentWindow.destroy()
-            break;
-        }
+        // セカンダリモニターが無い場合は何も表示しない（従来動作を維持）
+        const hasSecondaryDisplay = screen.getAllDisplays()
+            .some(display => display.bounds.x !== 0 || display.bounds.y !== 0);
+        if (!hasSecondaryDisplay) return true;
+
+        const currentWindow = getSubWindow();
+        const subWindow = createSubWindow();
+        loadSubWindow(subWindow, fileMeta);
+        currentWindow.destroy();
         return true;
     });
 
