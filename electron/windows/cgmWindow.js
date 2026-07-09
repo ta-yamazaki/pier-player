@@ -40,8 +40,6 @@ export const createCgmWindow = () => {
         }
     `);
 
-    // if (devToolsEnabled) cgmWindow.webContents.openDevTools();
-
     return cgmWindow;
 };
 

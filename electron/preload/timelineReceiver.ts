@@ -4,7 +4,6 @@ import {TimelineChannels} from '../ipc/channels'
 export const timelineReceiver = {
     // timeline windowからイベントを受け取る
     timelineWindowShow: (callback: any) => ipcRenderer.on(TimelineChannels.windowShow, callback),
-    timelineWindowHide: (callback: any) => ipcRenderer.on(TimelineChannels.windowHide, callback),
 
     // player from mainPage
     mainPlayer: {

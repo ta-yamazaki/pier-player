@@ -9,7 +9,6 @@ export const createVimeoWindow = () => {
         frame: false,
         titleBarStyle: 'hidden',
         backgroundColor: 'black',
-        // opacity: 0,
         alwaysOnTop: false,
         // 外部サイトをロードするためNode権限を渡さず、webSecurityも有効のまま
         webPreferences: {
@@ -42,9 +41,6 @@ export const createVimeoWindow = () => {
           opacity: 0 !important;
         }
     `)
-
-    // if (devToolsEnabled)
-    //     vimeoWindow.webContents.openDevTools() // デベロッパーツール
 
     return vimeoWindow;
 }

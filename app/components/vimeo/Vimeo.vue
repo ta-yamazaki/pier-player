@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue"
+import {ref} from "vue"
 import type {VimeoItem} from "~/types/models";
 
 /**
@@ -98,16 +98,6 @@ const isBeforeViewing = computed(() => !vimeo.value.isViewed && !vimeo.value.isP
 const isViewedBeforePlay = computed(() => vimeo.value.isViewed && !vimeo.value.isPlaying)
 const isPlaying = computed(() => vimeo.value.isPlaying)
 const invalidUrl = computed(() => isPresent(vimeo.value.url) && !isPresent(vimeo.value.playerUrl))
-
-/**
- * lifecycle
- */
-onMounted(async () => {
-})
-
-/**
- * watch
- */
 
 /**
  * methods

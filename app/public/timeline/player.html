@@ -2,8 +2,6 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <!--  &lt;!&ndash; https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP &ndash;&gt;-->
-  <!--  <meta http-equiv="Content-Security-Policy" content="default-src file://; script-src 'self'">-->
 </head>
 <style>
     html {
@@ -39,14 +37,7 @@
     }
 </style>
 <body>
-<!--<video id="player">-->
-<!--  <source id="source" src="" type="" />-->
-<!--</video>-->
-<!--<div id="blackScreen"></div>-->
 <script>
-    window.onload = (event) => {
-    };
-
     const body = document.getElementsByTagName('body')[0]
 
     let videoEl
@@ -123,7 +114,6 @@
             timelineListener.targetDuration(mediaEl.duration);
         });
         mediaEl.addEventListener('playing', (event) => {
-            // body.classList.remove("end")
             timelineListener.targetPlaying();
             fadeOutSetting(`1`, ``, ``)
         });
@@ -143,7 +133,6 @@
             timelineListener.targetPaused();
         });
         mediaEl.addEventListener('ended', (event) => {
-            // body.classList.add("end")
             timelineListener.targetEnded();
         });
     }
@@ -195,12 +184,6 @@
         // マージンで 30ms いれておく
         return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - 0.03;
     }
-
-    // timelineReceiver.timelineWindowHide((event) => {
-    //     body.innerHTML = ""
-    //     body.classList.remove("start")
-    //     body.classList.remove("end")
-    // })
 
     mainCallback.restart((event, param) => element().currentTime = 0)
     mainCallback.rewind((event, param) => element().currentTime -= param.seekTime)

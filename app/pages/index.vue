@@ -34,7 +34,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
 import MediaFileList from "~/components/file/MediaFileList.vue";
 import FileDropInput from "~/components/input/FileDropInput.vue";
 
@@ -47,12 +47,6 @@ const selectedTab = ref("sunday");
 const previewFile = ref({src: "", type: ""});
 const videoReload = ref(0);
 const api = window.api;
-
-/**
- * lifecycle
- */
-onMounted(async () => {
-});
 
 /**
  * methods
@@ -90,10 +84,6 @@ const selectWednesdayTab = () => {
 const selectOtherTab = () => {
   selectedTab.value = "other";
 };
-
-/**
- * watch
- */
 </script>
 
 <style scoped>

@@ -111,36 +111,8 @@
           <div class="level-right"></div>
         </nav>
         <nav class="py-1 m-0" style="padding-left: 5rem">
-          <TimelineWaveform
-              :key="waveformKey"
-              :file-path="file.path"
-              @ready="(duration) => totalDuration = duration"
-          />
+          <TimelineWaveform :file-path="file.path"/>
         </nav>
-<!--        ノーマライズ後に音源がぷつることがあるのでいったん機能非表示-->
-<!--        <nav class="level is-mobile py-1 m-0">-->
-<!--          <div class="level-left nowrap">-->
-<!--            <p style="width: 4.5rem"></p>-->
-<!--            <span>ラウドネス: </span>-->
-<!--            <span v-if="!loudnessLoading">{{ loudness || "" }}（目安: -14 ~ -16）</span>-->
-<!--            <span v-else>取得中...</span>-->
-<!--            &lt;!&ndash;            <button class="button is-small"&ndash;&gt;-->
-<!--            &lt;!&ndash;                    :class="{'is-loading': loudnessLoading}"&ndash;&gt;-->
-<!--            &lt;!&ndash;                    @click="getLoudness()"&ndash;&gt;-->
-<!--            &lt;!&ndash;            >取得&ndash;&gt;-->
-<!--            &lt;!&ndash;            </button>&ndash;&gt;-->
-<!--          </div>-->
-<!--          <div class="level-right">-->
-<!--            <template v-if="!loudnessLoading">-->
-<!--              <button class="button is-small is-white"-->
-<!--                      :class="{'is-loading': normalizeLoading}"-->
-<!--                      @click="normalize()"-->
-<!--              >ノーマライズ-->
-<!--              </button>-->
-<!--              <span v-if="normalizeLoading">{{ normalizeProgress + "%" }}</span>-->
-<!--            </template>-->
-<!--          </div>-->
-<!--        </nav>-->
       </div>
       <!-- 再生編集ここまで -->
     </div>
@@ -166,7 +138,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, toRaw, watch} from 'vue'
+import {ref, toRaw, watch} from 'vue'
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconFolder from "~/components/icon/NuxtIconFolder.vue";
@@ -196,28 +168,15 @@ interface Props {
 const props = defineProps<Props>();
 
 const file = ref(props.file)
-const totalDuration = ref<number>()
-const waveformKey = ref<number>(0)
 const editorOpen = ref(false)
 const startLoading = ref(false)
-
-const loudness = ref(0)
-const loudnessLoading = ref(false)
-const normalizeProgress = ref("0")
-const normalizeLoading = ref(false)
 
 const trimStep = 0.5
 const fadeStep = 0.1
 const gainMin = 0
 const gainMax = 3
 const timelineApi = window.timeline
-const convertApi = window.convertApi
 const commonApi = window.commonApi
-
-/* -------------------- ライフサイクル -------------------- */
-onMounted(() => {
-  // if (file.value.exists) getLoudness()
-})
 
 /**
  * watch
@@ -342,44 +301,6 @@ function close() {
 
 function mediaEnded() {
   emit("mediaEnded")
-}
-
-function getLoudness() {
-  loudnessLoading.value = true
-  convertApi.getLoudness(toRaw(file.value.path))
-      .then((result: number) => {
-        loudness.value = result
-      })
-      .catch((e: any) => {
-        console.error(file.value.path)
-        console.error(e)
-      })
-      .finally(() => {
-        loudnessLoading.value = false
-      });
-}
-
-async function normalize() {
-  normalizeLoading.value = true
-
-  const offProgress = convertApi.onNormalizeProgress((data: any) => {
-    if (data.seconds < 0) return
-    if (!totalDuration.value) return
-    normalizeProgress.value = (data.seconds / totalDuration.value * 100).toFixed(0)
-  });
-
-  try {
-    await convertApi.normalize(
-        file.value.path, isAudio.value, isVideo.value
-    );
-    waveformKey.value++
-    getLoudness()
-  } catch (e: any) {
-    console.error("エラー:", e.message);
-  } finally {
-    offProgress()
-    normalizeLoading.value = false
-  }
 }
 </script>
 

@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import "@/assets/css/timeline.css"
-import {onMounted, ref} from 'vue'
+import {ref} from 'vue'
 import TimelineFileList from "~/components/timeline/TimelineFileList.vue";
 import FileDropInput from "~/components/input/FileDropInput.vue";
 
@@ -27,14 +27,6 @@ const timelineFileListRef = ref<InstanceType<typeof TimelineFileList> | null>(nu
 const files = ref<any[]>([])
 const timelineApi = window.timeline
 
-/* -------------------- ライフサイクル -------------------- */
-onMounted(() => {
-})
-
-/* -------------------- watch -------------------- */
-
-
-/* -------------------- computed -------------------- */
 async function selectFile(file: File) {
   const path = window.webUtils.getPathForFile(file)
   const checkedFile = await timelineApi.checkFilePath({

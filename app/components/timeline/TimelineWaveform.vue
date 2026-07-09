@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue'
+import {ref, watch} from 'vue'
 import {useWaveSurfer, useWaveSurferHover} from '@meersagor/wavesurfer-vue'
 
 /**
@@ -47,13 +47,6 @@ const {hoverPlugin} = useWaveSurferHover({
   }
 })
 
-/* -------------------- ライフサイクル -------------------- */
-onMounted(() => {
-})
-
-// --------------------------------------------------
-// watchers
-// --------------------------------------------------
 watch(
     isReady, (isReady) => {
       if (isReady) emit("ready", totalDuration.value)

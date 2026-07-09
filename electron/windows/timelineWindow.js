@@ -7,8 +7,6 @@ import {TimelineChannels} from "../ipc/channels";
 let timelineWindow;
 
 export const createTimelineWindow = () => {
-    // if (timelineWindow && !timelineWindow.isDestroyed()) return timelineWindow;
-
     timelineWindow = new BrowserWindow({
         show: false,
         icon: iconPath,
@@ -32,8 +30,6 @@ export const createTimelineWindow = () => {
         timelineWindow.setFullScreen(true);
         break;
     }
-
-    // if (devToolsEnabled) timelineWindow.webContents.openDevTools();
 
     return timelineWindow;
 };

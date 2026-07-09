@@ -23,7 +23,6 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-    console.log("activate")
     if (BrowserWindow.getAllWindows().length === 0)
         initMainWindow();
 });

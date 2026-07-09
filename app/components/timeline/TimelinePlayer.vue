@@ -112,9 +112,6 @@ onUnmounted(() => {
   unsubscribes = []
 })
 
-/* -------------------- watch -------------------- */
-
-
 /* -------------------- computed -------------------- */
 const currentTimeColon = computed(() => minSecColonFrom(playerMeta.currentTime))
 const durationColon = computed(() => minSecColonFrom(playerMeta.duration))

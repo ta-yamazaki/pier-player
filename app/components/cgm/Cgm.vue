@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue"
+import {ref} from "vue"
 import type {CgmItem} from "~/types/models";
 
 /**
@@ -75,16 +75,6 @@ const cgmApi = window.cgm
 const isViewedBeforePlay = computed(() => cgm.value.isViewed && !cgm.value.isPlaying)
 const isPlaying = computed(() => cgm.value.isPlaying)
 const cgmPathExists = computed(() => isPresent(cgm.value.path))
-
-// --------------------------------------------------
-// lifecycle
-// --------------------------------------------------
-onMounted(async () => {
-})
-
-// --------------------------------------------------
-// watchers
-// --------------------------------------------------
 
 // --------------------------------------------------
 // methods

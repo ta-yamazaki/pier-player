@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import {ref} from 'vue'
 import ShowcaseVimeoList from "~/components/vimeo/showcase/ShowcaseVimeoList.vue";
 import ShowcaseSetting from "~/components/vimeo/showcase/ShowcaseSetting.vue";
 
@@ -29,14 +29,6 @@ const showcaseVimeoListRef = ref<InstanceType<typeof ShowcaseVimeoList> | null>(
 
 // state
 const showcaseUrlWithPassword = ref("")
-
-// init
-onMounted(async () => {
-})
-
-// watchers
-
-// computed
 
 // methods
 const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {

@@ -11,7 +11,6 @@ export const FileChannels = {
     getFiles: 'getFiles',
     storeFiles: 'storeFiles',
     subWindowShow: 'subWindowShow',
-    subWindowHide: 'subWindowHide',
 } as const
 
 // CGMモード
@@ -31,7 +30,6 @@ export const VimeoChannels = {
     close: 'closeVimeo',
     getList: 'getVimeoList',
     storeList: 'storeVimeoList',
-    errorOpen: 'errorVimeoOpen',
 } as const
 
 // Vimeoモード（ショーケース）
@@ -51,7 +49,6 @@ export const TimelineChannels = {
     closeWindow: 'closeTimelineWindow',
     continuousPlay: 'timelineContinuousPlay',
     windowShow: 'timelineWindowShow',
-    windowHide: 'timelineWindowHide',
 
     // メイン画面 → プレイヤーウィンドウの操作
     restart: 'timelineRestart',

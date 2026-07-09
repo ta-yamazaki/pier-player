@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import {ref} from 'vue'
 import type {ShowcaseItem} from "~/types/models";
 
 /**
@@ -53,12 +53,6 @@ const vimeo = ref(props.vimeo)
 
 // API (Electron preload で expose 済みのやつを参照)
 const showcaseApi = window.showcaseApi
-
-// init
-onMounted(() => {
-})
-
-// watchers
 
 // computed
 const isViewedBeforePlay = computed(() => vimeo.value.isViewed && !vimeo.value.isPlaying)

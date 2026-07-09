@@ -21,24 +21,9 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue"
+import {ref} from "vue"
 
 const vimeoListRef = ref<InstanceType<typeof VimeoList> | null>(null)
-
-/**
- * state
- */
-
-/**
- * lifecycle
- */
-onMounted(async () => {
-})
-
-/**
- * watch
- */
-
 
 /**
  * methods

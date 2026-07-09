@@ -7,8 +7,6 @@ import {FileChannels} from "../ipc/channels";
 let subWindow;
 
 export const createSubWindow = () => {
-    // if (subWindow && !subWindow.isDestroyed()) return subWindow;
-
     subWindow = new BrowserWindow({
         show: false,
         icon: iconPath,

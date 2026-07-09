@@ -80,12 +80,6 @@ function addFile(file: any) {
   targetFiles.value.push(file)
 }
 
-const close = (i) => {
-  const file = targetFiles.value[i];
-  api.closeSubWindow();
-  file.isPlaying = false;
-};
-
 function reset() {
   api.closeSubWindow();
   targetFiles.value.forEach((file) => {

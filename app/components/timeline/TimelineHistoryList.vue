@@ -65,8 +65,6 @@ onMounted(async () => {
   })
 })
 
-/* -------------------- watch -------------------- */
-
 /* -------------------- computed -------------------- */
 const filteredFiles = computed(() => {
       if (!searchText.value) return files.value

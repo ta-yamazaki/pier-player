@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import {ref} from 'vue'
 
 /**
  * Props
@@ -36,13 +36,6 @@ const emit = defineEmits<Emits>();
 const isEnter = ref(false)
 const disallowedFileTypeMessage = ref("")
 
-/* -------------------- ライフサイクル -------------------- */
-onMounted(async () => {
-})
-
-/* -------------------- computed -------------------- */
-
-/* -------------------- ファイル関連 -------------------- */
 /* -------------------- DnD -------------------- */
 function dragDropEnter() {
   isEnter.value = true
