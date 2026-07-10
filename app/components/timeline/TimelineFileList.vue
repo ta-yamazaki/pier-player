@@ -77,15 +77,20 @@ function mediaStart() {
 
 function mediaEnded(i: number) {
   const currentFile = files.value[i]
-  if (!currentFile.continuousPlay) return
-
   currentFile.isPlaying = false
+
+  // 自動再生オフ、または最後のファイルなら再生を終了してウィンドウを閉じる
   const nextFile = files.value[i + 1]
+  if (!currentFile.continuousPlay || !nextFile) {
+    timelineApi.closeTimelineWindow()
+    return
+  }
   continuousPlay(nextFile)
 }
 
 function continuousPlay(nextFile: any) {
   if (!nextFile.exists) {
+    timelineApi.closeTimelineWindow()
     notifyError(`次のファイルが読み込めません。ファイルが無いか、アクセスできない場所にあります。「${nextFile.name}」`)
     return;
   }
@@ -94,6 +99,7 @@ function continuousPlay(nextFile: any) {
   timelineApi.continuousPlay(toRaw(nextFile)).then((isExists: boolean) => {
     if (!isExists) {
       nextFile.isPlaying = false
+      timelineApi.closeTimelineWindow()
       notifyError(`ファイルが開けませんでした。「${nextFile.name}」`)
     }
   })
