@@ -46,7 +46,7 @@ type Emits = {
 };
 const emit = defineEmits<Emits>();
 
-const timelineApi = window.timeline
+const timelineApi = window.timelineApi
 const {notifyError} = useNotification()
 
 const files = useStoredList<any>(

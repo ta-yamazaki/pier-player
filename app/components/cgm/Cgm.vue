@@ -71,7 +71,7 @@ const isLoading = ref(false)
 // 親のリストと同一オブジェクトを共有し、変更は親のdeep watchで永続化される
 const cgm = toRef(props, 'cgm')
 
-const cgmApi = window.cgm
+const cgmApi = window.cgmApi
 
 // --------------------------------------------------
 // computed

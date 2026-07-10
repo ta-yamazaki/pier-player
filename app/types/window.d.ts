@@ -15,10 +15,10 @@ import type {
 declare global {
     interface Window {
         api: typeof api
-        cgm: typeof cgmApi
-        vimeo: typeof vimeoApi
+        cgmApi: typeof cgmApi
+        vimeoApi: typeof vimeoApi
         showcaseApi: typeof showcaseApi
-        timeline: typeof timelineApi
+        timelineApi: typeof timelineApi
         convertApi: typeof convertApi
         commonApi: typeof commonApi
         webUtils: {

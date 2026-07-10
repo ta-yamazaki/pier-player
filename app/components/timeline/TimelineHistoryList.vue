@@ -58,7 +58,7 @@ import {onMounted, ref} from 'vue'
 const files = ref<any[]>([])
 const selectedFiles = ref<any[]>([])
 const searchText = ref("")
-const timelineApi = window.timeline
+const timelineApi = window.timelineApi
 const {notify, notifyError} = useNotification()
 
 /* -------------------- ライフサイクル -------------------- */

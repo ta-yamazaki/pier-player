@@ -46,7 +46,7 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 // --------------------------------------------------
 // state
 // --------------------------------------------------
-const cgmApi = window.cgm
+const cgmApi = window.cgmApi
 
 const cgmList = useStoredList<any>(
     () => cgmApi.getCgmList().then(ensureIds),

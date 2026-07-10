@@ -79,7 +79,7 @@ npx eslint .
 
 ### FFmpeg統合
 
-`ffmpeg-static` と `ffprobe-static` をランタイム依存として同梱。ピッチシフト（rubberband）とラウドネス解析（LUFS）に使用。`electron-builder.json5` でASAR圧縮から除外して展開。
+`ffmpeg-static` と `ffprobe-static` をランタイム依存として同梱。ピッチシフト（rubberband）とラウドネス解析（LUFS）に使用。バイナリを実行できるよう `electron-builder.json5` で `asar: false`（非ASAR構成）にしている。
 
 ### ビルド設定
 

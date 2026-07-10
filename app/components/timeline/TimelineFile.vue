@@ -182,7 +182,7 @@ const trimStep = 0.5
 const fadeStep = 0.1
 const gainMin = 0
 const gainMax = 3
-const timelineApi = window.timeline
+const timelineApi = window.timelineApi
 const commonApi = window.commonApi
 const {notifyError} = useNotification()
 

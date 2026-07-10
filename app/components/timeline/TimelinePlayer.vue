@@ -90,7 +90,7 @@ const tooltip = ref({
   x: 0,
   value: ""
 });
-const timelineApi = window.timeline
+const timelineApi = window.timelineApi
 
 // プレイヤーメタ情報
 const playerMeta = reactive({

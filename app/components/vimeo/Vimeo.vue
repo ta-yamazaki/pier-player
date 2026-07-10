@@ -100,7 +100,7 @@ const isLoading = ref(false)
 // 親のリストと同一オブジェクトを共有し、変更は親のdeep watchで永続化される
 const vimeo = toRef(props, 'vimeo')
 
-const vimeoApi = window.vimeo
+const vimeoApi = window.vimeoApi
 const {notifyError} = useNotification()
 
 /**

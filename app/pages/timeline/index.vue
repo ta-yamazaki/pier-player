@@ -26,7 +26,7 @@ import FileDropInput from "~/components/input/FileDropInput.vue";
 const timelineFileListRef = ref<InstanceType<typeof TimelineFileList> | null>(null)
 
 const files = ref<any[]>([])
-const timelineApi = window.timeline
+const timelineApi = window.timelineApi
 
 async function selectFile(file: File) {
   const path = window.webUtils.getPathForFile(file)

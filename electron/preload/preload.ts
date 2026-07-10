@@ -49,7 +49,7 @@ export const cgmApi = {
     // CGM windowからイベントを受け取る
     errorCgmOpen: listen(CgmChannels.errorOpen),
 }
-contextBridge.exposeInMainWorld('cgm', cgmApi);
+contextBridge.exposeInMainWorld('cgmApi', cgmApi);
 
 /**
  * Vimeoモード（個別動画）
@@ -62,7 +62,7 @@ export const vimeoApi = {
     getVimeoList: () => ipcRenderer.invoke(VimeoChannels.getList),
     storeVimeoList: (vimeoList: any[]) => ipcRenderer.invoke(VimeoChannels.storeList, vimeoList),
 };
-contextBridge.exposeInMainWorld('vimeo', vimeoApi);
+contextBridge.exposeInMainWorld('vimeoApi', vimeoApi);
 
 /**
  * Vimeoモード（ショーケース）
@@ -116,7 +116,7 @@ export const timelineApi = {
     getHistory: () => ipcRenderer.invoke(TimelineChannels.getHistory),
     storeHistory: (file: any) => ipcRenderer.invoke(TimelineChannels.storeHistory, file),
 }
-contextBridge.exposeInMainWorld('timeline', timelineApi);
+contextBridge.exposeInMainWorld('timelineApi', timelineApi);
 
 /**
  * 変換モード

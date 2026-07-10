@@ -34,7 +34,7 @@ const cgmListRef = ref<InstanceType<typeof CgmList> | null>(null)
 const previewCgm = ref({title: "", path: ""})
 const videoReload = ref(0)
 
-const cgmApi = window.cgm
+const cgmApi = window.cgmApi
 const {notifyError} = useNotification()
 
 // --------------------------------------------------

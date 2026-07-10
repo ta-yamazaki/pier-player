@@ -42,7 +42,7 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 /**
  * state
  */
-const vimeoApi = window.vimeo
+const vimeoApi = window.vimeoApi
 
 const vimeoList = useStoredList<any>(
     () => vimeoApi.getVimeoList().then(ensureIds),
