@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from "path";
 import {ipcMain} from 'electron';
 import {execFile, spawn} from "child_process";
@@ -115,7 +114,8 @@ export const registerConvertHandlers = () => {
 
     ipcMain.handle(ConvertChannels.normalize, async (event, originalPath, isVideo, isAudio) => {
         const ext = path.extname(originalPath);
-        const outputPath = originalPath.replace(ext, `_temp${ext}`);
+        // 元ファイルは上書きせず別名で保存する（convert-pitchと同様）
+        const outputPath = originalPath.replace(ext, `_normalized${ext}`);
 
         // ffmpeg loudnorm 1パス設定
         const args = [
@@ -137,7 +137,6 @@ export const registerConvertHandlers = () => {
             onProgress: (sec) => event.sender.send(ConvertChannels.normalizeProgress, {seconds: sec}),
         });
 
-        fs.renameSync(outputPath, originalPath);
-        return {outputFile: originalPath};
+        return {outputFile: outputPath};
     });
 };

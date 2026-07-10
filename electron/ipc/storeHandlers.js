@@ -17,14 +17,19 @@ const keys = {
     timelineHistory: "timelineHistory",
 };
 
+// ファイルモードのタブ（getFiles/storeFiles がレンダラーから受け取れるキー）
+const fileTabs = ["sunday", "wednesday", "other"];
+
 export const registerStoreHandlers = () => {
     /**
      * メイン画面 ファイルモード
      */
     ipcMain.handle(FileChannels.getFiles, (_event, target) => {
+        if (!fileTabs.includes(target)) throw new Error(`不正なストアキー: ${target}`);
         return withExistsAll(store.get(target, []));
     });
     ipcMain.handle(FileChannels.storeFiles, (_event, target, files) => {
+        if (!fileTabs.includes(target)) throw new Error(`不正なストアキー: ${target}`);
         store.set(target, files);
     });
 
