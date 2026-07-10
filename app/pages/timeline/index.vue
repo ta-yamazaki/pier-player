@@ -2,7 +2,7 @@
   <div style="margin: auto; width: 95%; max-width: 640px;">
     <h5 class="title is-5 mb-2 pt-3">タイムライン</h5>
     <NuxtLink to="/timeline/history">履歴から追加する ></NuxtLink>
-    <FileDropInput @dropped-file="selectFile"/>
+    <FileDropInput multiple @dropped-files="selectFiles"/>
 
     <button
 class="button is-small is-pulled-right mb-3"
@@ -28,23 +28,26 @@ const timelineFileListRef = ref<InstanceType<typeof TimelineFileList> | null>(nu
 const files = ref<any[]>([])
 const timelineApi = window.timelineApi
 
-async function selectFile(file: File) {
-  const path = window.webUtils.getPathForFile(file)
-  const checkedFile = await timelineApi.checkFilePath({
-    path,
-    name: file.name,
-    type: file.type,
-    exists: true,
-    startTrimSec: 0,
-    endTrimSec: 0,
-    startFadeSec: 0.7,
-    endFadeSec: 0.7,
-    gain: 1,
-    continuousPlay: true,
-    key: 0,
-  })
+// ドロップされた順にリストへ追加するため、1件ずつ直列に処理する
+async function selectFiles(files: File[]) {
+  for (const file of files) {
+    const path = window.webUtils.getPathForFile(file)
+    const checkedFile = await timelineApi.checkFilePath({
+      path,
+      name: file.name,
+      type: file.type,
+      exists: true,
+      startTrimSec: 0,
+      endTrimSec: 0,
+      startFadeSec: 0.7,
+      endFadeSec: 0.7,
+      gain: 1,
+      continuousPlay: true,
+      key: 0,
+    })
 
-  timelineFileListRef.value?.addRow(checkedFile)
+    timelineFileListRef.value?.addRow(checkedFile)
+  }
 }
 
 function changeFiles(newFiles: any) {

@@ -22,15 +22,17 @@ import {ref} from 'vue'
  */
 interface Props {
   loading?: boolean;
+  multiple?: boolean;
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 /**
  * emits
  */
 type Emits = {
-  (event: "droppedFile", value: any): void;
+  (event: "droppedFile", value: File): void;
+  (event: "droppedFiles", value: File[]): void;
 };
 const emit = defineEmits<Emits>();
 
@@ -49,13 +51,20 @@ function dragDropLeave() {
 function droppedFile(e: DragEvent) {
   disallowedFileTypeMessage.value = ""
   isEnter.value = false
-  const file = e.dataTransfer?.files[0]
-  if (!file) return
-  if (!isAllowedMediaType(file.type)) {
+  const dropped = Array.from(e.dataTransfer?.files ?? [])
+  if (dropped.length === 0) return
+
+  const allowed = dropped.filter(f => isAllowedMediaType(f.type))
+  if (allowed.length < dropped.length) {
     disallowedFileTypeMessage.value = "動画か音源ファイルのみ追加可能です。"
-    return
   }
-  emit("droppedFile", file)
+  if (allowed.length === 0) return
+
+  if (props.multiple) {
+    emit("droppedFiles", allowed)
+  } else {
+    emit("droppedFile", allowed[0])
+  }
 }
 </script>
 
