@@ -41,6 +41,8 @@ async function selectFiles(files: File[]) {
       endTrimSec: 0,
       startFadeSec: 0.7,
       endFadeSec: 0.7,
+      startAudioFadeSec: 0.7,
+      endAudioFadeSec: 0.7,
       gain: 1,
       continuousPlay: true,
       key: 0,

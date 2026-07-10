@@ -77,11 +77,10 @@ v-model="file.endTrimSec"
             <NuxtIconPlus class="is-clickable" @click="adjust('endTrimSec', trimStep)"/>
           </div>
         </nav>
-        <nav class="level is-mobile py-1 m-0 border-bottom">
+        <nav v-if="isVideo" class="level is-mobile py-1 m-0 border-bottom">
           <div class="level-left">
             <p class="nowrap" style="width: 4.5rem">
-              <NuxtIcon name="material-symbols:transition-fade"/>
-              フェード
+              映像フェード
             </p>
             <NuxtIconMinus class="is-clickable" @click="adjust('startFadeSec', -fadeStep)"/>
             <input
@@ -97,6 +96,27 @@ v-model="file.endFadeSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
             <NuxtIconPlus class="is-clickable" @click="adjust('endFadeSec', fadeStep)"/>
+          </div>
+        </nav>
+        <nav class="level is-mobile py-1 m-0 border-bottom">
+          <div class="level-left">
+            <p class="nowrap" style="width: 4.5rem">
+              音声フェード
+            </p>
+            <NuxtIconMinus class="is-clickable" @click="adjust('startAudioFadeSec', -fadeStep)"/>
+            <input
+v-model="file.startAudioFadeSec"
+                   class="input is-primary borderless editInput is-small px-1 py-0"
+                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+            <NuxtIconPlus class="is-clickable" @click="adjust('startAudioFadeSec', fadeStep)"/>
+          </div>
+          <div class="level-right">
+            <NuxtIconMinus class="is-clickable" @click="adjust('endAudioFadeSec', -fadeStep)"/>
+            <input
+v-model="file.endAudioFadeSec"
+                   class="input is-primary borderless editInput is-small px-1 py-0"
+                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+            <NuxtIconPlus class="is-clickable" @click="adjust('endAudioFadeSec', fadeStep)"/>
           </div>
         </nav>
         <nav class="level is-mobile py-1 m-0">
@@ -209,7 +229,7 @@ function openFolder() {
 }
 
 /* -------------------- トリミング・フェード調整 -------------------- */
-type AdjustableKey = 'startTrimSec' | 'endTrimSec' | 'startFadeSec' | 'endFadeSec'
+type AdjustableKey = 'startTrimSec' | 'endTrimSec' | 'startFadeSec' | 'endFadeSec' | 'startAudioFadeSec' | 'endAudioFadeSec'
 
 // 指定キーの秒数を delta 分増減する（0未満にはしない）
 function adjust(key: AdjustableKey, delta: number) {

@@ -50,9 +50,18 @@ const timelineApi = window.timelineApi
 const {notifyError} = useNotification()
 
 const files = useStoredList<any>(
-    () => timelineApi.getFiles().then(ensureIds),
+    () => timelineApi.getFiles().then(ensureIds).then(ensureAudioFade),
     (list) => timelineApi.storeFiles(list),
 )
+
+// 音声フェード導入前に保存されたデータには、当時のフェード値を音声フェードとして補完する
+function ensureAudioFade(list: any[]): any[] {
+  return list.map(f => ({
+    startAudioFadeSec: f.startFadeSec ?? 0,
+    endAudioFadeSec: f.endFadeSec ?? 0,
+    ...f,
+  }))
+}
 const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(files, () => {
   if (playingFileExists.value) {
     notifyError("再生中は順番を変えられません")

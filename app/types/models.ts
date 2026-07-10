@@ -16,8 +16,10 @@ export interface FileMeta {
 export interface TimelineFileMeta extends FileMeta {
     startTrimSec: number
     endTrimSec: number
-    startFadeSec: number
+    startFadeSec: number // 映像フェード（ウィンドウopacity）
     endFadeSec: number
+    startAudioFadeSec: number // 音声フェード（GainNodeランプ）
+    endAudioFadeSec: number
     gain: number
     continuousPlay: boolean
     key: number
