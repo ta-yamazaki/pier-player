@@ -1,6 +1,7 @@
 import fs from 'fs';
-import {ipcMain, screen, shell} from 'electron';
+import {ipcMain, shell} from 'electron';
 import {createSubWindow, getSubWindow, loadSubWindow} from '../windows/subWindow.js';
+import {getSecondaryDisplay} from '../windows/playerWindow.js';
 import {withExists} from "../utils/fileCheck.js";
 import {CommonChannels, FileChannels} from "./channels";
 
@@ -9,9 +10,7 @@ export const registerMainHandlers = () => {
         if (!fs.existsSync(fileMeta.path)) return false;
 
         // セカンダリモニターが無い場合は何も表示しない（従来動作を維持）
-        const hasSecondaryDisplay = screen.getAllDisplays()
-            .some(display => display.bounds.x !== 0 || display.bounds.y !== 0);
-        if (!hasSecondaryDisplay) return true;
+        if (!getSecondaryDisplay()) return true;
 
         const currentWindow = getSubWindow();
         const subWindow = createSubWindow();

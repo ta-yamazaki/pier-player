@@ -1,48 +1,28 @@
-import {BrowserWindow, screen} from 'electron';
 import path from 'node:path';
-import {iconPath} from "../utils/path.js";
-import {MAIN_DIST} from "./mainWindow";
+import {MAIN_DIST, VITE_PUBLIC} from "../utils/path.js";
+import {isVideoType} from "../utils/media.js";
+import {createPlayerWindow} from "./playerWindow.js";
 import {FileChannels} from "../ipc/channels";
 
 let subWindow;
 
 export const createSubWindow = () => {
-    subWindow = new BrowserWindow({
-        show: false,
-        icon: iconPath,
-        frame: false,
-        titleBarStyle: 'hidden',
-        backgroundColor: 'black',
-        opacity: 0,
-        alwaysOnTop: false,
-        webPreferences: {
-            nodeIntegration: false,
-            contextIsolation: true,
-            webSecurity: false, // ローカルファイルの再生に必要
-            preload: path.join(MAIN_DIST, '/subReceiver.js')
-        },
+    subWindow = createPlayerWindow({
+        preload: path.join(MAIN_DIST, '/subReceiver.js'),
+        startTransparent: true,
+        disableWebSecurity: true, // ローカルファイルの再生に必要
     });
-
-    const displays = screen.getAllDisplays();
-    for (const display of displays) {
-        if (display.bounds.x === 0 && display.bounds.y === 0) continue;
-        subWindow.setBounds({x: display.bounds.x, y: display.bounds.y});
-        subWindow.setFullScreen(true);
-        break;
-    }
-
     return subWindow;
 };
 
 export const loadSubWindow = async (subWindow, fileMeta) => {
     if (process.env.VITE_DEV_SERVER_URL) {
         await subWindow.loadURL(path.join(process.env.VITE_DEV_SERVER_URL, 'sub/player.html'))
-        // subWindow.webContents.openDevTools()
     } else {
-        await subWindow.loadFile(path.join(process.env.VITE_PUBLIC, 'sub', 'player.html'))
+        await subWindow.loadFile(path.join(VITE_PUBLIC, 'sub', 'player.html'))
     }
 
-    if (fileMeta.type.match(/video\/.*/)) {
+    if (isVideoType(fileMeta.type)) {
         subWindow.showInactive();
         subWindow.moveTop();
     }

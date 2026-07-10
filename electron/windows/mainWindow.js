@@ -1,9 +1,6 @@
 import {app, BrowserWindow} from 'electron';
 import path from 'node:path';
-import {iconPath} from "../utils/path.js";
-
-process.env.APP_ROOT = path.join(__dirname, '..')
-export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
+import {iconPath, MAIN_DIST, VITE_PUBLIC} from "../utils/path.js";
 
 let mainWindow;
 
@@ -33,7 +30,7 @@ export const createMainWindow = () => {
         })
         mainWindow.webContents.openDevTools()
     } else {
-        mainWindow.loadFile(path.join(process.env.VITE_PUBLIC, 'index.html'))
+        mainWindow.loadFile(path.join(VITE_PUBLIC, 'index.html'))
     }
 
     return mainWindow;

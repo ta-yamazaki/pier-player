@@ -1,22 +1,9 @@
 import {app, BrowserWindow, dialog} from 'electron'
-import path from 'node:path'
 import electronUpdater from 'electron-updater'
 import {registerIpcHandlers} from "./ipc/handlers";
 import {createWindows, initMainWindow} from "./windows/windows";
 
 const {autoUpdater} = electronUpdater;
-
-// The built directory structure
-//
-// ├─┬ dist-electron
-// │ ├─┬ main
-// │ │ └── index.js
-// │ ├─┬ preload
-// │ │ └── index.js
-// │ ├─┬ renderer
-// │ │ └── index.html
-process.env.APP_ROOT = path.join(__dirname, '..')
-process.env.VITE_PUBLIC = path.join(process.env.APP_ROOT, '.output/public')
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
