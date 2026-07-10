@@ -4,6 +4,7 @@
 
 // ファイル再生モードのファイル情報
 export interface FileMeta {
+    id?: string // リスト行の :key 用（追加・読込時に付与）
     path: string
     name: string
     type: string
@@ -25,6 +26,7 @@ export interface TimelineFileMeta extends FileMeta {
 
 // CGM映像
 export interface CgmItem {
+    id?: string
     path: string
     title: string
     isViewed: boolean
@@ -33,6 +35,7 @@ export interface CgmItem {
 
 // Vimeo個別動画
 export interface VimeoItem {
+    id?: string
     url?: string
     playerUrl?: string
     title: string
@@ -43,6 +46,7 @@ export interface VimeoItem {
 
 // Vimeoショーケース内の動画
 export interface ShowcaseItem {
+    id?: string
     title: string
     isViewed: boolean
     isPlaying: boolean

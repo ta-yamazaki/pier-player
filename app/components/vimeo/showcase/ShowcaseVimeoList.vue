@@ -19,7 +19,7 @@
       <tbody>
       <tr
 v-for="(vimeo, i) in vimeoList"
-          :key="vimeo"
+          :key="vimeo.id"
           :class="{
               'dragging': i === dragIndex,
               'has-background-primary-light': isViewedBeforePlay(vimeo),
@@ -74,7 +74,7 @@ const showcaseApi = window.showcaseApi
 
 // state
 const vimeoList = useStoredList<any>(
-    () => showcaseApi.getPlayList(),
+    () => showcaseApi.getPlayList().then(ensureIds),
     (list) => showcaseApi.storePlayList(list),
 )
 const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(vimeoList)
@@ -95,6 +95,7 @@ const closeAll = () => {
 
 const addShowcaseVimeo = () => {
   vimeoList.value.push({
+    id: newId(),
     title: '',
     isViewed: false,
     isPlaying: false
@@ -107,8 +108,9 @@ const removeRow = (i: number) => {
 }
 
 const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {
-  if (isOverride) vimeoList.value = toRaw(titles)
-  else vimeoList.value = [...toRaw(vimeoList.value), ...titles]
+  const withIds = ensureIds(toRaw(titles))
+  if (isOverride) vimeoList.value = withIds
+  else vimeoList.value = [...toRaw(vimeoList.value), ...withIds]
 }
 
 defineExpose({closeAll, addShowcaseVimeo, getShowcaseVideoTitles})

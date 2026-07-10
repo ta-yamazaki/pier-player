@@ -8,7 +8,7 @@
         </td>
       </tr>
       <tr
-v-for="(cgm, i) in cgmList" :key="cgm"
+v-for="(cgm, i) in cgmList" :key="cgm.id"
           :class="{
               'dragging': i === dragIndex,
               'has-background-primary-light': isViewedBeforePlay(cgm),
@@ -49,7 +49,7 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 const cgmApi = window.cgm
 
 const cgmList = useStoredList<any>(
-    () => cgmApi.getCgmList(),
+    () => cgmApi.getCgmList().then(ensureIds),
     (list) => cgmApi.storeCgmList(list),
 )
 const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(cgmList)
@@ -84,6 +84,7 @@ function closeStatusAll() {
 
 function addCgm() {
   cgmList.value.push({
+    id: newId(),
     path: "",
     title: "",
     isViewed: false,

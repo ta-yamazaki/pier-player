@@ -6,7 +6,7 @@ v-if="files.length > 0"
     <tbody>
     <tr
 v-for="(file, i) in files"
-        :key="file"
+        :key="file.id"
         :class="{'dragging': i === dragIndex}">
       <td
 :draggable="!playingFileExists"
@@ -50,7 +50,7 @@ const timelineApi = window.timeline
 const {notifyError} = useNotification()
 
 const files = useStoredList<any>(
-    () => timelineApi.getFiles(),
+    () => timelineApi.getFiles().then(ensureIds),
     (list) => timelineApi.storeFiles(list),
 )
 const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(files, () => {
@@ -104,8 +104,8 @@ function reset() {
   files.value.forEach(f => f.isPlaying = false)
 }
 
-function addRow(file) {
-  files.value.push(file)
+function addRow(file: any) {
+  files.value.push({...file, id: newId()})
 }
 
 function removeRow(i: number) {

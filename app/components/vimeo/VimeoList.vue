@@ -4,7 +4,7 @@
       <tbody>
       <tr
 v-for="(vimeo, i) in vimeoList"
-          :key="vimeo"
+          :key="vimeo.id"
           :class="{
               'dragging': i === dragIndex,
               'has-background-primary-light': isViewedBeforePlay(vimeo),
@@ -45,7 +45,7 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 const vimeoApi = window.vimeo
 
 const vimeoList = useStoredList<any>(
-    () => vimeoApi.getVimeoList(),
+    () => vimeoApi.getVimeoList().then(ensureIds),
     (list) => vimeoApi.storeVimeoList(list),
 )
 const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(vimeoList)
@@ -66,6 +66,7 @@ const closeAll = () => {
 
 const addVimeo = () => {
   vimeoList.value.push({
+    id: newId(),
     title: "",
     isViewed: false,
     isPlaying: false

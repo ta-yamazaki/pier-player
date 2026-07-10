@@ -3,7 +3,7 @@
   <table class="table my-2 is-fullwidth">
     <tbody>
     <tr
-v-for="(file, i) in targetFiles" :key="file"
+v-for="(file, i) in targetFiles" :key="file.id"
         :class="{
               'dragging': i === dragIndex,
               'has-background-primary-light has-text-weight-bold': file.isPlaying
@@ -70,7 +70,7 @@ const api = window.api;
  */
 onMounted(async () => {
   for (const tab of Object.keys(filesByTab.value)) {
-    filesByTab.value[tab] = await api.getFiles(tab);
+    filesByTab.value[tab] = ensureIds(await api.getFiles(tab));
   }
 });
 
@@ -78,7 +78,7 @@ onMounted(async () => {
  * methods
  */
 function addFile(file: any) {
-  targetFiles.value.push(file)
+  targetFiles.value.push({...file, id: newId()})
 }
 
 function reset() {
