@@ -61,20 +61,20 @@ v-if="file.isPlaying"
               <NuxtIcon name="mdi:content-cut"/>
               カット
             </p>
-            <NuxtIconMinus class="is-clickable" @click="decreaseStartTrim()"/>
+            <NuxtIconMinus class="is-clickable" @click="adjust('startTrimSec', -trimStep)"/>
             <input
 v-model="file.startTrimSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-            <NuxtIconPlus class="is-clickable" @click="increaseStartTrim()"/>
+            <NuxtIconPlus class="is-clickable" @click="adjust('startTrimSec', trimStep)"/>
           </div>
           <div class="level-right">
-            <NuxtIconMinus class="is-clickable" @click="decreaseEndTrim()"/>
+            <NuxtIconMinus class="is-clickable" @click="adjust('endTrimSec', -trimStep)"/>
             <input
 v-model="file.endTrimSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-            <NuxtIconPlus class="is-clickable" @click="increaseEndTrim()"/>
+            <NuxtIconPlus class="is-clickable" @click="adjust('endTrimSec', trimStep)"/>
           </div>
         </nav>
         <nav v-if="isVideo" class="level is-mobile py-1 m-0 border-bottom">
@@ -83,20 +83,20 @@ v-model="file.endTrimSec"
               <NuxtIcon name="material-symbols:transition-fade"/>
               フェード
             </p>
-            <NuxtIconMinus @click="decreaseStartFade()"/>
+            <NuxtIconMinus @click="adjust('startFadeSec', -fadeStep)"/>
             <input
 v-model="file.startFadeSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0">
-            <NuxtIconPlus @click="increaseStartFade()"/>
+            <NuxtIconPlus @click="adjust('startFadeSec', fadeStep)"/>
           </div>
           <div class="level-right">
-            <NuxtIconMinus @click="decreaseEndFade()"/>
+            <NuxtIconMinus @click="adjust('endFadeSec', -fadeStep)"/>
             <input
 v-model="file.endFadeSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-            <NuxtIconPlus @click="increaseEndFade()"/>
+            <NuxtIconPlus @click="adjust('endFadeSec', fadeStep)"/>
           </div>
         </nav>
         <nav class="level is-mobile py-1 m-0">
@@ -207,46 +207,14 @@ function openFolder() {
   commonApi.openFolder(toRaw(file.value.path))
 }
 
-/* -------------------- トリミング -------------------- */
-function increaseStartTrim() {
-  const f = file.value
-  f.startTrimSec = increase(f.startTrimSec, trimStep)
-}
+/* -------------------- トリミング・フェード調整 -------------------- */
+type AdjustableKey = 'startTrimSec' | 'endTrimSec' | 'startFadeSec' | 'endFadeSec'
 
-function decreaseStartTrim() {
-  const f = file.value
-  f.startTrimSec = decrease(f.startTrimSec, trimStep)
-}
-
-function increaseEndTrim() {
-  const f = file.value
-  f.endTrimSec = increase(f.endTrimSec, trimStep)
-}
-
-function decreaseEndTrim() {
-  const f = file.value
-  f.endTrimSec = decrease(f.endTrimSec, trimStep)
-}
-
-/* -------------------- フェード -------------------- */
-function increaseStartFade() {
-  const f = file.value
-  f.startFadeSec = increase(f.startFadeSec, fadeStep)
-}
-
-function decreaseStartFade() {
-  const f = file.value
-  f.startFadeSec = decrease(f.startFadeSec, fadeStep)
-}
-
-function increaseEndFade() {
-  const f = file.value
-  f.endFadeSec = increase(f.endFadeSec, fadeStep)
-}
-
-function decreaseEndFade() {
-  const f = file.value
-  f.endFadeSec = decrease(f.endFadeSec, fadeStep)
+// 指定キーの秒数を delta 分増減する（0未満にはしない）
+function adjust(key: AdjustableKey, delta: number) {
+  const current = Number(file.value[key]) || 0
+  const next = Math.round((current + delta) * 1000) / 1000
+  file.value[key] = Math.max(0, next)
 }
 
 function sliderBackground() {
@@ -263,19 +231,6 @@ function sliderBackground() {
       transparent ${percent + 1}%)
   `
   return `${defaultLine}, ${barColor}`
-}
-
-/* -------------------- 共通計算 -------------------- */
-function increase(target: number, step: number, max: number | null = null, defaultVal: number = step) {
-  if (!target) return defaultVal
-  if (max && target >= max) return max
-  return Math.round((Number(target) + step) * 1000) / 1000
-}
-
-function decrease(target: number, step: number, min = 0, defaultVal: number = min) {
-  if (!target) return defaultVal
-  if (target <= min) return min
-  return Math.round((Number(target) - step) * 1000) / 1000
 }
 
 /* -------------------- 再生関連 -------------------- */
