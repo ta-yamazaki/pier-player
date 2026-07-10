@@ -10,7 +10,9 @@
 
     <div class="tabs is-centered is-fullwidth mb-4">
       <ul>
-        <li><NuxtLink to="/vimeo/showcase">ショーケース</NuxtLink></li>
+        <li>
+          <NuxtLink to="/vimeo/showcase">ショーケース</NuxtLink>
+        </li>
         <li class="is-active"><a>個別映像</a></li>
       </ul>
     </div>
@@ -23,7 +25,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref} from "vue"
 
 const vimeoListRef = ref<InstanceType<typeof VimeoList> | null>(null)

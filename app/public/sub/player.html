@@ -19,9 +19,14 @@
         animation-name: fadeIn;
         animation-duration: 1s;
     }
+
     @keyframes fadeIn {
-        from {opacity: 0;}
-        to {opacity: 1;}
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
 
     body.start.end {
@@ -29,9 +34,14 @@
         animation-name: blackOut;
         animation-duration: 1s;
     }
+
     @keyframes blackOut {
-        from {opacity: 1;}
-        to {opacity: 0;}
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
     }
 
     video {
@@ -62,7 +72,9 @@
                 body.classList.add("start")
             }).catch((e) => console.error(e))
 
-            video.addEventListener("ended", () => { body.classList.add("end") })
+            video.addEventListener("ended", () => {
+                body.classList.add("end")
+            })
         }
 
         function playAudio(event, param) {

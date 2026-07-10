@@ -1,12 +1,12 @@
 <template>
   <NuxtIcon
-      name="material-symbols:folder"
-      :size="size"
       :color="color"
+      :size="size"
+      name="material-symbols:folder"
   />
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 interface Props {

@@ -5,19 +5,19 @@
   </div>
   <template v-else>
     <button
-class="button is-primary is-fullwidth my-3"
-            style="position: sticky; top: 7px; z-index:100;"
-            :disabled="selectedFiles.length === 0"
-            @click="addTimeline">
+        :disabled="selectedFiles.length === 0"
+        class="button is-primary is-fullwidth my-3"
+        style="position: sticky; top: 7px; z-index:100;"
+        @click="addTimeline">
       タイムラインに追加する
       <span class="count-badge">{{ selectedFiles.length }}</span>
     </button>
 
     <input
-v-model="searchText"
-           type="text"
-           class="input is-fullwidth my-3"
-           placeholder="ファイル名で検索...">
+        v-model="searchText"
+        class="input is-fullwidth my-3"
+        placeholder="ファイル名で検索..."
+        type="text">
 
     <div class="box py-1 px-2">
       <table class="table is-fullwidth is-hoverable">
@@ -25,11 +25,11 @@ v-model="searchText"
         <tr class="is-size-7">
           <td class="fitContent">
             <input
-type="checkbox"
-                   class="is-clickable"
-                   :checked="selectedFiles.length > 0"
-                   :disabled="selectedFiles.length === 0"
-                   @click="deselectAll">
+                :checked="selectedFiles.length > 0"
+                :disabled="selectedFiles.length === 0"
+                class="is-clickable"
+                type="checkbox"
+                @click="deselectAll">
           </td>
           <td class="note">↓ 追加したいものにチェック</td>
           <td class="note">最終更新日</td>
@@ -37,14 +37,14 @@ type="checkbox"
         </thead>
         <tbody>
         <tr
-v-for="file in filteredFiles" :key="file.name"
+            v-for="file in filteredFiles" :key="file.name"
             class="is-clickable"
             @click="toggle(file)">
           <td class="fitContent is-size-7">
             <input
-type="checkbox"
-                   class="is-clickable"
-                   :checked="isSelected(file)">
+                :checked="isSelected(file)"
+                class="is-clickable"
+                type="checkbox">
           </td>
           <td style="line-break: anywhere">{{ file.name }}</td>
           <td>{{ new Date(file.updatedAt).toLocaleDateString() }}</td>
@@ -55,7 +55,7 @@ type="checkbox"
   </template>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {onMounted, ref} from 'vue'
 
 const files = ref<any[]>([])

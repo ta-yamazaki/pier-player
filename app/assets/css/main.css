@@ -12,17 +12,17 @@
     --sidebar-width: 176px;
 
     /* palette */
-    --pp-bg: hsl(213, 40%, 97%);          /* 港の朝（ベース背景） */
-    --pp-surface: #ffffff;                /* 甲板（カード） */
-    --pp-surface-2: hsl(214, 30%, 94%);   /* 甲板・浮き */
-    --pp-field: #ffffff;                  /* 入力欄 */
+    --pp-bg: hsl(213, 40%, 97%); /* 港の朝（ベース背景） */
+    --pp-surface: #ffffff; /* 甲板（カード） */
+    --pp-surface-2: hsl(214, 30%, 94%); /* 甲板・浮き */
+    --pp-field: #ffffff; /* 入力欄 */
     --pp-line: hsl(214, 22%, 82%);
     --pp-line-soft: hsl(214, 28%, 89%);
     --pp-text: hsl(216, 40%, 14%);
-    --pp-fog: hsl(215, 16%, 44%);         /* 霧（弱い文字） */
-    --pp-cyan: hsl(190, 90%, 31%);        /* 灯台（ブランド・スタンバイ） */
+    --pp-fog: hsl(215, 16%, 44%); /* 霧（弱い文字） */
+    --pp-cyan: hsl(190, 90%, 31%); /* 灯台（ブランド・スタンバイ） */
     --pp-cyan-soft: hsla(190, 90%, 31%, 0.10);
-    --pp-red: hsl(354, 72%, 47%);         /* 信号紅（ON AIR） */
+    --pp-red: hsl(354, 72%, 47%); /* 信号紅（ON AIR） */
     --pp-red-soft: hsla(354, 72%, 47%, 0.08);
     --pp-amber: hsl(36, 95%, 38%);
 
@@ -68,8 +68,8 @@
 }
 
 html, body {
-    -ms-overflow-style: none;  /* IE, Edge */
-    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none; /* IE, Edge */
+    scrollbar-width: none; /* Firefox */
     background-color: var(--pp-bg);
 }
 
@@ -203,8 +203,12 @@ a:hover {
 }
 
 @keyframes pp-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.25; }
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.25;
+    }
 }
 
 .table tr.is-standby {
@@ -498,7 +502,9 @@ label.checkbox:hover {
 }
 
 @keyframes pp-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* ------------------------------------------------------------

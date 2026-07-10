@@ -18,15 +18,15 @@
       <h2 class="preview-title">{{ previewCgm.title }}</h2>
       <div class="preview-frame" style="aspect-ratio: 16/9">
         <iframe
-:key="videoReload" :src="previewCgm.path"
-                width="100%" height="100%"/>
+            :key="videoReload" :src="previewCgm.path"
+            height="100%" width="100%"/>
       </div>
       <p class="note mt-2">※プレビューを再生すると音が出ます。</p>
     </section>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {onMounted, onUnmounted, ref} from "vue"
 import CgmList from "~/components/cgm/CgmList.vue";
 

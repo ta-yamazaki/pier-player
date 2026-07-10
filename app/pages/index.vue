@@ -30,7 +30,7 @@
       <p class="eyebrow">Preview</p>
       <h2 class="preview-title">{{ previewFile.name }}</h2>
       <div class="preview-frame" style="aspect-ratio: 16/9">
-        <video :key="videoReload" controls autoplay muted>
+        <video :key="videoReload" autoplay controls muted>
           <source :src="previewFile.path" :type="previewFile.type">
         </video>
       </div>
@@ -38,7 +38,7 @@
     </section>
   </div>
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref} from "vue";
 import MediaFileList from "~/components/file/MediaFileList.vue";
 import FileDropInput from "~/components/input/FileDropInput.vue";

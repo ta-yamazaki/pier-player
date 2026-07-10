@@ -1,13 +1,13 @@
 <template>
   <NuxtIcon
+      :color="color"
       :name="name"
       :size="size"
-      :color="color"
       class="is-clickable"
   />
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 interface Props {

@@ -1,35 +1,35 @@
 <template>
   <div v-if="targetFiles.length > 0" class="box py-1 px-2">
-  <table class="table my-2 is-fullwidth">
-    <tbody>
-    <tr
-v-for="(file, i) in targetFiles" :key="file.id"
-        :class="{
+    <table class="table my-2 is-fullwidth">
+      <tbody>
+      <tr
+          v-for="(file, i) in targetFiles" :key="file.id"
+          :class="{
               'dragging': i === dragIndex,
               'is-live': file.isPlaying
             }">
-      <td
-:draggable="true"
-          class="px-0 fitContent"
-          @dragstart="dragStart(i)"
-          @dragenter="dragEnter(i)"
-          @dragover.prevent
-          @dragend="dragEnd()">
-        <NuxtIcon name="ic:baseline-drag-indicator" class="m-0 is-draggable drag-handle"/>
-      </td>
-      <td class="pr-0 py-0">
-        <MediaFile :file="file" @play="reset" @preview="preview"/>
-      </td>
-      <td class="mx-2 fitContent">
-        <button class="delete" @click="removeRow(i)"/>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+        <td
+            :draggable="true"
+            class="px-0 fitContent"
+            @dragend="dragEnd()"
+            @dragenter="dragEnter(i)"
+            @dragstart="dragStart(i)"
+            @dragover.prevent>
+          <NuxtIcon class="m-0 is-draggable drag-handle" name="ic:baseline-drag-indicator"/>
+        </td>
+        <td class="pr-0 py-0">
+          <MediaFile :file="file" @play="reset" @preview="preview"/>
+        </td>
+        <td class="mx-2 fitContent">
+          <button class="delete" @click="removeRow(i)"/>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {computed, onMounted, ref, watch} from "vue";
 import MediaFile from "~/components/file/MediaFile.vue";
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";

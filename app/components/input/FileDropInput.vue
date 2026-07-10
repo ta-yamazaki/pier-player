@@ -6,8 +6,8 @@
   </div>
   <template v-else>
     <div
-        class="dropArea"
         :class="{'enter': isEnter}"
+        class="dropArea"
         @dragenter="dragDropEnter()"
         @dragleave="dragDropLeave()"
         @dragover.prevent
@@ -21,7 +21,7 @@
   </template>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref} from 'vue'
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 

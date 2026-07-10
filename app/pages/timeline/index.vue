@@ -9,7 +9,7 @@
     </header>
 
     <div class="mb-2">
-      <NuxtLink to="/timeline/history" class="is-size-7">履歴から追加する →</NuxtLink>
+      <NuxtLink class="is-size-7" to="/timeline/history">履歴から追加する →</NuxtLink>
     </div>
     <FileDropInput multiple @dropped-files="selectFiles"/>
 
@@ -23,7 +23,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import "@/assets/css/timeline.css"
 import {ref} from 'vue'
 import TimelineFileList from "~/components/timeline/TimelineFileList.vue";

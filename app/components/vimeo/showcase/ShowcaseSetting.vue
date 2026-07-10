@@ -5,7 +5,7 @@
     <div class="field">
       <label class="label is-size-7">ショーケースURL</label>
       <p class="control">
-        <input v-model="showcase.rawUrl" type="url" class="input is-small" placeholder="VimeoショーケースURL">
+        <input v-model="showcase.rawUrl" class="input is-small" placeholder="VimeoショーケースURL" type="url">
       </p>
       <p v-if="showcaseRawUrlExists && showcaseUrlInvalid" class="has-text-danger"
       >VimeoショーケースURLの形式が正しくありません。</p>
@@ -14,7 +14,7 @@
     <div class="field">
       <label class="label is-size-7">パスワード</label>
       <p class="control">
-        <input v-model="showcase.password" type="text" class="input is-small" placeholder="パスワード">
+        <input v-model="showcase.password" class="input is-small" placeholder="パスワード" type="text">
       </p>
     </div>
 
@@ -24,16 +24,16 @@
         <small>映像一覧を上書きする</small>
       </label>
       <button
-class="button is-small is-primary is-outlined is-fullwidth"
-              :class="{'is-loading': isGettingShowcaseVideos}"
-              @click="getShowcaseVideoTitles()">
+          :class="{'is-loading': isGettingShowcaseVideos}"
+          class="button is-small is-primary is-outlined is-fullwidth"
+          @click="getShowcaseVideoTitles()">
         ショーケースの映像一覧を取得
       </button>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {computed, onMounted, reactive, ref, watch} from 'vue'
 
 /**

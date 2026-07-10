@@ -1,22 +1,22 @@
 <template>
   <table
-v-if="files.length > 0"
-         class="table my-2 is-fullwidth borderless"
-         style="background-color: transparent">
+      v-if="files.length > 0"
+      class="table my-2 is-fullwidth borderless"
+      style="background-color: transparent">
     <tbody>
     <tr
-v-for="(file, i) in files"
+        v-for="(file, i) in files"
         :key="file.id"
         :class="{'dragging': i === dragIndex}">
       <td
-:draggable="!playingFileExists"
+          :draggable="!playingFileExists"
           class="pl-1 pr-0 fitContent"
           style="white-space: nowrap;"
-          @dragstart="dragStart(i)"
+          @dragend="dragEnd()"
           @dragenter="dragEnter(i)"
-          @dragover.prevent
-          @dragend="dragEnd()">
-        <NuxtIcon name="ic:baseline-drag-indicator" class="m-0 is-draggable drag-handle"/>
+          @dragstart="dragStart(i)"
+          @dragover.prevent>
+        <NuxtIcon class="m-0 is-draggable drag-handle" name="ic:baseline-drag-indicator"/>
       </td>
       <td class="p-1" style="font-size: 0.9rem; overflow-x: auto;">
         <TimelineFile
@@ -34,7 +34,7 @@ v-for="(file, i) in files"
   </table>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {computed, watch} from 'vue'
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
@@ -62,6 +62,7 @@ function ensureAudioFade(list: any[]): any[] {
     ...f,
   }))
 }
+
 const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(files, () => {
   if (playingFileExists.value) {
     notifyError("再生中は順番を変えられません")

@@ -1,13 +1,13 @@
 <template>
   <NuxtIcon
-      name="solar:music-notes-bold"
-      :size="size || 18"
       :color="color"
+      :size="size || 18"
       class="has-text-warning-40"
+      name="solar:music-notes-bold"
   />
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 interface Props {

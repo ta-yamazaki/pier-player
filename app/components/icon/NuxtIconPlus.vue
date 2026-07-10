@@ -1,14 +1,14 @@
 <template>
   <NuxtIcon
-      name="mdi:add"
-      :size="size"
       :color="color"
+      :size="size"
       class="is-clickable"
+      name="mdi:add"
       style="transform: scale(1.2)"
   />
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 interface Props {

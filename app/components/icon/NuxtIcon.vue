@@ -1,13 +1,13 @@
 <template>
   <Icon
+      :color="color"
       :name="name"
       :size="size"
-      :color="color"
       mode="svg"
   />
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 interface Props {
   name: string;
   size?: string | number;

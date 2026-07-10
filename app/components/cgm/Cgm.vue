@@ -4,32 +4,35 @@
       <span class="button is-small is-static field-tag">タイトル</span>
     </p>
     <p class="control is-expanded">
-      <input v-model="cgm.title" type="text" class="input is-small" placeholder="映像タイトル（任意）">
+      <input v-model="cgm.title" class="input is-small" placeholder="映像タイトル（任意）" type="text">
     </p>
     <button
-v-if="cgmPathExists && !cgm.isViewed"
-            class="button is-small is-link is-outlined ml-2 action-btn"
-            :class="isLoading ? 'is-loading' : ''"
-            @click="view()"
-    >表示</button>
+        v-if="cgmPathExists && !cgm.isViewed"
+        :class="isLoading ? 'is-loading' : ''"
+        class="button is-small is-link is-outlined ml-2 action-btn"
+        @click="view()"
+    >表示
+    </button>
     <button
-v-if="isViewedBeforePlay"
-            class="button is-small is-primary ml-2 action-btn"
-            :class="{'is-loading': isLoading}"
-            @click="play()"
-    >再生</button>
+        v-if="isViewedBeforePlay"
+        :class="{'is-loading': isLoading}"
+        class="button is-small is-primary ml-2 action-btn"
+        @click="play()"
+    >再生
+    </button>
     <button
-v-if="isPlaying"
-            class="button is-small is-danger ml-2 action-btn"
-            @click="close()"
-    >閉じる</button>
+        v-if="isPlaying"
+        class="button is-small is-danger ml-2 action-btn"
+        @click="close()"
+    >閉じる
+    </button>
   </div>
   <div class="field has-addons">
     <p class="control">
       <span class="button is-small is-static field-tag">URL</span>
     </p>
     <p class="control is-expanded">
-      <input v-model="cgm.path" type="url" class="input is-small" placeholder="CGM映像URL">
+      <input v-model="cgm.path" class="input is-small" placeholder="CGM映像URL" type="url">
     </p>
     <p v-if="cgmPathExists">
       <button class="button is-small ml-2 action-btn" @click="preview()">プレビュー</button>
@@ -37,7 +40,7 @@ v-if="isPlaying"
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref, toRef} from "vue"
 import type {CgmItem} from "~/types/models";
 

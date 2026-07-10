@@ -1,7 +1,7 @@
 <template>
   <!-- ファイルが存在する-->
   <template v-if="file.exists">
-    <div class="box p-2 mb-1" :class="{'is-live': file.isPlaying}">
+    <div :class="{'is-live': file.isPlaying}" class="box p-2 mb-1">
       <nav class="level is-mobile mb-0">
         <div class="level-left" style="max-width: calc(100% - 55px);">
           <div style="line-break: anywhere">
@@ -17,17 +17,19 @@
         <div class="level-right" style="gap: 0.6rem;">
           <span v-if="file.isPlaying" class="chip on-air"><span class="dot"/>ON AIR</span>
           <button
-v-if="!file.isPlaying"
-                  class="button is-small is-primary"
-                  :class="{'is-loading': startLoading}"
-                  @click="start()"
-          >再生</button>
+              v-if="!file.isPlaying"
+              :class="{'is-loading': startLoading}"
+              class="button is-small is-primary"
+              @click="start()"
+          >再生
+          </button>
           <button
-v-if="file.isPlaying"
-                  class="button is-small is-danger"
-                  :class="{'is-loading': startLoading}"
-                  @click="close()"
-          >停止</button>
+              v-if="file.isPlaying"
+              :class="{'is-loading': startLoading}"
+              class="button is-small is-danger"
+              @click="close()"
+          >停止
+          </button>
         </div>
       </nav>
       <nav class="level is-mobile py-1 m-0 v-center">
@@ -64,17 +66,17 @@ v-if="file.isPlaying"
             </p>
             <NuxtIconMinus class="is-clickable" @click="adjust('startTrimSec', -trimStep)"/>
             <input
-v-model="file.startTrimSec"
-                   class="input is-primary borderless editInput is-small px-1 py-0"
-                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                v-model="file.startTrimSec"
+                class="input is-primary borderless editInput is-small px-1 py-0"
+                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
             <NuxtIconPlus class="is-clickable" @click="adjust('startTrimSec', trimStep)"/>
           </div>
           <div class="level-right">
             <NuxtIconMinus class="is-clickable" @click="adjust('endTrimSec', -trimStep)"/>
             <input
-v-model="file.endTrimSec"
-                   class="input is-primary borderless editInput is-small px-1 py-0"
-                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                v-model="file.endTrimSec"
+                class="input is-primary borderless editInput is-small px-1 py-0"
+                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
             <NuxtIconPlus class="is-clickable" @click="adjust('endTrimSec', trimStep)"/>
           </div>
         </nav>
@@ -85,17 +87,17 @@ v-model="file.endTrimSec"
             </p>
             <NuxtIconMinus class="is-clickable" @click="adjust('startFadeSec', -fadeStep)"/>
             <input
-v-model="file.startFadeSec"
-                   class="input is-primary borderless editInput is-small px-1 py-0"
-                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                v-model="file.startFadeSec"
+                class="input is-primary borderless editInput is-small px-1 py-0"
+                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
             <NuxtIconPlus class="is-clickable" @click="adjust('startFadeSec', fadeStep)"/>
           </div>
           <div class="level-right">
             <NuxtIconMinus class="is-clickable" @click="adjust('endFadeSec', -fadeStep)"/>
             <input
-v-model="file.endFadeSec"
-                   class="input is-primary borderless editInput is-small px-1 py-0"
-                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                v-model="file.endFadeSec"
+                class="input is-primary borderless editInput is-small px-1 py-0"
+                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
             <NuxtIconPlus class="is-clickable" @click="adjust('endFadeSec', fadeStep)"/>
           </div>
         </nav>
@@ -106,17 +108,17 @@ v-model="file.endFadeSec"
             </p>
             <NuxtIconMinus class="is-clickable" @click="adjust('startAudioFadeSec', -fadeStep)"/>
             <input
-v-model="file.startAudioFadeSec"
-                   class="input is-primary borderless editInput is-small px-1 py-0"
-                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                v-model="file.startAudioFadeSec"
+                class="input is-primary borderless editInput is-small px-1 py-0"
+                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
             <NuxtIconPlus class="is-clickable" @click="adjust('startAudioFadeSec', fadeStep)"/>
           </div>
           <div class="level-right">
             <NuxtIconMinus class="is-clickable" @click="adjust('endAudioFadeSec', -fadeStep)"/>
             <input
-v-model="file.endAudioFadeSec"
-                   class="input is-primary borderless editInput is-small px-1 py-0"
-                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+                v-model="file.endAudioFadeSec"
+                class="input is-primary borderless editInput is-small px-1 py-0"
+                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
             <NuxtIconPlus class="is-clickable" @click="adjust('endAudioFadeSec', fadeStep)"/>
           </div>
         </nav>
@@ -127,12 +129,12 @@ v-model="file.endAudioFadeSec"
               音量
             </p>
             <input
-v-model="file.gain"
-                   type="range"
-                   class="v-center"
-                   :style="{background: sliderBackground()}"
-                   step="0.1" :min="gainMin" :max="gainMax"
-                   @dblclick="file.gain = 1">
+                v-model="file.gain"
+                :max="gainMax"
+                :min="gainMin"
+                :style="{background: sliderBackground()}"
+                class="v-center" step="0.1" type="range"
+                @dblclick="file.gain = 1">
             <div class="control ml-1" style="font-size: inherit;">{{ file.gain }}</div>
             <div class="has-text-grey ml-0">（元の音量＝1）</div>
           </div>
@@ -165,7 +167,7 @@ v-model="file.gain"
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref, toRaw, toRef, watch} from 'vue'
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
@@ -230,7 +232,13 @@ function openFolder() {
 }
 
 /* -------------------- トリミング・フェード調整 -------------------- */
-type AdjustableKey = 'startTrimSec' | 'endTrimSec' | 'startFadeSec' | 'endFadeSec' | 'startAudioFadeSec' | 'endAudioFadeSec'
+type AdjustableKey =
+    'startTrimSec'
+    | 'endTrimSec'
+    | 'startFadeSec'
+    | 'endFadeSec'
+    | 'startAudioFadeSec'
+    | 'endAudioFadeSec'
 
 // 指定キーの秒数を delta 分増減する（0未満にはしない）
 function adjust(key: AdjustableKey, delta: number) {

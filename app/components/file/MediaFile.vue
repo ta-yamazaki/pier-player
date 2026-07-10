@@ -19,21 +19,23 @@
     <div class="ml-auto mr-0 is-flex is-align-items-center" style="gap: 0.6rem;">
       <span v-if="file.isPlaying" class="chip on-air"><span class="dot"/>ON AIR</span>
       <button
-v-if="file.path && !file.isPlaying"
-              class="button is-small is-primary"
-              :disabled="!file.exists"
-              @click="play()"
-      >再生</button>
+          v-if="file.path && !file.isPlaying"
+          :disabled="!file.exists"
+          class="button is-small is-primary"
+          @click="play()"
+      >再生
+      </button>
       <button
-v-if="file.isPlaying"
-              class="button is-small is-danger"
-              @click="close()"
-      >停止</button>
+          v-if="file.isPlaying"
+          class="button is-small is-danger"
+          @click="close()"
+      >停止
+      </button>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {toRef} from "vue";
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";

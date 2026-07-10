@@ -5,28 +5,31 @@
     </p>
     <p class="control is-expanded">
       <input
-v-model="vimeo.title" type="text" class="input is-small" placeholder="映像タイトル（任意）"
-             :readonly="!isBeforeViewing">
+          v-model="vimeo.title" :readonly="!isBeforeViewing" class="input is-small" placeholder="映像タイトル（任意）"
+          type="text">
     </p>
     <p>
       <button
-v-if="isBeforeViewing"
-              class="button is-small is-link is-outlined ml-2 action-btn"
-              :class="{'is-loading': isLoading}"
-              :disabled="!isPresent(vimeo.playerUrl)"
-              @click="view()"
-      >表示</button>
+          v-if="isBeforeViewing"
+          :class="{'is-loading': isLoading}"
+          :disabled="!isPresent(vimeo.playerUrl)"
+          class="button is-small is-link is-outlined ml-2 action-btn"
+          @click="view()"
+      >表示
+      </button>
       <button
-v-if="isViewedBeforePlay"
-              class="button is-small is-primary ml-2 action-btn"
-              :class="{'is-loading': isLoading}"
-              @click="play()"
-      >再生</button>
+          v-if="isViewedBeforePlay"
+          :class="{'is-loading': isLoading}"
+          class="button is-small is-primary ml-2 action-btn"
+          @click="play()"
+      >再生
+      </button>
       <button
-v-if="isPlaying"
-              class="button is-small is-danger ml-2 action-btn"
-              @click="close()"
-      >閉じる</button>
+          v-if="isPlaying"
+          class="button is-small is-danger ml-2 action-btn"
+          @click="close()"
+      >閉じる
+      </button>
     </p>
   </div>
   <div class="is-flex">
@@ -36,13 +39,13 @@ v-if="isPlaying"
       </p>
       <p class="control is-expanded">
         <input
-v-model="vimeo.url"
-               type="url"
-               class="input is-small"
-               :class="{'is-danger': invalidUrl}"
-               :readonly="!isBeforeViewing"
-               @keyup="generatePlayerUrl()"
-               @change="generatePlayerUrl()">
+            v-model="vimeo.url"
+            :class="{'is-danger': invalidUrl}"
+            :readonly="!isBeforeViewing"
+            class="input is-small"
+            type="url"
+            @change="generatePlayerUrl()"
+            @keyup="generatePlayerUrl()">
       </p>
     </div>
     <div class="field has-addons mb-1 ml-2">
@@ -51,17 +54,17 @@ v-model="vimeo.url"
       </p>
       <p class="control" style="width: 6rem">
         <input
-v-model="vimeo.password" type="text" class="input is-small"
-               :readonly="!isBeforeViewing">
+            v-model="vimeo.password" :readonly="!isBeforeViewing" class="input is-small"
+            type="text">
       </p>
     </div>
   </div>
   <small
-v-if="invalidUrl"
-         class="has-text-danger">URLの形式が正しくありません</small>
+      v-if="invalidUrl"
+      class="has-text-danger">URLの形式が正しくありません</small>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref, toRef} from "vue"
 import type {VimeoItem} from "~/types/models";
 

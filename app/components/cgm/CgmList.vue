@@ -2,43 +2,43 @@
   <div v-if="cgmList.length > 0">
     <p class="note mb-2">※表示に少し時間がかかる場合があります。</p>
     <div class="box py-1 px-2">
-    <table class="table mb-2 is-fullwidth">
-      <tbody>
-      <tr
-v-for="(cgm, i) in cgmList" :key="cgm.id"
-          :class="{
+      <table class="table mb-2 is-fullwidth">
+        <tbody>
+        <tr
+            v-for="(cgm, i) in cgmList" :key="cgm.id"
+            :class="{
               'dragging': i === dragIndex,
               'is-standby': isViewedBeforePlay(cgm),
               'is-live': isPlaying(cgm)
             }">
-        <td
-:draggable="true"
-            style="vertical-align: middle"
-            class="px-0 is-draggable fitContent"
-            @dragstart="dragStart(i)"
-            @dragenter="dragEnter(i)"
-            @dragover.prevent
-            @dragend="dragEnd()">
-          <NuxtIcon name="ic:baseline-drag-indicator" class="drag-handle"/>
-        </td>
-        <td>
-          <Cgm
-              :cgm="cgm"
-              @preview="preview(cgm)"
-              @view="closeStatusAll()"
-          />
-        </td>
-        <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
-          <button class="delete" @click="removeRow(i)"/>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+          <td
+              :draggable="true"
+              class="px-0 is-draggable fitContent"
+              style="vertical-align: middle"
+              @dragend="dragEnd()"
+              @dragenter="dragEnter(i)"
+              @dragstart="dragStart(i)"
+              @dragover.prevent>
+            <NuxtIcon class="drag-handle" name="ic:baseline-drag-indicator"/>
+          </td>
+          <td>
+            <Cgm
+                :cgm="cgm"
+                @preview="preview(cgm)"
+                @view="closeStatusAll()"
+            />
+          </td>
+          <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
+            <button class="delete" @click="removeRow(i)"/>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 // --------------------------------------------------

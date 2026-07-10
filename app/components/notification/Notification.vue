@@ -4,9 +4,9 @@
       <div class="message-body is-flex is-align-items-center">
         <b class="is-flex-grow-1">{{ message }}</b>
         <button
-class="delete has-background-success-dark"
-                style="opacity: 0.5"
-                @click="message = null"/>
+            class="delete has-background-success-dark"
+            style="opacity: 0.5"
+            @click="message = null"/>
       </div>
     </article>
   </transition>
@@ -15,15 +15,15 @@ class="delete has-background-success-dark"
       <div class="message-body is-flex is-align-items-center">
         <b class="is-flex-grow-1">{{ errorMessage }}</b>
         <button
-class="delete has-background-danger-dark"
-                style="opacity: 0.5"
-                @click="errorMessage = null"/>
+            class="delete has-background-danger-dark"
+            style="opacity: 0.5"
+            @click="errorMessage = null"/>
       </div>
     </article>
   </transition>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {useNotification} from "@/composables/useNotification";
 
 const {message, errorMessage} = useNotification();

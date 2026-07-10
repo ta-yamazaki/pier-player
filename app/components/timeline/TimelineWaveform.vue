@@ -3,7 +3,7 @@
   <div ref="containerRef"/>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref, watch} from 'vue'
 import {useWaveSurfer, useWaveSurferHover} from '@meersagor/wavesurfer-vue'
 

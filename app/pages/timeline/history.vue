@@ -6,12 +6,12 @@
         <h1 class="page-title">タイムライン履歴</h1>
       </div>
     </header>
-    <NuxtLink to="/timeline" class="is-size-7">← 戻る</NuxtLink>
+    <NuxtLink class="is-size-7" to="/timeline">← 戻る</NuxtLink>
     <TimelineHistoryList/>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 </script>
 
 <style scoped>

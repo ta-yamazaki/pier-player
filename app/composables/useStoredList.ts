@@ -1,4 +1,4 @@
-import {onMounted, ref, toRaw, watch, type Ref} from 'vue'
+import {onMounted, ref, type Ref, toRaw, watch} from 'vue'
 
 /**
  * electron-store と同期するリスト
@@ -8,15 +8,15 @@ export function useStoredList<T>(
     load: () => Promise<T[]>,
     save: (list: T[]) => void,
 ): Ref<T[]> {
-    const list = ref<T[]>([]) as Ref<T[]>
+  const list = ref<T[]>([]) as Ref<T[]>
 
-    onMounted(async () => {
-        list.value = await load()
-    })
+  onMounted(async () => {
+    list.value = await load()
+  })
 
-    watch(list, (newVal) => {
-        save(toRaw(newVal))
-    }, {deep: true})
+  watch(list, (newVal) => {
+    save(toRaw(newVal))
+  }, {deep: true})
 
-    return list
+  return list
 }

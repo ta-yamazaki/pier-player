@@ -3,7 +3,7 @@
     <table class="table my-2 is-fullwidth">
       <tbody>
       <tr
-v-for="(vimeo, i) in vimeoList"
+          v-for="(vimeo, i) in vimeoList"
           :key="vimeo.id"
           :class="{
               'dragging': i === dragIndex,
@@ -11,14 +11,14 @@ v-for="(vimeo, i) in vimeoList"
               'is-live': isPlaying(vimeo)
             }">
         <td
-:draggable="true"
-            style="vertical-align: middle"
+            :draggable="true"
             class="px-0 is-draggable fitContent"
-            @dragstart="dragStart(i)"
+            style="vertical-align: middle"
+            @dragend="dragEnd()"
             @dragenter="dragEnter(i)"
-            @dragover.prevent
-            @dragend="dragEnd()">
-          <NuxtIcon name="ic:baseline-drag-indicator" class="drag-handle"/>
+            @dragstart="dragStart(i)"
+            @dragover.prevent>
+          <NuxtIcon class="drag-handle" name="ic:baseline-drag-indicator"/>
         </td>
         <td>
           <Vimeo
@@ -36,7 +36,7 @@ v-for="(vimeo, i) in vimeoList"
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 /**

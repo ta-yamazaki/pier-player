@@ -7,21 +7,21 @@
         <p class="timecode">{{ currentTimeColon }}</p>
         <progress
             ref="progressBar"
+            :max="playerMeta.duration"
+            :value="playerMeta.currentTime"
             class="mx-2 mb-0"
             style="cursor: pointer;"
-            :value="playerMeta.currentTime"
-            :max="playerMeta.duration"
             @mousedown="startSeek"
-            @mousemove="onMouseMove"
             @mouseleave="hideTooltip"
+            @mousemove="onMouseMove"
         />
         <p class="timecode">{{ durationColon }}</p>
       </nav>
       <!-- tooltip -->
       <div
-v-if="tooltip.visible"
-           class="tooltip"
-           :style="{ left: tooltip.x + 'px' }">
+          v-if="tooltip.visible"
+          :style="{ left: tooltip.x + 'px' }"
+          class="tooltip">
         {{ tooltip.value }}
       </div>
 
@@ -35,13 +35,13 @@ v-if="tooltip.visible"
         </p>
         <p class="level-item play-main">
           <NuxtIconPlayer
-v-if="!playerMeta.isPlaying"
-                          name="mdi:play-circle" size="48"
-                          @click="play()"/>
+              v-if="!playerMeta.isPlaying"
+              name="mdi:play-circle" size="48"
+              @click="play()"/>
           <NuxtIconPlayer
-v-if="playerMeta.isPlaying"
-                          name="mdi:pause-circle" size="48"
-                          @click="pause()"/>
+              v-if="playerMeta.isPlaying"
+              name="mdi:pause-circle" size="48"
+              @click="pause()"/>
         </p>
         <p class="level-item">
           <NuxtIconPlayer name="mdi:fast-forward-10" @click="forward(10)"/>
@@ -55,7 +55,7 @@ v-if="playerMeta.isPlaying"
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import "@/assets/css/timeline.css"
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import NuxtIconPlayer from "~/components/icon/NuxtIconPlayer.vue";

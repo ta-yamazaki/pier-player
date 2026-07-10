@@ -27,7 +27,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref} from 'vue'
 import ShowcaseVimeoList from "~/components/vimeo/showcase/ShowcaseVimeoList.vue";
 import ShowcaseSetting from "~/components/vimeo/showcase/ShowcaseSetting.vue";

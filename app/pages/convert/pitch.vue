@@ -22,12 +22,12 @@
                 <small>ピッチ変更</small>
               </p>
               <input
-v-model="semitones"
-                     type="range"
-                     class="v-center"
-                     step="1" min="-12" max="12"
-                     :disabled="loading"
-                     @dblclick="semitones = 0">
+                  v-model="semitones"
+                  :disabled="loading"
+                  class="v-center"
+                  max="12" min="-12" step="1"
+                  type="range"
+                  @dblclick="semitones = 0">
               <div class="control ml-2 semitone-value">{{ semitonesText }}</div>
             </div>
             <div class="level-right"/>
@@ -35,10 +35,10 @@ v-model="semitones"
         </div>
 
         <button
-class="button is-fullwidth is-primary mt-4"
-                :class="{'is-loading': loading}"
-                :disabled="semitones == 0 || loading"
-                @click="convertFile">
+            :class="{'is-loading': loading}"
+            :disabled="semitones == 0 || loading"
+            class="button is-fullwidth is-primary mt-4"
+            @click="convertFile">
           変換
         </button>
       </div>
@@ -46,9 +46,9 @@ class="button is-fullwidth is-primary mt-4"
     <div class="my-5">
       <div v-if="!converted && totalDuration">
         <progress
-class="progress is-primary"
-                  :value="progress"
-                  :max="totalDuration"/>
+            :max="totalDuration"
+            :value="progress"
+            class="progress is-primary"/>
         <span class="timecode">{{ percent.toFixed(0) }} %</span>
       </div>
       <template v-if="converted">
@@ -66,7 +66,7 @@ class="progress is-primary"
     </div>
   </div>
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 import {onMounted, onUnmounted} from "vue";
 import FileDropInput from "~/components/input/FileDropInput.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";

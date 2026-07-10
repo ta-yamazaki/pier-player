@@ -6,7 +6,7 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import SideMenu from "~/components/menu/SideMenu.vue";
 import Notification from "~/components/notification/Notification.vue";
 </script>

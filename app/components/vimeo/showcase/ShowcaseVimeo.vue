@@ -2,34 +2,37 @@
   <div class="field has-addons" style="white-space: nowrap;">
     <p class="control is-expanded">
       <input
-v-model="vimeo.title"
-             type="text"
-             class="input"
-             placeholder="映像タイトル（完全一致）">
+          v-model="vimeo.title"
+          class="input"
+          placeholder="映像タイトル（完全一致）"
+          type="text">
     </p>
     <p>
       <button
-v-if="isPresent(vimeo.title) && !vimeo.isViewed"
-              class="button is-link is-outlined ml-2 action-btn"
-              :class="{'is-loading': isLoading}"
-              @click="view()"
-      >表示</button>
+          v-if="isPresent(vimeo.title) && !vimeo.isViewed"
+          :class="{'is-loading': isLoading}"
+          class="button is-link is-outlined ml-2 action-btn"
+          @click="view()"
+      >表示
+      </button>
       <button
-v-if="isViewedBeforePlay"
-              class="button is-primary ml-2 action-btn"
-              :class="{'is-loading': isLoading}"
-              @click="play()"
-      >再生</button>
+          v-if="isViewedBeforePlay"
+          :class="{'is-loading': isLoading}"
+          class="button is-primary ml-2 action-btn"
+          @click="play()"
+      >再生
+      </button>
       <button
-v-if="isPlaying"
-              class="button is-danger ml-2 action-btn"
-              @click="close()"
-      >閉じる</button>
+          v-if="isPlaying"
+          class="button is-danger ml-2 action-btn"
+          @click="close()"
+      >閉じる
+      </button>
     </p>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref, toRef} from 'vue'
 import type {ShowcaseItem} from "~/types/models";
 
