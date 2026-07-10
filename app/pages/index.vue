@@ -1,9 +1,9 @@
 <template>
   <div class="tabs is-centered is-fullwidth mb-4">
     <ul>
-      <li :class="{'is-active': selectedTab === 'sunday'}" @click="selectSundayTab()"><a>主日礼拝</a></li>
-      <li :class="{'is-active': selectedTab === 'wednesday'}" @click="selectWednesdayTab()"><a>水曜礼拝</a></li>
-      <li :class="{'is-active': selectedTab === 'other'}" @click="selectOtherTab()"><a>その他</a></li>
+      <li :class="{'is-active': selectedTab === 'sunday'}" @click="selectedTab = 'sunday'"><a>主日礼拝</a></li>
+      <li :class="{'is-active': selectedTab === 'wednesday'}" @click="selectedTab = 'wednesday'"><a>水曜礼拝</a></li>
+      <li :class="{'is-active': selectedTab === 'other'}" @click="selectedTab = 'other'"><a>その他</a></li>
     </ul>
   </div>
 
@@ -44,7 +44,7 @@ const mediaFileListRef = ref<InstanceType<typeof MediaFileList> | null>(null)
  * state
  */
 const selectedTab = ref("sunday");
-const previewFile = ref({src: "", type: ""});
+const previewFile = ref({name: "", path: "", type: ""});
 const videoReload = ref(0);
 const api = window.api;
 
@@ -68,21 +68,9 @@ const reset = () => {
   mediaFileListRef.value?.reset()  // 子のメソッドを呼び出す
 };
 
-const preview = (file) => {
-  previewFile.value.name = file.name;
-  previewFile.value.path = file.path;
-  previewFile.value.type = file.type;
+const preview = (file: any) => {
+  previewFile.value = {name: file.name, path: file.path, type: file.type};
   videoReload.value++;
-};
-
-const selectSundayTab = () => {
-  selectedTab.value = "sunday";
-};
-const selectWednesdayTab = () => {
-  selectedTab.value = "wednesday";
-};
-const selectOtherTab = () => {
-  selectedTab.value = "other";
 };
 </script>
 

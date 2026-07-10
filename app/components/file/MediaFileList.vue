@@ -30,7 +30,7 @@ v-for="(file, i) in targetFiles" :key="file"
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import MediaFile from "~/components/file/MediaFile.vue";
 import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
@@ -55,13 +55,13 @@ const props = defineProps<Props>();
 /**
  * state
  */
-const files = {
-  sunday: ref<any[]>([]),
-  wednesday: ref<any[]>([]),
-  other: ref<any[]>([]),
-};
+const filesByTab = ref<Record<string, any[]>>({
+  sunday: [],
+  wednesday: [],
+  other: [],
+});
 
-const targetFiles = ref<any[]>([]);
+const targetFiles = computed(() => filesByTab.value[props.tab] ?? []);
 const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(targetFiles);
 const api = window.api;
 
@@ -69,10 +69,9 @@ const api = window.api;
  * lifecycle
  */
 onMounted(async () => {
-  files.sunday.value = await api.getFiles("sunday");
-  targetFiles.value = files.sunday.value;
-  files.wednesday.value = await api.getFiles("wednesday");
-  files.other.value = await api.getFiles("other");
+  for (const tab of Object.keys(filesByTab.value)) {
+    filesByTab.value[tab] = await api.getFiles(tab);
+  }
 });
 
 /**
@@ -89,12 +88,12 @@ function reset() {
   });
 }
 
-const removeRow = (i) => {
+const removeRow = (i: number) => {
   api.closeSubWindow();
   targetFiles.value.splice(i, 1);
 };
 
-const preview = (file) => {
+const preview = (file: any) => {
   emit("preview", file)
 };
 
@@ -103,12 +102,6 @@ defineExpose({addFile, reset})
 /**
  * watch
  */
-watch(
-    () => props.tab,
-    (newVal) => {
-      targetFiles.value = files[newVal].value;
-    }
-);
 watch(
     targetFiles,
     (newVal) => {
