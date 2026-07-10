@@ -77,26 +77,26 @@ v-model="file.endTrimSec"
             <NuxtIconPlus class="is-clickable" @click="adjust('endTrimSec', trimStep)"/>
           </div>
         </nav>
-        <nav v-if="isVideo" class="level is-mobile py-1 m-0 border-bottom">
+        <nav class="level is-mobile py-1 m-0 border-bottom">
           <div class="level-left">
             <p class="nowrap" style="width: 4.5rem">
               <NuxtIcon name="material-symbols:transition-fade"/>
               フェード
             </p>
-            <NuxtIconMinus @click="adjust('startFadeSec', -fadeStep)"/>
+            <NuxtIconMinus class="is-clickable" @click="adjust('startFadeSec', -fadeStep)"/>
             <input
 v-model="file.startFadeSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
-                   type="number" min="0">
-            <NuxtIconPlus @click="adjust('startFadeSec', fadeStep)"/>
+                   type="number" min="0" style="width: 2.75rem;height: 1.75em;">
+            <NuxtIconPlus class="is-clickable" @click="adjust('startFadeSec', fadeStep)"/>
           </div>
           <div class="level-right">
-            <NuxtIconMinus @click="adjust('endFadeSec', -fadeStep)"/>
+            <NuxtIconMinus class="is-clickable" @click="adjust('endFadeSec', -fadeStep)"/>
             <input
 v-model="file.endFadeSec"
                    class="input is-primary borderless editInput is-small px-1 py-0"
                    type="number" min="0" style="width: 2.75rem;height: 1.75em;">
-            <NuxtIconPlus @click="adjust('endFadeSec', fadeStep)"/>
+            <NuxtIconPlus class="is-clickable" @click="adjust('endFadeSec', fadeStep)"/>
           </div>
         </nav>
         <nav class="level is-mobile py-1 m-0">

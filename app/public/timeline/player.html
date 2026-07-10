@@ -49,6 +49,7 @@
     const gainNode = () => videoEl ? videoGainNode : audioGainNode;
 
     let file
+    let fadeOutStarted = false
 
     const receiver = window.timelineReceiver
     const mainCallback = receiver.mainPlayer
@@ -71,6 +72,7 @@
 
         videoEl.play().then(() => {
             fadeInSetting(`${file.startFadeSec}s`)
+            audioFadeIn()
         }).catch((e) => console.error(e))
 
         listeners(videoEl)
@@ -93,7 +95,9 @@
         audioGainSourceSetting()
         audioEl.currentTime = file.startTrimSec // 再生位置
 
-        audioEl.play()
+        audioEl.play().then(() => {
+            audioFadeIn()
+        }).catch((e) => console.error(e))
 
         listeners(audioEl)
     }
@@ -115,7 +119,10 @@
         });
         mediaEl.addEventListener('playing', (event) => {
             timelineListener.targetPlaying();
+            // 一時停止からの再開時に画面と音量を戻す（フェードアウト域なら timeupdate で再フェードする）
+            fadeOutStarted = false
             fadeOutSetting(`1`, ``, ``)
+            audioFadeReset()
         });
         mediaEl.addEventListener('timeupdate', (event) => {
             timelineListener.targetTimeupdate(file, mediaEl.currentTime, mediaEl.duration);
@@ -126,8 +133,18 @@
                 timelineListener.targetEnded();
             }
 
-            if (fadeOutReached(mediaEl))
-                fadeOutSetting(`0`, `blackOut`, `${file.endFadeSec}s`)
+            if (fadeOutReached(mediaEl)) {
+                if (!fadeOutStarted) {
+                    fadeOutStarted = true
+                    fadeOutSetting(`0`, `blackOut`, `${file.endFadeSec}s`)
+                    audioFadeOut()
+                }
+            } else if (fadeOutStarted) {
+                // シークでフェードアウト域から戻った場合は解除する
+                fadeOutStarted = false
+                fadeOutSetting(`1`, ``, ``)
+                audioFadeReset()
+            }
         });
         mediaEl.addEventListener('pause', (event) => {
             timelineListener.targetPaused();
@@ -163,6 +180,36 @@
         return gainNode
     }
 
+    // 音量フェードイン: 0 → 設定ゲイン まで startFadeSec 秒でランプ
+    function audioFadeIn() {
+        const node = gainNode()
+        const fadeSec = Number(file.startFadeSec) || 0
+        if (!node || fadeSec <= 0) return
+        const now = node.context.currentTime
+        node.gain.cancelScheduledValues(now)
+        node.gain.setValueAtTime(0, now)
+        node.gain.linearRampToValueAtTime(Number(file.gain) || 0, now + fadeSec)
+    }
+
+    // 音量フェードアウト: 現在音量 → 0 まで endFadeSec 秒でランプ
+    function audioFadeOut() {
+        const node = gainNode()
+        const fadeSec = Number(file.endFadeSec) || 0
+        if (!node || fadeSec <= 0) return
+        const now = node.context.currentTime
+        node.gain.cancelScheduledValues(now)
+        node.gain.setValueAtTime(node.gain.value, now)
+        node.gain.linearRampToValueAtTime(0, now + fadeSec)
+    }
+
+    // フェードを解除して設定ゲインに戻す
+    function audioFadeReset() {
+        const node = gainNode()
+        if (!node) return
+        node.gain.cancelScheduledValues(node.context.currentTime)
+        node.gain.value = Number(file.gain) || 0
+    }
+
     function fadeInSetting(duration) {
         body.style.opacity = "1"
         body.style.animationName = "fadeIn"
@@ -194,7 +241,8 @@
     mainCallback.seek((event, param) => element().currentTime = param.newTime)
     mainCallback.fileMetaChange((event, param) => {
         file = {...param.file}
-        if(gainNode()) gainNode().gain.value = file.gain;
+        // フェードアウト中はランプを優先し、音量変更は反映しない
+        if (!fadeOutStarted) audioFadeReset()
     })
 </script>
 
