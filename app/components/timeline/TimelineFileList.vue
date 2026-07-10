@@ -54,11 +54,11 @@ const files = useStoredList<any>(
     (list) => timelineApi.storeFiles(list),
 )
 
-// 音声フェード導入前に保存されたデータには、当時のフェード値を音声フェードとして補完する
+// 音声フェード導入前に保存されたデータには、音声フェードなし（0秒）を補完する
 function ensureAudioFade(list: any[]): any[] {
   return list.map(f => ({
-    startAudioFadeSec: f.startFadeSec ?? 0,
-    endAudioFadeSec: f.endFadeSec ?? 0,
+    startAudioFadeSec: 0,
+    endAudioFadeSec: 0,
     ...f,
   }))
 }
