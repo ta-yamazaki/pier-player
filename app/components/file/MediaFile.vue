@@ -33,7 +33,7 @@ v-if="file.isPlaying"
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {toRef} from "vue";
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconFolder from "~/components/icon/NuxtIconFolder.vue";
@@ -56,15 +56,11 @@ interface Props {
 const props = defineProps<Props>();
 
 // state
-const file = ref(props.file);
+// 親のリストと同一オブジェクトを共有し、変更は親のdeep watchで永続化される
+const file = toRef(props, 'file');
 const api = window.api;
 const commonApi = window.commonApi;
 const {notifyError} = useNotification();
-
-// init
-onMounted(() => {
-  file.value = props.file
-});
 
 // methods
 const isVideo = () => isVideoType(file.value.type);

@@ -145,7 +145,7 @@ v-model="file.gain"
 </template>
 
 <script setup lang="ts">
-import {ref, toRaw, watch} from 'vue'
+import {ref, toRaw, toRef, watch} from 'vue'
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconFolder from "~/components/icon/NuxtIconFolder.vue";
@@ -173,7 +173,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const file = ref(props.file)
+// 親のリストと同一オブジェクトを共有し、変更は親のdeep watchで永続化される
+const file = toRef(props, 'file')
 const editorOpen = ref(false)
 const startLoading = ref(false)
 

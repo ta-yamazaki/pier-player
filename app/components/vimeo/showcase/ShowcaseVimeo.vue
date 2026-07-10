@@ -30,7 +30,7 @@ v-if="isPlaying"
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import {ref, toRef} from 'vue'
 import type {ShowcaseItem} from "~/types/models";
 
 /**
@@ -53,7 +53,8 @@ const props = defineProps<Props>();
 
 // state
 const isLoading = ref(false)
-const vimeo = ref(props.vimeo)
+// 親のリストと同一オブジェクトを共有し、変更は親のdeep watchで永続化される
+const vimeo = toRef(props, 'vimeo')
 
 // API (Electron preload で expose 済みのやつを参照)
 const showcaseApi = window.showcaseApi
