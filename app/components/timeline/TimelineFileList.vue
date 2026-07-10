@@ -16,7 +16,7 @@ v-for="(file, i) in files"
           @dragenter="dragEnter(i)"
           @dragover.prevent
           @dragend="dragEnd()">
-        <NuxtIcon name="ic:baseline-drag-indicator" class="m-0 is-draggable"/>
+        <NuxtIcon name="ic:baseline-drag-indicator" class="m-0 is-draggable drag-handle"/>
       </td>
       <td class="p-1" style="font-size: 0.9rem; overflow-x: auto;">
         <TimelineFile

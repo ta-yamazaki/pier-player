@@ -1,17 +1,23 @@
 <template>
-  <nav class="level is-mobile my-2">
-    <div class="level-left is-size-7">※最初の表示は少し時間がかかります。</div>
+  <nav class="level is-mobile mt-5 mb-2">
+    <div class="level-left">
+      <div>
+        <p class="eyebrow">Playlist</p>
+        <h2 class="section-title">映像リスト</h2>
+      </div>
+    </div>
     <div class="level-right">
       <button class="button is-small" @click="closeAll()">表示リセット</button>
     </div>
   </nav>
+  <p class="note mb-2">※最初の表示は少し時間がかかります。</p>
   <div v-if="vimeoList.length > 0" class="box py-1 px-2">
     <table class="table my-2 is-narrow is-fullwidth">
       <thead>
       <tr class="is-size-7" style="white-space: nowrap;">
         <th/>
         <th>
-          <span>タイトル（完全一致）</span>
+          <span class="note">タイトル（完全一致）</span>
         </th>
         <th/>
       </tr>
@@ -22,8 +28,8 @@ v-for="(vimeo, i) in vimeoList"
           :key="vimeo.id"
           :class="{
               'dragging': i === dragIndex,
-              'has-background-primary-light': isViewedBeforePlay(vimeo),
-              'has-background-danger-light': isPlaying(vimeo)
+              'is-standby': isViewedBeforePlay(vimeo),
+              'is-live': isPlaying(vimeo)
             }">
         <td
 :draggable="true"
@@ -33,7 +39,7 @@ v-for="(vimeo, i) in vimeoList"
             @dragenter="dragEnter(i)"
             @dragover.prevent
             @dragend="dragEnd()">
-          <NuxtIcon name="ic:baseline-drag-indicator"/>
+          <NuxtIcon name="ic:baseline-drag-indicator" class="drag-handle"/>
         </td>
         <td style="width: 30rem;">
           <ShowcaseVimeo
@@ -51,8 +57,8 @@ v-for="(vimeo, i) in vimeoList"
     </table>
   </div>
 
-  <button class="button is-primary is-fullwidth mt-5" @click="addShowcaseVimeo()">
-    ＋追加
+  <button class="button is-add is-fullwidth mt-4" @click="addShowcaseVimeo()">
+    ＋ 追加
   </button>
 </template>
 

@@ -1,36 +1,41 @@
 <template>
-  <div class="tabs is-centered is-fullwidth mb-4">
-    <ul>
-      <li :class="{'is-active': selectedTab === 'sunday'}" @click="selectedTab = 'sunday'"><a>主日礼拝</a></li>
-      <li :class="{'is-active': selectedTab === 'wednesday'}" @click="selectedTab = 'wednesday'"><a>水曜礼拝</a></li>
-      <li :class="{'is-active': selectedTab === 'other'}" @click="selectedTab = 'other'"><a>その他</a></li>
-    </ul>
-  </div>
-
-  <div style="margin: auto; width: 95%; max-width: 640px">
-    <FileDropInput @dropped-file="selectFile"/>
-
-    <div class="buttons is-right my-2">
+  <div class="page-shell">
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">File Mode</p>
+        <h1 class="page-title">ファイル再生</h1>
+      </div>
       <button class="button is-small" @click="reset()">表示リセット</button>
+    </header>
+
+    <div class="tabs is-centered is-fullwidth mb-4">
+      <ul>
+        <li :class="{'is-active': selectedTab === 'sunday'}" @click="selectedTab = 'sunday'"><a>主日礼拝</a></li>
+        <li :class="{'is-active': selectedTab === 'wednesday'}" @click="selectedTab = 'wednesday'"><a>水曜礼拝</a></li>
+        <li :class="{'is-active': selectedTab === 'other'}" @click="selectedTab = 'other'"><a>その他</a></li>
+      </ul>
     </div>
 
-    <MediaFileList
-        ref="mediaFileListRef"
-        :tab="selectedTab"
-        @preview="preview"
-    />
-    <br>
-    <div v-if="previewFile.path" style="width: 100%; margin: auto">
-      <small class="mt-4 mb-1">映像プレビュー</small>
-      <h6 class="title is-6 mb-2">{{ previewFile.name }}</h6>
-      <div style="aspect-ratio: 16/9">
+    <FileDropInput @dropped-file="selectFile"/>
+
+    <div class="mt-4">
+      <MediaFileList
+          ref="mediaFileListRef"
+          :tab="selectedTab"
+          @preview="preview"
+      />
+    </div>
+
+    <section v-if="previewFile.path" class="mt-6">
+      <p class="eyebrow">Preview</p>
+      <h2 class="preview-title">{{ previewFile.name }}</h2>
+      <div class="preview-frame" style="aspect-ratio: 16/9">
         <video :key="videoReload" controls autoplay muted>
           <source :src="previewFile.path" :type="previewFile.type">
         </video>
-        <br>
-        <small>※サブモニターでは再生バーは表示されません。</small>
       </div>
-    </div>
+      <p class="note mt-2">※サブモニターでは再生バーは表示されません。</p>
+    </section>
   </div>
 </template>
 <script setup lang="ts">

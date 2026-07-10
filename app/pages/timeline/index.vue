@@ -1,18 +1,24 @@
 <template>
-  <div style="margin: auto; width: 95%; max-width: 640px;">
-    <h5 class="title is-5 mb-2 pt-3">タイムライン</h5>
-    <NuxtLink to="/timeline/history">履歴から追加する ></NuxtLink>
+  <div class="page-shell">
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">Timeline</p>
+        <h1 class="page-title">タイムライン</h1>
+      </div>
+      <button class="button is-small" @click="reset()">表示リセット</button>
+    </header>
+
+    <div class="mb-2">
+      <NuxtLink to="/timeline/history" class="is-size-7">履歴から追加する →</NuxtLink>
+    </div>
     <FileDropInput multiple @dropped-files="selectFiles"/>
 
-    <button
-class="button is-small is-pulled-right mb-3"
-            @click="reset()"
-    >表示リセット
-    </button>
-    <TimelineFileList
-        ref="timelineFileListRef"
-        @change-files="changeFiles"
-    />
+    <div class="mt-3">
+      <TimelineFileList
+          ref="timelineFileListRef"
+          @change-files="changeFiles"
+      />
+    </div>
     <div style="height: var(--timeline-player-heght);"/>
   </div>
 </template>

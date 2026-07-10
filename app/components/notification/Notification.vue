@@ -1,6 +1,6 @@
 <template>
   <transition name="slide-fade">
-    <article v-if="message" class="message m-0 is-success">
+    <article v-if="message" class="message is-success">
       <div class="message-body is-flex is-align-items-center">
         <b class="is-flex-grow-1">{{ message }}</b>
         <button
@@ -11,7 +11,7 @@ class="delete has-background-success-dark"
     </article>
   </transition>
   <transition name="slide-fade">
-    <article v-if="errorMessage" class="message m-0 is-danger">
+    <article v-if="errorMessage" class="message is-danger">
       <div class="message-body is-flex is-align-items-center">
         <b class="is-flex-grow-1">{{ errorMessage }}</b>
         <button
@@ -32,9 +32,10 @@ const {message, errorMessage} = useNotification();
 <style scoped>
 article.message {
   position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0.9rem;
+  z-index: 200;
+  width: min(92%, 560px);
+  margin: 0 auto 0.5rem;
 }
 
 .slide-fade-enter-active {

@@ -1,12 +1,5 @@
 :root {
-    --theme-color: rgb(9, 150, 175);
-    --timeline-linear-gradient: linear-gradient(
-            125deg,
-            var(--theme-color),
-            rgb(151, 136, 218),
-            rgb(168, 15, 137)
-    );
-    --timeline-player-heght: 114px
+    --timeline-player-heght: 118px;
 }
 
 table.borderless td {
@@ -17,7 +10,9 @@ input.editInput {
     text-align: center;
     width: 2.75rem;
     height: 1.75em;
-    background-color: whitesmoke;
+    background-color: var(--pp-field);
+    color: var(--pp-text);
+    border-radius: 6px;
 }
 
 input[type=number]::-webkit-inner-spin-button,

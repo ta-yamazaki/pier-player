@@ -1,24 +1,28 @@
 <template>
-  <div style="margin: auto; width: 95%; max-width: 640px">
-    <h5 class="title is-5 mb-2 pt-3">CGM映像</h5>
-    <div class="buttons is-right my-2">
+  <div class="page-shell">
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">CGM</p>
+        <h1 class="page-title">CGM映像</h1>
+      </div>
       <button class="button is-small" @click="reset()">表示リセット</button>
-    </div>
+    </header>
+
     <CgmList ref="cgmListRef" @preview="preview"/>
-    <button class="button is-primary is-fullwidth" @click="addRow()">
-      ＋追加
+    <button class="button is-add is-fullwidth mt-3" @click="addRow()">
+      ＋ 追加
     </button>
 
-    <br>
-    <div v-if="previewCgm.path" style="width: 100%; margin: auto">
-      <small class="mt-4 mb-1">映像プレビュー ※再生すると音が出ます</small>
-      <h6 class="title is-6 mb-2">{{ previewCgm.title }}</h6>
-      <div style="aspect-ratio: 16/9">
+    <section v-if="previewCgm.path" class="mt-6">
+      <p class="eyebrow">Preview</p>
+      <h2 class="preview-title">{{ previewCgm.title }}</h2>
+      <div class="preview-frame" style="aspect-ratio: 16/9">
         <iframe
 :key="videoReload" :src="previewCgm.path"
                 width="100%" height="100%"/>
       </div>
-    </div>
+      <p class="note mt-2">※プレビューを再生すると音が出ます。</p>
+    </section>
   </div>
 </template>
 

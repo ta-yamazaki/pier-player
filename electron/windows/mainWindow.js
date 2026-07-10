@@ -9,6 +9,7 @@ export const createMainWindow = () => {
         title: "Pier Player",
         width: 900,
         height: 700,
+        backgroundColor: '#f3f7fb', // 起動時のちらつき防止（テーマ背景色に合わせる）
         icon: iconPath,
         webPreferences: {
             nodeIntegration: false,

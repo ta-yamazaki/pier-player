@@ -1,10 +1,7 @@
 <template>
   <div class="field has-addons mb-1" style="white-space: nowrap;">
     <p class="control">
-      <a
-class="button is-small label is-light"
-         :class="{'is-primary': isViewedBeforePlay, 'is-danger': isPlaying}"
-      >タイトル</a>
+      <span class="button is-small is-static field-tag">タイトル</span>
     </p>
     <p class="control is-expanded">
       <input
@@ -14,32 +11,28 @@ v-model="vimeo.title" type="text" class="input is-small" placeholder="映像タ�
     <p>
       <button
 v-if="isBeforeViewing"
-              class="button is-small is-link is-outlined ml-2"
+              class="button is-small is-link is-outlined ml-2 action-btn"
               :class="{'is-loading': isLoading}"
               :disabled="!isPresent(vimeo.playerUrl)"
               @click="view()"
-      ><b>表示</b></button>
+      >表示</button>
       <button
 v-if="isViewedBeforePlay"
-              class="button is-small is-primary ml-2"
+              class="button is-small is-primary ml-2 action-btn"
               :class="{'is-loading': isLoading}"
               @click="play()"
-      ><b>再生</b></button>
+      >再生</button>
       <button
 v-if="isPlaying"
-              class="button is-small is-danger ml-2"
+              class="button is-small is-danger ml-2 action-btn"
               @click="close()"
-      ><b>閉じる</b></button>
+      >閉じる</button>
     </p>
   </div>
-  {{ vimeo.titleFromUrl }}
   <div class="is-flex">
     <div class="field has-addons mb-1 is-flex-grow-1">
       <p class="control">
-        <a
-class="button is-small label is-light"
-           :class="{'is-primary': isViewedBeforePlay, 'is-danger': isPlaying}"
-        >URL<small class="required">*</small></a>
+        <span class="button is-small is-static field-tag">URL<small class="required">*</small></span>
       </p>
       <p class="control is-expanded">
         <input
@@ -54,10 +47,7 @@ v-model="vimeo.url"
     </div>
     <div class="field has-addons mb-1 ml-2">
       <p class="control">
-        <a
-class="button is-small label is-light"
-           :class="{'is-primary': isViewedBeforePlay, 'is-danger': isPlaying}"
-        >パスワード</a>
+        <span class="button is-small is-static field-tag">パスワード</span>
       </p>
       <p class="control" style="width: 6rem">
         <input
@@ -148,12 +138,7 @@ const generatePlayerUrl = () => {
 </script>
 
 <style scoped>
-.control a.label {
+.action-btn {
   width: 5rem;
-  cursor: unset;
-}
-
-.control button.label {
-  cursor: unset;
 }
 </style>

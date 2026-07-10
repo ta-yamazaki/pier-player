@@ -10,21 +10,21 @@ v-model="vimeo.title"
     <p>
       <button
 v-if="isPresent(vimeo.title) && !vimeo.isViewed"
-              class="button is-link is-outlined ml-2"
+              class="button is-link is-outlined ml-2 action-btn"
               :class="{'is-loading': isLoading}"
               @click="view()"
-      ><b>表示</b></button>
+      >表示</button>
       <button
 v-if="isViewedBeforePlay"
-              class="button is-primary ml-2"
+              class="button is-primary ml-2 action-btn"
               :class="{'is-loading': isLoading}"
               @click="play()"
-      ><b>再生</b></button>
+      >再生</button>
       <button
 v-if="isPlaying"
-              class="button is-danger ml-2"
+              class="button is-danger ml-2 action-btn"
               @click="close()"
-      ><b>閉じる</b></button>
+      >閉じる</button>
     </p>
   </div>
 </template>
@@ -92,4 +92,7 @@ const close = () => {
 </script>
 
 <style scoped>
+.action-btn {
+  width: 5rem;
+}
 </style>

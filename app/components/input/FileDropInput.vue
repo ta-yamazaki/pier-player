@@ -1,14 +1,21 @@
 <template>
-  <div v-if="loading" class="dropArea loading">ドラッグ＆ドロップしてファイルを追加</div>
+  <div v-if="loading" class="dropArea loading">
+    <NuxtIcon name="mdi:tray-arrow-down" size="20"/>
+    <span class="drop-main">ここにファイルをドラッグ＆ドロップ</span>
+    <span class="drop-sub">DROP MEDIA FILES</span>
+  </div>
   <template v-else>
     <div
-class="dropArea"
-         :class="{'enter': isEnter}"
-         @dragenter="dragDropEnter()"
-         @dragleave="dragDropLeave()"
-         @dragover.prevent
-         @drop.prevent="droppedFile($event)"
-    >ドラッグ＆ドロップしてファイルを追加
+        class="dropArea"
+        :class="{'enter': isEnter}"
+        @dragenter="dragDropEnter()"
+        @dragleave="dragDropLeave()"
+        @dragover.prevent
+        @drop.prevent="droppedFile($event)"
+    >
+      <NuxtIcon name="mdi:tray-arrow-down" size="20"/>
+      <span class="drop-main">ここにファイルをドラッグ＆ドロップ</span>
+      <span class="drop-sub">DROP MEDIA FILES</span>
     </div>
     <p class="help is-danger">{{ disallowedFileTypeMessage }}</p>
   </template>
@@ -16,6 +23,7 @@ class="dropArea"
 
 <script setup lang="ts">
 import {ref} from 'vue'
+import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 
 /**
  * Props
@@ -70,26 +78,46 @@ function droppedFile(e: DragEvent) {
 
 <style scoped>
 .dropArea {
-  color: var(--bulma-primary-dark);
-  font-weight: bold;
-  font-size: 0.8rem;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
   width: 100%;
   margin: auto;
-  height: 5rem;
-  border: 1px solid var(--bulma-primary);
-  background-color: var(--bulma-primary-light);
-  border-radius: 7px;
+  height: 6rem;
+  border: 1.5px dashed hsla(190, 90%, 31%, 0.35);
+  border-radius: 12px;
+  background-color: hsla(190, 90%, 31%, 0.04);
+  color: var(--pp-cyan);
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* 子要素で dragleave が誤発火しないように */
+.dropArea > * {
+  pointer-events: none;
+}
+
+.drop-main {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--pp-text);
+}
+
+.drop-sub {
+  font-family: var(--pp-font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  color: var(--pp-fog);
 }
 
 .dropArea.enter {
-  color: white;
-  background-color: var(--bulma-primary);
+  border-color: var(--pp-cyan);
+  background-color: var(--pp-cyan-soft);
+  box-shadow: 0 0 0 4px hsla(190, 90%, 31%, 0.12);
 }
 
 .dropArea.loading {
-  opacity: 0.5;
+  opacity: 0.45;
 }
 </style>

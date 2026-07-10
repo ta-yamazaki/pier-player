@@ -32,8 +32,8 @@ const {waveSurfer, totalDuration, isReady} = useWaveSurfer({
     url: props.filePath,
     height: 48,
     barGap: 2,
-    waveColor: "gray",
-    progressColor: "gray",
+    waveColor: "#a3b4ca",
+    progressColor: "#a3b4ca",
     fillParent: true,
     cursorWidth: 0
   }
@@ -43,7 +43,9 @@ useWaveSurferHover({
   waveSurfer,
   hoverOptions: {
     labelSize: 16,
-    labelBackground: "whitesmoke"
+    labelBackground: "#ffffff",
+    labelColor: "#16283f",
+    lineColor: "#0895b0"
   }
 })
 

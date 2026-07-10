@@ -1,7 +1,7 @@
 <template>
   <!-- ファイルが存在する-->
   <template v-if="file.exists">
-    <div class="box p-2 mb-1" :class="{'has-background-danger-light': file.isPlaying}">
+    <div class="box p-2 mb-1" :class="{'is-live': file.isPlaying}">
       <nav class="level is-mobile mb-0">
         <div class="level-left" style="max-width: calc(100% - 55px);">
           <div style="line-break: anywhere">
@@ -14,19 +14,20 @@
                 @click="openFolder()"/>
           </div>
         </div>
-        <div class="level-right">
+        <div class="level-right" style="gap: 0.6rem;">
+          <span v-if="file.isPlaying" class="chip on-air"><span class="dot"/>ON AIR</span>
           <button
 v-if="!file.isPlaying"
                   class="button is-small is-primary"
                   :class="{'is-loading': startLoading}"
                   @click="start()"
-          ><b>再生</b></button>
+          >再生</button>
           <button
 v-if="file.isPlaying"
                   class="button is-small is-danger"
                   :class="{'is-loading': startLoading}"
                   @click="close()"
-          ><b>停止</b></button>
+          >停止</button>
         </div>
       </nav>
       <nav class="level is-mobile py-1 m-0 v-center">
@@ -150,7 +151,7 @@ v-model="file.gain"
     />
   </template>
   <!-- ファイルが存在しない-->
-  <div v-else class="box p-2 has-background-light">
+  <div v-else class="box p-2 is-missing">
     <nav class="level is-mobile mb-0">
       <div class="level-left" style="max-width: calc(100% - 55px);">
         <NuxtIconVideo v-if="isVideo"/>
@@ -239,8 +240,8 @@ function adjust(key: AdjustableKey, delta: number) {
 }
 
 function sliderBackground() {
-  const activeColor = "var(--bulma-primary)"
-  const inactiveColor = "whitesmoke"
+  const activeColor = "var(--pp-cyan)"
+  const inactiveColor = "hsl(214, 30%, 88%)"
   const ratio = (file.value.gain - gainMin) / (gainMax - gainMin) * 100
   const barColor = `linear-gradient(90deg, ${activeColor} ${ratio}%, ${inactiveColor} ${ratio}%)`
 
@@ -248,7 +249,7 @@ function sliderBackground() {
   const defaultLine = `
     linear-gradient(to right,
       transparent ${percent - 1}%,
-      var(--bulma-primary-dark) ${percent}%,
+      var(--pp-fog) ${percent}%,
       transparent ${percent + 1}%)
   `
   return `${defaultLine}, ${barColor}`
@@ -306,8 +307,8 @@ input[type="range"]::-webkit-slider-thumb {
   width: 12px;
   height: 12px;
   border-radius: 4px;
-  background: var(--bulma-primary);
-  border: 1px solid var(--bulma-primary-light);
+  background: var(--pp-cyan);
+  border: 1px solid #ffffff;
   box-shadow: none
 }
 
@@ -316,13 +317,17 @@ input[type="range"]::-moz-range-thumb {
   width: 12px;
   height: 12px;
   border-radius: 4px;
-  background: var(--bulma-primary);
-  border: 1px solid var(--bulma-primary-light);
+  background: var(--pp-cyan);
+  border: 1px solid #ffffff;
   box-shadow: none;
 }
 
+.editor {
+  color: var(--pp-fog);
+}
+
 .editor nav.border-bottom {
-  border-bottom: 1px dashed lightgray;
+  border-bottom: 1px dashed var(--pp-line);
 }
 
 td {

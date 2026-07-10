@@ -1,5 +1,6 @@
 <template>
-  <h5 class="title is-5 mb-1">設定</h5>
+  <p class="eyebrow">Showcase Settings</p>
+  <h2 class="section-title mb-2">ショーケース設定</h2>
   <div class="box">
     <div class="field">
       <label class="label is-size-7">ショーケースURL</label>

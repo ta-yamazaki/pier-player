@@ -7,8 +7,8 @@ v-for="(vimeo, i) in vimeoList"
           :key="vimeo.id"
           :class="{
               'dragging': i === dragIndex,
-              'has-background-primary-light': isViewedBeforePlay(vimeo),
-              'has-background-danger-light': isPlaying(vimeo)
+              'is-standby': isViewedBeforePlay(vimeo),
+              'is-live': isPlaying(vimeo)
             }">
         <td
 :draggable="true"
@@ -18,7 +18,7 @@ v-for="(vimeo, i) in vimeoList"
             @dragenter="dragEnter(i)"
             @dragover.prevent
             @dragend="dragEnd()">
-          <NuxtIcon name="ic:baseline-drag-indicator"/>
+          <NuxtIcon name="ic:baseline-drag-indicator" class="drag-handle"/>
         </td>
         <td>
           <Vimeo
@@ -85,12 +85,4 @@ defineExpose({addVimeo, closeAll})
 </script>
 
 <style scoped>
-.control a.label {
-  width: 5rem;
-  cursor: unset;
-}
-
-.control button.label {
-  cursor: unset;
-}
 </style>

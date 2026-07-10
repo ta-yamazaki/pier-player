@@ -1,44 +1,38 @@
 <template>
   <div class="field has-addons mb-1" style="white-space: nowrap;">
     <p class="control">
-      <a
-class="button is-small label is-light"
-         :class="{'is-primary': isViewedBeforePlay, 'is-danger': isPlaying}"
-      >タイトル</a>
+      <span class="button is-small is-static field-tag">タイトル</span>
     </p>
     <p class="control is-expanded">
       <input v-model="cgm.title" type="text" class="input is-small" placeholder="映像タイトル（任意）">
     </p>
     <button
 v-if="cgmPathExists && !cgm.isViewed"
-            class="button is-small is-link is-outlined ml-2"
+            class="button is-small is-link is-outlined ml-2 action-btn"
             :class="isLoading ? 'is-loading' : ''"
             @click="view()"
-    ><b>表示</b></button>
+    >表示</button>
     <button
 v-if="isViewedBeforePlay"
-            class="button is-small is-primary ml-2"
+            class="button is-small is-primary ml-2 action-btn"
             :class="{'is-loading': isLoading}"
             @click="play()"
-    ><b>再生</b></button>
+    >再生</button>
     <button
 v-if="isPlaying"
-            class="button is-small is-danger ml-2"
+            class="button is-small is-danger ml-2 action-btn"
             @click="close()"
-    ><b>閉じる</b></button>
+    >閉じる</button>
   </div>
   <div class="field has-addons">
     <p class="control">
-      <a
-class="button is-small label is-light"
-         :class="{'is-primary': isViewedBeforePlay, 'is-danger': isPlaying}"
-      >URL</a>
+      <span class="button is-small is-static field-tag">URL</span>
     </p>
     <p class="control is-expanded">
       <input v-model="cgm.path" type="url" class="input is-small" placeholder="CGM映像URL">
     </p>
     <p v-if="cgmPathExists">
-      <button class="button is-small ml-2" @click="preview()">プレビュー</button>
+      <button class="button is-small ml-2 action-btn" @click="preview()">プレビュー</button>
     </p>
   </div>
 </template>
@@ -110,16 +104,11 @@ function preview() {
 
 
 <style scoped>
-.control a.label {
-  width: 5rem;
-  cursor: unset;
-}
-
 .control input {
   min-width: 15rem
 }
 
-.field button {
-  width: 5rem !important;
+.action-btn {
+  width: 5rem;
 }
 </style>

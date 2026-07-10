@@ -1,6 +1,6 @@
 <template>
   <SideMenu/>
-  <main class="pb-6" style="background-color: whitesmoke; min-height: 100vh;">
+  <main>
     <Notification/>
     <slot/>
   </main>

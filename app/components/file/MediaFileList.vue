@@ -6,7 +6,7 @@
 v-for="(file, i) in targetFiles" :key="file.id"
         :class="{
               'dragging': i === dragIndex,
-              'has-background-primary-light has-text-weight-bold': file.isPlaying
+              'is-live': file.isPlaying
             }">
       <td
 :draggable="true"
@@ -15,7 +15,7 @@ v-for="(file, i) in targetFiles" :key="file.id"
           @dragenter="dragEnter(i)"
           @dragover.prevent
           @dragend="dragEnd()">
-        <NuxtIcon name="ic:baseline-drag-indicator" class="m-0 is-draggable"/>
+        <NuxtIcon name="ic:baseline-drag-indicator" class="m-0 is-draggable drag-handle"/>
       </td>
       <td class="pr-0 py-0">
         <MediaFile :file="file" @play="reset" @preview="preview"/>

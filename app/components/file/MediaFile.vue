@@ -16,18 +16,19 @@
       <p v-if="!file.exists" class="has-text-danger"
       >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
     </div>
-    <div class="ml-auto mr-0">
+    <div class="ml-auto mr-0 is-flex is-align-items-center" style="gap: 0.6rem;">
+      <span v-if="file.isPlaying" class="chip on-air"><span class="dot"/>ON AIR</span>
       <button
 v-if="file.path && !file.isPlaying"
               class="button is-small is-primary"
               :disabled="!file.exists"
               @click="play()"
-      ><b>再生</b></button>
+      >再生</button>
       <button
 v-if="file.isPlaying"
               class="button is-small is-danger"
               @click="close()"
-      ><b>停止</b></button>
+      >停止</button>
     </div>
   </div>
 </template>

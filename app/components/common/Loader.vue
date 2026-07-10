@@ -1,7 +1,5 @@
 <template>
-    <div
-class="loader mx-auto my-5"
-         style="height: 40px;width: 40px;"/>
+  <div class="pp-loader"/>
 </template>
 
 <script setup lang="ts">

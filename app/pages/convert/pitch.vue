@@ -1,62 +1,67 @@
 <template>
-  <div style="margin: auto; width: 95%; max-width: 640px">
-    <h5 class="title is-5 mb-2 pt-3">ピッチ変更</h5>
-    <FileDropInput :loading="loading" @dropped-file="selectFile"/>
-    <div v-if="file.path" class="my-6">
+  <div class="page-shell">
+    <header class="page-head">
       <div>
-        <small>ピッチ変更するファイル</small>
-        <div class="is-size-5">
+        <p class="eyebrow">Pitch Shift</p>
+        <h1 class="page-title">ピッチ変更</h1>
+      </div>
+    </header>
+    <FileDropInput :loading="loading" @dropped-file="selectFile"/>
+    <div v-if="file.path" class="my-5">
+      <div class="box p-4">
+        <p class="eyebrow">Source</p>
+        <div class="is-size-5 mt-1">
           <NuxtIconAudio v-if="isAudio" class="mr-3"/>
           <NuxtIconVideo v-if="isVideo" class="mr-3"/>
           <b>{{ file.name }}</b>
         </div>
-      </div>
-      <div class="mt-4">
-        <nav class="level is-mobile">
-          <div class="level-left nowrap">
-            <p class="nowrap">
-              <small>ピッチ変更</small>
-            </p>
-            <input
+        <div class="mt-4">
+          <nav class="level is-mobile">
+            <div class="level-left nowrap">
+              <p class="nowrap mr-2">
+                <small>ピッチ変更</small>
+              </p>
+              <input
 v-model="semitones"
-                   type="range"
-                   class="v-center"
-                   step="1" min="-12" max="12"
-                   :disabled="loading"
-                   @dblclick="semitones = 0">
-            <div class="control ml-1" style="font-size: inherit;">{{ semitonesText }}</div>
-          </div>
-          <div class="level-right"/>
-        </nav>
-      </div>
+                     type="range"
+                     class="v-center"
+                     step="1" min="-12" max="12"
+                     :disabled="loading"
+                     @dblclick="semitones = 0">
+              <div class="control ml-2 semitone-value">{{ semitonesText }}</div>
+            </div>
+            <div class="level-right"/>
+          </nav>
+        </div>
 
-      <button
+        <button
 class="button is-fullwidth is-primary mt-4"
-              :class="{'is-loading': loading}"
-              :disabled="semitones == 0 || loading"
-              @click="convertFile">
-        変換
-      </button>
+                :class="{'is-loading': loading}"
+                :disabled="semitones == 0 || loading"
+                @click="convertFile">
+          変換
+        </button>
+      </div>
     </div>
-    <div class="my-6">
+    <div class="my-5">
       <div v-if="!converted && totalDuration">
         <progress
 class="progress is-primary"
                   :value="progress"
                   :max="totalDuration"/>
-        <span>{{ percent.toFixed(0) }} %</span>
+        <span class="timecode">{{ percent.toFixed(0) }} %</span>
       </div>
       <template v-if="converted">
-        <div class="notification is-warning is-light mb-1">
-          <small>ピッチ変更されたファイル</small>
-          <div class="is-size-5">
+        <div class="result-panel mb-2">
+          <p class="eyebrow" style="color: var(--pp-amber)">Output</p>
+          <div class="is-size-5 mt-1">
             <NuxtIconAudio v-if="isAudio" class="mr-3"/>
             <NuxtIconVideo v-if="isVideo" class="mr-3"/>
             <b>{{ convertedFilename }}</b>
           </div>
-          <a @click="openFolder()">フォルダを開く</a>
+          <a class="is-size-7" @click="openFolder()">フォルダを開く →</a>
         </div>
-        <small>※元のファイルと同じフォルダ内に生成されています。</small>
+        <p class="note">※元のファイルと同じフォルダ内に生成されています。</p>
       </template>
     </div>
   </div>
@@ -168,6 +173,12 @@ const openFolder = () => {
 </script>
 
 <style scoped>
+.semitone-value {
+  font-family: var(--pp-font-mono);
+  font-variant-numeric: tabular-nums;
+  min-width: 2.2em;
+}
+
 /***********************/
 /* ピッチスライダー */
 /***********************/
@@ -178,12 +189,11 @@ input[type="range"] {
   border-radius: 99px;
   background: linear-gradient(
       to right,
-      var(--bulma-primary-light) 49%,
-      var(--bulma-primary) 50%,
-      var(--bulma-primary-light) 51%
+      hsl(214, 30%, 88%) 49%,
+      var(--pp-cyan) 50%,
+      hsl(214, 30%, 88%) 51%
   );
   cursor: pointer;
-  box-shadow: var(--bulma-shadow);
 }
 
 /* ツマミ：Chrome, Safari, Edge用 */
@@ -193,9 +203,9 @@ input[type="range"]::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 5px;
-  background: var(--bulma-primary);
-  border: 1px solid var(--bulma-primary-light);
-  box-shadow: var(--bulma-shadow);
+  background: var(--pp-cyan);
+  border: 1px solid #ffffff;
+  box-shadow: 0 2px 8px hsla(215, 50%, 30%, 0.3);
 }
 
 /* ツマミ：Firefox用 */
@@ -203,8 +213,8 @@ input[type="range"]::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 4px;
-  background: var(--bulma-primary);
-  border: 1px solid var(--bulma-primary-light);
-  box-shadow: var(--bulma-shadow);
+  background: var(--pp-cyan);
+  border: 1px solid #ffffff;
+  box-shadow: 0 2px 8px hsla(215, 50%, 30%, 0.3);
 }
 </style>

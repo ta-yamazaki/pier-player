@@ -1,21 +1,24 @@
 <template>
-  <div class="tabs is-centered is-fullwidth mb-4">
-    <ul>
-      <li><NuxtLink to="/vimeo/showcase">ショーケース</NuxtLink></li>
-      <li class="is-active"><a>個別映像</a></li>
-    </ul>
-  </div>
-
-  <div style="margin: auto; width: 95%; max-width: 640px">
-    <nav class="level is-mobile my-2">
-      <div class="level-left is-size-7">※最初の表示は少し時間がかかります。</div>
-      <div class="level-right">
-        <button class="button is-small" @click="reset()">表示リセット</button>
+  <div class="page-shell">
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">Vimeo</p>
+        <h1 class="page-title">Vimeo再生</h1>
       </div>
-    </nav>
+      <button class="button is-small" @click="reset()">表示リセット</button>
+    </header>
+
+    <div class="tabs is-centered is-fullwidth mb-4">
+      <ul>
+        <li><NuxtLink to="/vimeo/showcase">ショーケース</NuxtLink></li>
+        <li class="is-active"><a>個別映像</a></li>
+      </ul>
+    </div>
+
+    <p class="note mb-2">※最初の表示は少し時間がかかります。</p>
     <VimeoList ref="vimeoListRef"/>
-    <button class="button is-primary is-fullwidth mt-5" @click="addRow()">
-      ＋追加
+    <button class="button is-add is-fullwidth mt-4" @click="addRow()">
+      ＋ 追加
     </button>
   </div>
 </template>

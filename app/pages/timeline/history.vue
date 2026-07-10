@@ -1,7 +1,12 @@
 <template>
-  <div style="margin: auto; width: 95%; max-width: 640px">
-    <h5 class="title is-5 mb-2 pt-3">タイムライン履歴</h5>
-    <NuxtLink to="/timeline">&lt; 戻る</NuxtLink>
+  <div class="page-shell">
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">Timeline / History</p>
+        <h1 class="page-title">タイムライン履歴</h1>
+      </div>
+    </header>
+    <NuxtLink to="/timeline" class="is-size-7">← 戻る</NuxtLink>
     <TimelineHistoryList/>
   </div>
 </template>

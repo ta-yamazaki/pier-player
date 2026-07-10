@@ -16,10 +16,10 @@ interface Props {
   color?: string;
 }
 
-// withDefaults を使って default 値を指定
+// color未指定時は currentColor を継承し、親のCSSで色を制御する
 withDefaults(defineProps<Props>(), {
   size: "24",
-  color: "'var(--bulma-primary-dark)'"
+  color: undefined
 });
 </script>
 

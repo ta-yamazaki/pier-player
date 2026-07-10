@@ -1,5 +1,8 @@
 <template>
-  <p v-if="files.length === 0">履歴がありません</p>
+  <div v-if="files.length === 0" class="empty-state">
+    <p class="eyebrow">No History</p>
+    <p>履歴がありません</p>
+  </div>
   <template v-else>
     <button
 class="button is-primary is-fullwidth my-3"
@@ -7,14 +10,14 @@ class="button is-primary is-fullwidth my-3"
             :disabled="selectedFiles.length === 0"
             @click="addTimeline">
       タイムラインに追加する
-      <span class="tag is-primary-light is-rounded ml-2">{{ selectedFiles.length }}</span>
+      <span class="count-badge">{{ selectedFiles.length }}</span>
     </button>
 
     <input
 v-model="searchText"
            type="text"
-           class="input is-light is-fullwidth my-3"
-           placeholder="検索...">
+           class="input is-fullwidth my-3"
+           placeholder="ファイル名で検索...">
 
     <div class="box py-1 px-2">
       <table class="table is-fullwidth is-hoverable">
@@ -28,8 +31,8 @@ type="checkbox"
                    :disabled="selectedFiles.length === 0"
                    @click="deselectAll">
           </td>
-          <td>↓ 追加したいものにチェック</td>
-          <td>最終更新日</td>
+          <td class="note">↓ 追加したいものにチェック</td>
+          <td class="note">最終更新日</td>
         </tr>
         </thead>
         <tbody>

@@ -2,9 +2,9 @@
   <div class="timelinePlayer">
     <Loader v-if="!playerMeta.selectedFilename"/>
     <template v-else>
-      <div class="has-text-centered">{{ playerMeta.selectedFilename }}</div>
+      <div class="has-text-centered player-filename">{{ playerMeta.selectedFilename }}</div>
       <nav class="level is-mobile mb-1">
-        <p>{{ currentTimeColon }}</p>
+        <p class="timecode">{{ currentTimeColon }}</p>
         <progress
             ref="progressBar"
             class="mx-2 mb-0"
@@ -15,7 +15,7 @@
             @mousemove="onMouseMove"
             @mouseleave="hideTooltip"
         />
-        <p>{{ durationColon }}</p>
+        <p class="timecode">{{ durationColon }}</p>
       </nav>
       <!-- tooltip -->
       <div
@@ -25,7 +25,7 @@ v-if="tooltip.visible"
         {{ tooltip.value }}
       </div>
 
-      <nav class="level is-mobile">
+      <nav class="level is-mobile transport">
         <p class="level-item"/>
         <p class="level-item">
           <NuxtIconPlayer name="mdi:skip-previous" @click="restart()"/>
@@ -33,16 +33,14 @@ v-if="tooltip.visible"
         <p class="level-item">
           <NuxtIconPlayer name="mdi:rewind-10" @click="rewind(10)"/>
         </p>
-        <p class="level-item">
+        <p class="level-item play-main">
           <NuxtIconPlayer
 v-if="!playerMeta.isPlaying"
                           name="mdi:play-circle" size="48"
-                          :color="'var(--bulma-primary-30)'"
                           @click="play()"/>
           <NuxtIconPlayer
 v-if="playerMeta.isPlaying"
                           name="mdi:pause-circle" size="48"
-                          :color="'var(--bulma-primary-30)'"
                           @click="pause()"/>
         </p>
         <p class="level-item">
@@ -202,10 +200,32 @@ function playerHooks() {
   left: var(--sidebar-width); /* サイドバーの分だけ右寄せ */
   height: var(--timeline-player-heght);
   z-index: 100;
-  padding: 7px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
+  padding: 9px 14px;
+  background-color: hsla(0, 0%, 100%, 0.88);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--pp-line-soft);
+  box-shadow: 0 -8px 30px hsla(215, 50%, 30%, 0.14);
   animation: SlideIN 0.3s ease-in-out;
+}
+
+.player-filename {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--pp-text);
+  margin-bottom: 2px;
+}
+
+.transport {
+  color: var(--pp-fog);
+}
+
+.transport .level-item:hover {
+  color: var(--pp-text);
+}
+
+.transport .play-main,
+.transport .play-main:hover {
+  color: var(--pp-cyan);
 }
 
 @keyframes SlideIN {
@@ -231,30 +251,25 @@ progress {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 12px;
+  height: 10px;
   border-radius: 999px;
   overflow: hidden;
-  background-color: #e6eaf0;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: hsl(214, 30%, 89%);
 }
 
 /* WebKit (Chrome, Safari) */
 progress::-webkit-progress-bar {
-  background-color: #e6eaf0;
+  background-color: hsl(214, 30%, 89%);
   border-radius: 999px;
 }
 
 progress::-webkit-progress-value {
-  /*background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),*/
-  /*            var(--timeline-linear-gradient);*/
-  background-color: var(--bulma-primary-30);
+  background: linear-gradient(90deg, hsl(190, 90%, 28%), hsl(189, 80%, 42%));
 }
 
 /* Firefox */
 progress::-moz-progress-bar {
-  /*background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)),*/
-  /*            var(--timeline-linear-gradient);*/
-  background-color: var(--bulma-primary-30);
+  background: linear-gradient(90deg, hsl(190, 90%, 28%), hsl(189, 80%, 42%));
 }
 
 .tooltip {
@@ -262,10 +277,13 @@ progress::-moz-progress-bar {
   top: 0; /* progressBar の上に出す */
   padding: 4px 6px;
   font-size: 12px;
-  background: black;
-  color: white;
-  border-radius: 4px;
+  font-family: var(--pp-font-mono);
+  background: #ffffff;
+  border: 1px solid var(--pp-line);
+  color: var(--pp-text);
+  border-radius: 6px;
   white-space: nowrap;
   pointer-events: none;
+  box-shadow: 0 4px 12px hsla(215, 50%, 30%, 0.15);
 }
 </style>

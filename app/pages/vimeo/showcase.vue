@@ -1,14 +1,21 @@
 <template>
-  <div class="tabs is-centered is-fullwidth mb-4">
-    <ul>
-      <li class="is-active"><a>ショーケース</a></li>
-      <li>
-        <NuxtLink to="/vimeo">個別映像</NuxtLink>
-      </li>
-    </ul>
-  </div>
+  <div class="page-shell">
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">Vimeo</p>
+        <h1 class="page-title">Vimeo再生</h1>
+      </div>
+    </header>
 
-  <div style="margin: auto; width: 95%; max-width: 640px">
+    <div class="tabs is-centered is-fullwidth mb-4">
+      <ul>
+        <li class="is-active"><a>ショーケース</a></li>
+        <li>
+          <NuxtLink to="/vimeo">個別映像</NuxtLink>
+        </li>
+      </ul>
+    </div>
+
     <ShowcaseSetting
         @update-url-with-password="(val) => showcaseUrlWithPassword = val"
         @get-showcase-video-titles="getShowcaseVideoTitles"

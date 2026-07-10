@@ -14,6 +14,13 @@ export default defineNuxtConfig({
             hashMode: true
         }
     },
+    app: {
+        head: {
+            htmlAttrs: {
+                'data-theme': 'light' // OS設定に関わらずBulmaのライトテーマを適用
+            }
+        }
+    },
     electron: {
         build: [
             {

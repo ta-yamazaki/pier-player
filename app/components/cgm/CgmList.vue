@@ -1,18 +1,15 @@
 <template>
-  <div v-if="cgmList.length > 0" class="box py-1 px-2">
+  <div v-if="cgmList.length > 0">
+    <p class="note mb-2">※表示に少し時間がかかる場合があります。</p>
+    <div class="box py-1 px-2">
     <table class="table mb-2 is-fullwidth">
       <tbody>
-      <tr class="is-size-7" style="white-space: nowrap;">
-        <td colspan="3">
-          <small>※表示に少し時間がかかる場合があります。</small>
-        </td>
-      </tr>
       <tr
 v-for="(cgm, i) in cgmList" :key="cgm.id"
           :class="{
               'dragging': i === dragIndex,
-              'has-background-primary-light': isViewedBeforePlay(cgm),
-              'has-background-danger-light': isPlaying(cgm)
+              'is-standby': isViewedBeforePlay(cgm),
+              'is-live': isPlaying(cgm)
             }">
         <td
 :draggable="true"
@@ -22,7 +19,7 @@ v-for="(cgm, i) in cgmList" :key="cgm.id"
             @dragenter="dragEnter(i)"
             @dragover.prevent
             @dragend="dragEnd()">
-          <NuxtIcon name="ic:baseline-drag-indicator"/>
+          <NuxtIcon name="ic:baseline-drag-indicator" class="drag-handle"/>
         </td>
         <td>
           <Cgm
@@ -37,6 +34,7 @@ v-for="(cgm, i) in cgmList" :key="cgm.id"
       </tr>
       </tbody>
     </table>
+    </div>
   </div>
 </template>
 
