@@ -15,7 +15,11 @@ const keys = {
 
     timelineList: "timelineList",
     timelineHistory: "timelineHistory",
+    timelineWaveformPeaks: "timelineWaveformPeaks",
 };
+
+// 波形ピークキャッシュの最大保持件数（1件あたり数KB。古いものから捨てる）
+const maxWaveformPeaksEntries = 200;
 
 // ファイルモードのタブ（getFiles/storeFiles がレンダラーから受け取れるキー）
 const fileTabs = ["sunday", "wednesday", "other"];
@@ -91,7 +95,41 @@ export const registerStoreHandlers = () => {
         file.updatedAt = new Date()
         saveMap(keys.timelineHistory, file.name, file);
     });
+
+    /**
+     * タイムラインモード 波形ピークキャッシュ（キー: ファイルパス）
+     */
+    ipcMain.handle(TimelineChannels.getWaveformPeaks, (_event) => {
+        return loadMap(keys.timelineWaveformPeaks);
+    });
+    ipcMain.handle(TimelineChannels.storeWaveformPeaks, (_event, path, entry) => {
+        const map = loadMap(keys.timelineWaveformPeaks);
+        map.set(path, {...entry, updatedAt: new Date()});
+        pruneOldest(map, maxWaveformPeaksEntries);
+        store.set(keys.timelineWaveformPeaks, Array.from(map.entries()));
+    });
+    ipcMain.handle(TimelineChannels.deleteWaveformPeaks, (_event, path) => {
+        const map = loadMap(keys.timelineWaveformPeaks);
+        if (!map.delete(path)) return;
+        store.set(keys.timelineWaveformPeaks, Array.from(map.entries()));
+    });
 };
+
+// updatedAt が古いエントリから削除して max 件以下に抑える
+function pruneOldest(map, max) {
+    while (map.size > max) {
+        let oldestKey = null;
+        let oldestTime = Infinity;
+        for (const [key, value] of map) {
+            const time = new Date(value?.updatedAt ?? 0).getTime();
+            if (time < oldestTime) {
+                oldestTime = time;
+                oldestKey = key;
+            }
+        }
+        map.delete(oldestKey);
+    }
+}
 
 function saveMap(storeKey, targetKey, targetValue) {
     const map = loadMap(storeKey);

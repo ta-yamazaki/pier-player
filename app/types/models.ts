@@ -24,6 +24,7 @@ export interface TimelineFileMeta extends FileMeta {
   continuousPlay: boolean
   key: number
   updatedAt?: string | Date
+  durationSec?: number // メディア実尺のキャッシュ（クリップストリップ描画用、メタデータ読込時に確定）
 }
 
 // CGM映像

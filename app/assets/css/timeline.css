@@ -33,3 +33,280 @@ details.trim summary::marker {
 .level .level-right {
     flex-direction: row !important;
 }
+
+/* ------------------------------------------------------------------
+ * クリップストリップ（EDIUS風トリム・フェード編集）
+ * ------------------------------------------------------------------ */
+.clip-strip {
+    user-select: none;
+    margin-bottom: 0.4rem;
+}
+
+/* タイムルーラー */
+.clip-ruler {
+    position: relative;
+    height: 14px;
+    font-family: var(--pp-font-mono);
+    font-size: 0.6rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--pp-fog);
+    overflow: hidden;
+}
+
+.clip-tick {
+    position: absolute;
+    bottom: 0;
+    padding-left: 3px;
+    border-left: 1px solid var(--pp-line);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.clip-loading {
+    font-family: var(--pp-font-ui);
+}
+
+/* クリップ本体 */
+.clip-body {
+    position: relative;
+    border: 1px solid var(--pp-line-soft);
+    border-radius: 6px;
+    background: var(--pp-surface);
+    overflow: hidden;
+}
+
+.clip-body.is-disabled .clip-fade-knob,
+.clip-body.is-disabled .clip-trim-handle {
+    pointer-events: none;
+    opacity: 0.35;
+}
+
+/* トラック（V=映像フェード / A=音声フェード） */
+.clip-track {
+    position: relative;
+}
+
+.clip-track.video {
+    height: 22px;
+    background: var(--pp-surface-2);
+    border-bottom: 1px dashed var(--pp-line-soft);
+}
+
+.clip-track.audio {
+    height: 36px;
+}
+
+.clip-track-label {
+    position: absolute;
+    top: 1px;
+    left: 4px;
+    z-index: 3;
+    font-family: var(--pp-font-mono);
+    font-size: 0.55rem;
+    color: var(--pp-fog);
+    pointer-events: none;
+}
+
+/* 波形（Aトラック背景） */
+.clip-wave {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* フェード三角（斜辺の外側＝消えている領域） */
+.clip-fade {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.clip-fade polygon {
+    fill: hsla(216, 40%, 14%, 0.16);
+    stroke: hsla(216, 40%, 14%, 0.35);
+    stroke-width: 0.6;
+    vector-effect: non-scaling-stroke;
+}
+
+/* フェードハンドル（三角の頂点） */
+.clip-fade-knob {
+    position: absolute;
+    top: 6px;
+    z-index: 5;
+    width: 11px;
+    height: 11px;
+    padding: 0;
+    border: 1px solid #ffffff;
+    border-radius: 50%;
+    background: var(--pp-cyan);
+    transform: translate(-50%, -50%);
+    cursor: ew-resize;
+    touch-action: none;
+    transition: width 0.1s ease, height 0.1s ease;
+}
+
+.clip-fade-knob:hover {
+    width: 14px;
+    height: 14px;
+}
+
+/* トリムで捨てる領域（斜線ハッチ） */
+.clip-trim-shade {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 3;
+    background: hsla(215, 16%, 44%, 0.12) repeating-linear-gradient(
+            45deg,
+            transparent 0 4px,
+            hsla(215, 16%, 44%, 0.22) 4px 6px);
+    pointer-events: none;
+}
+
+.clip-trim-shade.left {
+    left: 0;
+}
+
+.clip-trim-shade.right {
+    right: 0;
+}
+
+/* トリムハンドル（クリップ両端の縦バー） */
+.clip-trim-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 4;
+    width: 9px;
+    margin-left: -4.5px;
+    border-radius: 3px;
+    background: var(--pp-cyan);
+    box-shadow: 0 0 0 1px #ffffff inset;
+    cursor: ew-resize;
+    touch-action: none;
+    opacity: 0.85;
+}
+
+.clip-trim-handle:hover {
+    opacity: 1;
+}
+
+/* プレイヘッド（再生位置） */
+.clip-playhead {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 6;
+    width: 2px;
+    background: var(--pp-red);
+    box-shadow: 0 0 6px var(--pp-red);
+    pointer-events: none;
+}
+
+/* 数値入力行（ドラッグと併用） */
+.clip-values {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.2rem 0.35rem;
+    margin-top: 0.3rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.clip-values label {
+    color: var(--pp-fog);
+}
+
+/* パラメータのグループ枠（どの入力が何の値かを視覚的に括る） */
+.clip-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 1px 6px;
+    /*border: 1px solid var(--pp-line-soft);*/
+    /*border-radius: 6px;*/
+    white-space: nowrap;
+}
+
+.clip-group-label {
+    color: var(--pp-text);
+}
+
+.clip-group input.editInput {
+    border: 1px solid var(--pp-line);
+    background-color: var(--pp-field);
+}
+
+/* フェードイン／アウトの向きを示す三角アイコン（ストリップ上の三角と対応） */
+.fade-ico {
+    width: 10px;
+    height: 10px;
+    flex: none;
+    fill: var(--pp-fog);
+}
+
+/* 行の右端寄せ（全体時間＋波形再取得） */
+.clip-values-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: auto;
+}
+
+.clip-values-total {
+    font-family: var(--pp-font-mono);
+    color: var(--pp-fog);
+    white-space: nowrap;
+}
+
+.clip-values input.editInput.is-dragging {
+    border: 1px solid var(--pp-cyan);
+    box-shadow: 0 0 0 3px var(--pp-cyan-soft);
+}
+
+/* 音量スライダー */
+.clip-gain input[type="range"] {
+    appearance: none;
+    width: 110px;
+    height: 6px;
+    border-radius: 99px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.clip-gain input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    background: var(--pp-cyan);
+    border: 1px solid #ffffff;
+    box-shadow: none;
+}
+
+.clip-gain input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    background: var(--pp-cyan);
+    border: 1px solid #ffffff;
+    box-shadow: none;
+}
+
+.clip-gain-value {
+    min-width: 1.6em;
+    text-align: right;
+    font-family: var(--pp-font-mono);
+}
+
+.clip-wave-refresh {
+    color: var(--pp-fog);
+}
+
+.clip-wave-refresh:hover {
+    color: var(--pp-text);
+}

@@ -80,6 +80,10 @@ export const TimelineChannels = {
     storeAdditionalFiles: 'storeAdditionalTimelineFiles',
     getHistory: 'getTimelineHistory',
     storeHistory: 'storeTimelineHistory',
+
+    getWaveformPeaks: 'getTimelineWaveformPeaks',
+    storeWaveformPeaks: 'storeTimelineWaveformPeaks',
+    deleteWaveformPeaks: 'deleteTimelineWaveformPeaks',
 } as const
 
 // 変換モード（ピッチ・ラウドネス）

@@ -16,6 +16,10 @@
         </div>
         <div class="level-right" style="gap: 0.6rem;">
           <span v-if="file.isPlaying" class="chip on-air"><span class="dot"/>ON AIR</span>
+          <label v-if="!isLast" class="checkbox is-size-7 nowrap">
+            <input v-model="file.continuousPlay" type="checkbox">
+            次を自動再生
+          </label>
           <button
               v-if="!file.isPlaying"
               :class="{'is-loading': startLoading}"
@@ -32,117 +36,9 @@
           </button>
         </div>
       </nav>
-      <nav class="level is-mobile py-1 m-0 v-center">
-        <div class="level-left">
-          <div class="is-clickable is-size-7" @click="editorOpen = !editorOpen">
-            <NuxtIcon :name="editorOpen? 'iconamoon:arrow-up-2' : 'iconamoon:arrow-down-2'" size="14"/>
-            調整
-          </div>
-        </div>
-        <div class="level-right">
-          <label v-if="!isLast" class="checkbox">
-            <input v-model="file.continuousPlay" type="checkbox">
-            次を自動再生
-          </label>
-        </div>
-      </nav>
       <!-- 再生編集-->
-      <div v-if="editorOpen" class="mx-2 mt-2 mb-0 is-size-7 editor">
-        <nav class="level is-mobile py-0 my-0 border-bottom">
-          <div class="level-left">
-            <p class="nowrap" style="width: 5.75rem"/>
-            冒頭（秒）
-          </div>
-          <div class="level-right">
-            末尾（秒）
-            <p class="nowrap" style="width: 0.1rem"/>
-          </div>
-        </nav>
-        <nav class="level is-mobile py-1 m-0 border-bottom">
-          <div class="level-left">
-            <p class="nowrap" style="width: 4.5rem">
-              <NuxtIcon name="mdi:content-cut"/>
-              カット
-            </p>
-            <NuxtIconMinus class="is-clickable" @click="adjust('startTrimSec', -trimStep)"/>
-            <input
-                v-model="file.startTrimSec"
-                class="input is-primary borderless editInput is-small px-1 py-0"
-                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
-            <NuxtIconPlus class="is-clickable" @click="adjust('startTrimSec', trimStep)"/>
-          </div>
-          <div class="level-right">
-            <NuxtIconMinus class="is-clickable" @click="adjust('endTrimSec', -trimStep)"/>
-            <input
-                v-model="file.endTrimSec"
-                class="input is-primary borderless editInput is-small px-1 py-0"
-                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
-            <NuxtIconPlus class="is-clickable" @click="adjust('endTrimSec', trimStep)"/>
-          </div>
-        </nav>
-        <nav v-if="isVideo" class="level is-mobile py-1 m-0 border-bottom">
-          <div class="level-left">
-            <p class="nowrap" style="width: 4.5rem">
-              映像フェード
-            </p>
-            <NuxtIconMinus class="is-clickable" @click="adjust('startFadeSec', -fadeStep)"/>
-            <input
-                v-model="file.startFadeSec"
-                class="input is-primary borderless editInput is-small px-1 py-0"
-                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
-            <NuxtIconPlus class="is-clickable" @click="adjust('startFadeSec', fadeStep)"/>
-          </div>
-          <div class="level-right">
-            <NuxtIconMinus class="is-clickable" @click="adjust('endFadeSec', -fadeStep)"/>
-            <input
-                v-model="file.endFadeSec"
-                class="input is-primary borderless editInput is-small px-1 py-0"
-                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
-            <NuxtIconPlus class="is-clickable" @click="adjust('endFadeSec', fadeStep)"/>
-          </div>
-        </nav>
-        <nav class="level is-mobile py-1 m-0 border-bottom">
-          <div class="level-left">
-            <p class="nowrap" style="width: 4.5rem">
-              音声フェード
-            </p>
-            <NuxtIconMinus class="is-clickable" @click="adjust('startAudioFadeSec', -fadeStep)"/>
-            <input
-                v-model="file.startAudioFadeSec"
-                class="input is-primary borderless editInput is-small px-1 py-0"
-                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
-            <NuxtIconPlus class="is-clickable" @click="adjust('startAudioFadeSec', fadeStep)"/>
-          </div>
-          <div class="level-right">
-            <NuxtIconMinus class="is-clickable" @click="adjust('endAudioFadeSec', -fadeStep)"/>
-            <input
-                v-model="file.endAudioFadeSec"
-                class="input is-primary borderless editInput is-small px-1 py-0"
-                min="0" style="width: 2.75rem;height: 1.75em;" type="number">
-            <NuxtIconPlus class="is-clickable" @click="adjust('endAudioFadeSec', fadeStep)"/>
-          </div>
-        </nav>
-        <nav class="level is-mobile py-1 m-0">
-          <div class="level-left nowrap">
-            <p class="nowrap" style="width: 4.5rem">
-              <NuxtIcon name="mdi:volume-high"/>
-              音量
-            </p>
-            <input
-                v-model="file.gain"
-                :max="gainMax"
-                :min="gainMin"
-                :style="{background: sliderBackground()}"
-                class="v-center" step="0.1" type="range"
-                @dblclick="file.gain = 1">
-            <div class="control ml-1" style="font-size: inherit;">{{ file.gain }}</div>
-            <div class="has-text-grey ml-0">（元の音量＝1）</div>
-          </div>
-          <div class="level-right"/>
-        </nav>
-        <nav class="py-1 m-0" style="padding-left: 5rem">
-          <TimelineWaveform :file-path="file.path"/>
-        </nav>
+      <div class="mt-1 mb-0 is-size-7 editor">
+        <TimelineClipStrip :file="file"/>
       </div>
       <!-- 再生編集ここまで -->
     </div>
@@ -172,10 +68,7 @@ import {ref, toRaw, toRef, watch} from 'vue'
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconFolder from "~/components/icon/NuxtIconFolder.vue";
-import NuxtIconMinus from "~/components/icon/NuxtIconMinus.vue";
-import NuxtIconPlus from "~/components/icon/NuxtIconPlus.vue";
-import NuxtIcon from "~/components/icon/NuxtIcon.vue";
-import TimelineWaveform from "~/components/timeline/TimelineWaveform.vue";
+import TimelineClipStrip from "~/components/timeline/TimelineClipStrip.vue";
 import type {TimelineFileMeta} from "~/types/models";
 
 /**
@@ -198,13 +91,8 @@ const props = defineProps<Props>();
 
 // 親のリストと同一オブジェクトを共有し、変更は親のdeep watchで永続化される
 const file = toRef(props, 'file')
-const editorOpen = ref(false)
 const startLoading = ref(false)
 
-const trimStep = 0.5
-const fadeStep = 0.1
-const gainMin = 0
-const gainMax = 3
 const timelineApi = window.timelineApi
 const commonApi = window.commonApi
 const {notifyError} = useNotification()
@@ -229,38 +117,6 @@ const isAudio = computed(() => isAudioType(file.value.type))
 /* -------------------- ファイル関連 -------------------- */
 function openFolder() {
   commonApi.openFolder(toRaw(file.value.path))
-}
-
-/* -------------------- トリミング・フェード調整 -------------------- */
-type AdjustableKey =
-    'startTrimSec'
-    | 'endTrimSec'
-    | 'startFadeSec'
-    | 'endFadeSec'
-    | 'startAudioFadeSec'
-    | 'endAudioFadeSec'
-
-// 指定キーの秒数を delta 分増減する（0未満にはしない）
-function adjust(key: AdjustableKey, delta: number) {
-  const current = Number(file.value[key]) || 0
-  const next = Math.round((current + delta) * 1000) / 1000
-  file.value[key] = Math.max(0, next)
-}
-
-function sliderBackground() {
-  const activeColor = "var(--pp-cyan)"
-  const inactiveColor = "hsl(214, 30%, 88%)"
-  const ratio = (file.value.gain - gainMin) / (gainMax - gainMin) * 100
-  const barColor = `linear-gradient(90deg, ${activeColor} ${ratio}%, ${inactiveColor} ${ratio}%)`
-
-  const percent = (1 / (gainMax - gainMin)) * 100
-  const defaultLine = `
-    linear-gradient(to right,
-      transparent ${percent - 1}%,
-      var(--pp-fog) ${percent}%,
-      transparent ${percent + 1}%)
-  `
-  return `${defaultLine}, ${barColor}`
 }
 
 /* -------------------- 再生関連 -------------------- */
@@ -298,44 +154,8 @@ function mediaEnded() {
 
 <style scoped>
 
-/** 音量スライダー */
-input[type="range"] {
-  appearance: none;
-  width: 140px;
-  height: 6px;
-  border-radius: 99px;
-  background: transparent;
-  cursor: pointer;
-}
-
-/* ツマミ：Chrome, Safari, Edge用 */
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 4px;
-  background: var(--pp-cyan);
-  border: 1px solid #ffffff;
-  box-shadow: none
-}
-
-/* ツマミ：Firefox用 */
-input[type="range"]::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  border-radius: 4px;
-  background: var(--pp-cyan);
-  border: 1px solid #ffffff;
-  box-shadow: none;
-}
-
 .editor {
   color: var(--pp-fog);
-}
-
-.editor nav.border-bottom {
-  border-bottom: 1px dashed var(--pp-line);
 }
 
 td {

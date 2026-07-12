@@ -115,6 +115,11 @@ export const timelineApi = {
 
     getHistory: () => ipcRenderer.invoke(TimelineChannels.getHistory),
     storeHistory: (file: any) => ipcRenderer.invoke(TimelineChannels.storeHistory, file),
+
+    getWaveformPeaks: () => ipcRenderer.invoke(TimelineChannels.getWaveformPeaks),
+    storeWaveformPeaks: (path: string, entry: { peaks: number[][], duration: number, mediaDuration?: number }) =>
+        ipcRenderer.invoke(TimelineChannels.storeWaveformPeaks, path, entry),
+    deleteWaveformPeaks: (path: string) => ipcRenderer.invoke(TimelineChannels.deleteWaveformPeaks, path),
 }
 contextBridge.exposeInMainWorld('timelineApi', timelineApi);
 
