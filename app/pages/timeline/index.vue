@@ -1,10 +1,7 @@
 <template>
   <div class="page-shell">
     <header class="page-head">
-      <div>
-        <p class="eyebrow">Timeline</p>
-        <h1 class="page-title">タイムライン</h1>
-      </div>
+      <h1 class="page-title">タイムライン</h1>
       <button class="button is-small" @click="reset()">表示リセット</button>
     </header>
 

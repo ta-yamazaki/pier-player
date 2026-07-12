@@ -1,10 +1,7 @@
 <template>
   <div class="page-shell">
     <header class="page-head">
-      <div>
-        <p class="eyebrow">Vimeo</p>
-        <h1 class="page-title">Vimeo再生</h1>
-      </div>
+      <h1 class="page-title">Vimeo再生</h1>
     </header>
 
     <div class="tabs is-centered is-fullwidth mb-4">

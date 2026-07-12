@@ -109,15 +109,15 @@ a:hover {
     margin: 0 auto;
     width: 95%;
     max-width: 660px;
-    padding-top: 1.75rem;
+    padding-top: 1rem;
 }
 
 .page-head {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.75rem;
 }
 
 .eyebrow {

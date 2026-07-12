@@ -1,10 +1,7 @@
 <template>
   <div class="page-shell">
     <header class="page-head">
-      <div>
-        <p class="eyebrow">Pitch Shift</p>
-        <h1 class="page-title">ピッチ変更</h1>
-      </div>
+      <h1 class="page-title">ピッチ変更</h1>
     </header>
     <FileDropInput :loading="loading" @dropped-file="selectFile"/>
     <div v-if="file.path" class="my-5">
