@@ -13,6 +13,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "release": "node release.js",
+    "release:force": "node release-force.js",
     "test": "vitest run",
     "lint": "eslint ."
   },
