@@ -63,9 +63,3 @@ function reset() {
   timelineFileListRef.value?.reset()
 }
 </script>
-
-<style scoped>
-td {
-  vertical-align: middle !important;
-}
-</style>

@@ -11,9 +11,8 @@
     </div>
   </nav>
   <p class="note mb-2">※最初の表示は少し時間がかかります。</p>
-  <div v-if="vimeoList.length > 0" class="box py-1 px-2">
-    <table class="table my-2 is-narrow is-fullwidth">
-      <thead>
+  <SortableList :items="vimeoList" @remove="removeRow">
+    <template #head>
       <tr class="is-size-7" style="white-space: nowrap;">
         <th/>
         <th>
@@ -21,41 +20,15 @@
         </th>
         <th/>
       </tr>
-      </thead>
-      <tbody>
-      <tr
-          v-for="(vimeo, i) in vimeoList"
-          :key="vimeo.id"
-          :class="{
-              'dragging': i === dragIndex,
-              'is-standby': isViewedBeforePlay(vimeo),
-              'is-live': isPlaying(vimeo)
-            }">
-        <td
-            :draggable="true"
-            class="px-0 is-draggable fitContent"
-            style="vertical-align: middle"
-            @dragend="dragEnd()"
-            @dragenter="dragEnter(i)"
-            @dragstart="dragStart(i)"
-            @dragover.prevent>
-          <NuxtIcon class="drag-handle" name="ic:baseline-drag-indicator"/>
-        </td>
-        <td style="width: 30rem;">
-          <ShowcaseVimeo
-              :showcase-url-with-password="showcaseUrlWithPassword"
-              :vimeo="vimeo"
-              @view="closeAll"
-          />
-        </td>
-        <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
-          <button class="delete" @click="removeRow(i)"/>
-        </td>
-      </tr>
-
-      </tbody>
-    </table>
-  </div>
+    </template>
+    <template #default="{ item }">
+      <ShowcaseVimeo
+          :showcase-url-with-password="showcaseUrlWithPassword"
+          :vimeo="item"
+          @view="closeAll"
+      />
+    </template>
+  </SortableList>
 
   <button class="button is-add is-fullwidth mt-4" @click="addShowcaseVimeo()">
     ＋ 追加
@@ -63,8 +36,8 @@
 </template>
 
 <script lang="ts" setup>
-import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 import ShowcaseVimeo from "~/components/vimeo/showcase/ShowcaseVimeo.vue";
+import SortableList from "~/components/common/SortableList.vue";
 
 /**
  * Props
@@ -83,14 +56,7 @@ const vimeoList = useStoredList<any>(
     () => showcaseApi.getPlayList().then(ensureIds),
     (list) => showcaseApi.storePlayList(list),
 )
-const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(vimeoList)
-
-// computed
-
 // methods
-const isViewedBeforePlay = (vimeo: any) => vimeo.isViewed && !vimeo.isPlaying
-const isPlaying = (vimeo: any) => vimeo.isPlaying
-
 const closeAll = () => {
   showcaseApi.closeVimeoShowcase()
   vimeoList.value.forEach(v => {
@@ -121,6 +87,3 @@ const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {
 
 defineExpose({closeAll, addShowcaseVimeo, getShowcaseVideoTitles})
 </script>
-
-<style scoped>
-</style>

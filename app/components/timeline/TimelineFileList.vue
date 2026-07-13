@@ -1,42 +1,24 @@
 <template>
-  <table
-      v-if="files.length > 0"
-      class="table my-2 is-fullwidth borderless"
-      style="background-color: transparent">
-    <tbody>
-    <tr
-        v-for="(file, i) in files"
-        :key="file.id"
-        :class="{'dragging': i === dragIndex}">
-      <td
-          :draggable="!playingFileExists"
-          class="pl-1 pr-0 fitContent"
-          style="white-space: nowrap;"
-          @dragend="dragEnd()"
-          @dragenter="dragEnter(i)"
-          @dragstart="dragStart(i)"
-          @dragover.prevent>
-        <NuxtIcon class="m-0 is-draggable drag-handle" name="ic:baseline-drag-indicator"/>
-      </td>
-      <td class="p-1" style="font-size: 0.9rem; overflow-x: auto;">
-        <TimelineFile
-            :file="file"
-            :is-last="i === files.length - 1"
-            @media-start="mediaStart"
-            @media-ended="mediaEnded(i)"
-        />
-      </td>
-      <td class="mx-0 px-1 fitContent">
-        <button class="delete" @click="removeRow(i)"/>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+  <SortableList
+      :boxed="false"
+      :can-drag="canDrag"
+      :draggable="!playingFileExists"
+      :items="files"
+      @remove="removeRow">
+    <template #default="{ item, index }">
+      <TimelineFile
+          :file="item"
+          :is-last="index === files.length - 1"
+          @media-start="mediaStart"
+          @media-ended="mediaEnded(index)"
+      />
+    </template>
+  </SortableList>
 </template>
 
 <script lang="ts" setup>
 import {computed, watch} from 'vue'
-import NuxtIcon from "~/components/icon/NuxtIcon.vue";
+import SortableList from "~/components/common/SortableList.vue";
 
 /**
  * emits
@@ -63,13 +45,13 @@ function ensureAudioFade(list: any[]): any[] {
   }))
 }
 
-const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(files, () => {
+function canDrag() {
   if (playingFileExists.value) {
     notifyError("再生中は順番を変えられません")
     return false
   }
   return true
-})
+}
 
 watch(files, (newFiles) => {
   emit("changeFiles", newFiles)
@@ -130,9 +112,3 @@ function removeRow(i: number) {
 
 defineExpose({addRow, reset})
 </script>
-
-<style scoped>
-td {
-  vertical-align: middle !important;
-}
-</style>

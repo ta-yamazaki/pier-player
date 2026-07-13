@@ -75,9 +75,3 @@ const preview = (file: any) => {
   videoReload.value++;
 };
 </script>
-
-<style scoped>
-td {
-  vertical-align: middle !important;
-}
-</style>

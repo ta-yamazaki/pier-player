@@ -1,43 +1,16 @@
 <template>
-  <div v-if="vimeoList.length > 0" class="box py-1 px-2">
-    <table class="table my-2 is-fullwidth">
-      <tbody>
-      <tr
-          v-for="(vimeo, i) in vimeoList"
-          :key="vimeo.id"
-          :class="{
-              'dragging': i === dragIndex,
-              'is-standby': isViewedBeforePlay(vimeo),
-              'is-live': isPlaying(vimeo)
-            }">
-        <td
-            :draggable="true"
-            class="px-0 is-draggable fitContent"
-            style="vertical-align: middle"
-            @dragend="dragEnd()"
-            @dragenter="dragEnter(i)"
-            @dragstart="dragStart(i)"
-            @dragover.prevent>
-          <NuxtIcon class="drag-handle" name="ic:baseline-drag-indicator"/>
-        </td>
-        <td>
-          <Vimeo
-              :vimeo="vimeo"
-              @view="closeAll()"
-          />
-        </td>
-        <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
-          <button class="delete" @click="removeRow(i)"/>
-        </td>
-      </tr>
-
-      </tbody>
-    </table>
-  </div>
+  <SortableList :items="vimeoList" @remove="removeRow">
+    <template #default="{ item }">
+      <Vimeo
+          :vimeo="item"
+          @view="closeAll()"
+      />
+    </template>
+  </SortableList>
 </template>
 
 <script lang="ts" setup>
-import NuxtIcon from "~/components/icon/NuxtIcon.vue";
+import SortableList from "~/components/common/SortableList.vue";
 
 /**
  * state
@@ -48,14 +21,10 @@ const vimeoList = useStoredList<any>(
     () => vimeoApi.getVimeoList().then(ensureIds),
     (list) => vimeoApi.storeVimeoList(list),
 )
-const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(vimeoList)
 
 /**
  * methods
  */
-const isViewedBeforePlay = (vimeo: any) => vimeo.isViewed && !vimeo.isPlaying
-const isPlaying = (vimeo: any) => vimeo.isPlaying
-
 const closeAll = () => {
   vimeoApi.closeVimeo()
   vimeoList.value.forEach((vimeo) => {
@@ -83,6 +52,3 @@ const removeRow = (i: number) => {
 
 defineExpose({addVimeo, closeAll})
 </script>
-
-<style scoped>
-</style>

@@ -2,10 +2,6 @@
     --timeline-player-heght: 118px;
 }
 
-table.borderless td {
-    border: none;
-}
-
 input.editInput {
     text-align: center;
     width: 2.75rem;

@@ -1,45 +1,20 @@
 <template>
   <div v-if="cgmList.length > 0">
     <p class="note mb-2">※表示に少し時間がかかる場合があります。</p>
-    <div class="box py-1 px-2">
-      <table class="table mb-2 is-fullwidth">
-        <tbody>
-        <tr
-            v-for="(cgm, i) in cgmList" :key="cgm.id"
-            :class="{
-              'dragging': i === dragIndex,
-              'is-standby': isViewedBeforePlay(cgm),
-              'is-live': isPlaying(cgm)
-            }">
-          <td
-              :draggable="true"
-              class="px-0 is-draggable fitContent"
-              style="vertical-align: middle"
-              @dragend="dragEnd()"
-              @dragenter="dragEnter(i)"
-              @dragstart="dragStart(i)"
-              @dragover.prevent>
-            <NuxtIcon class="drag-handle" name="ic:baseline-drag-indicator"/>
-          </td>
-          <td>
-            <Cgm
-                :cgm="cgm"
-                @preview="preview(cgm)"
-                @view="closeStatusAll()"
-            />
-          </td>
-          <td class="pl-0 pr-1" style="width: 1rem; vertical-align: middle">
-            <button class="delete" @click="removeRow(i)"/>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+    <SortableList :items="cgmList" @remove="removeRow">
+      <template #default="{ item }">
+        <Cgm
+            :cgm="item"
+            @preview="preview(item)"
+            @view="closeStatusAll()"
+        />
+      </template>
+    </SortableList>
   </div>
 </template>
 
 <script lang="ts" setup>
-import NuxtIcon from "~/components/icon/NuxtIcon.vue";
+import SortableList from "~/components/common/SortableList.vue";
 
 // --------------------------------------------------
 // state
@@ -50,7 +25,6 @@ const cgmList = useStoredList<any>(
     () => cgmApi.getCgmList().then(ensureIds),
     (list) => cgmApi.storeCgmList(list),
 )
-const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(cgmList)
 
 /**
  * emits
@@ -64,14 +38,6 @@ const emit = defineEmits<Emits>();
 // --------------------------------------------------
 // methods
 // --------------------------------------------------
-function isViewedBeforePlay(cgm: any) {
-  return cgm.isViewed && !cgm.isPlaying
-}
-
-function isPlaying(cgm: any) {
-  return cgm.isPlaying
-}
-
 function closeStatusAll() {
   cgmApi.closeCgm()
   cgmList.value.forEach((cgm) => {
@@ -101,19 +67,3 @@ function preview(cgm: any) {
 
 defineExpose({addCgm, closeStatusAll})
 </script>
-
-
-<style scoped>
-.control a.label {
-  width: 5rem;
-  cursor: unset;
-}
-
-.control input {
-  min-width: 15rem
-}
-
-.field button {
-  width: 5rem !important;
-}
-</style>

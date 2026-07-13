@@ -6,7 +6,7 @@
     </header>
 
     <CgmList ref="cgmListRef" @preview="preview"/>
-    <button class="button is-add is-fullwidth mt-3" @click="addRow()">
+    <button class="button is-add is-fullwidth mt-4" @click="addRow()">
       ＋ 追加
     </button>
 

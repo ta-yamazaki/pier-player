@@ -38,14 +38,3 @@ const addRow = () => {
   vimeoListRef.value?.addVimeo()  // 子のメソッドを呼び出す
 }
 </script>
-
-<style scoped>
-.control a.label {
-  width: 5rem;
-  cursor: unset;
-}
-
-.control button.label {
-  cursor: unset;
-}
-</style>
