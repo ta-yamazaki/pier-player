@@ -86,6 +86,12 @@ export const TimelineChannels = {
     deleteWaveformPeaks: 'deleteTimelineWaveformPeaks',
 } as const
 
+// Praiseモード
+export const PraiseChannels = {
+    getSetList: 'getPraiseSetList',
+    storeSetList: 'storePraiseSetList',
+} as const
+
 // 変換モード（ピッチ・ラウドネス）
 export const ConvertChannels = {
     convertPitch: 'convert-pitch',

@@ -75,8 +75,14 @@ const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(list, props.canDr
 </script>
 
 <style scoped>
-td {
+/* Bulmaの .table td (vertical-align: top) より詳細度を上げて中央寄せにする */
+table.sortable-list td {
   vertical-align: middle;
+}
+
+/* SVGアイコンのベースライン由来のズレを防ぐ */
+td :deep(svg) {
+  display: block;
 }
 
 .cell-drag,

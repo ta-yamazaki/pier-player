@@ -12,6 +12,8 @@
   "files": [
     ".output/**/*",
     "dist-electron/**/*",
+    // ウィンドウアイコン（iconPath）が実行時に参照するため同梱する
+    "electron/assets/**/*",
     "package.json"
   ],
   "mac": {
@@ -21,7 +23,7 @@
     ]
   },
   "win": {
-    "icon": "electron/assets/img/icon.png",
+    "icon": "electron/assets/img/icon.ico",
     "target": [
       {
         "target": "nsis",

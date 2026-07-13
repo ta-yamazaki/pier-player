@@ -7,6 +7,7 @@ import type {
   cgmApi,
   commonApi,
   convertApi,
+  praiseApi,
   showcaseApi,
   timelineApi,
   vimeoApi,
@@ -19,6 +20,7 @@ declare global {
     vimeoApi: typeof vimeoApi
     showcaseApi: typeof showcaseApi
     timelineApi: typeof timelineApi
+    praiseApi: typeof praiseApi
     convertApi: typeof convertApi
     commonApi: typeof commonApi
     webUtils: {

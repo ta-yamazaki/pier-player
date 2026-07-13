@@ -4,6 +4,7 @@ import {
     CommonChannels,
     ConvertChannels,
     FileChannels,
+    PraiseChannels,
     ShowcaseChannels,
     TimelineChannels,
     VimeoChannels,
@@ -122,6 +123,15 @@ export const timelineApi = {
     deleteWaveformPeaks: (path: string) => ipcRenderer.invoke(TimelineChannels.deleteWaveformPeaks, path),
 }
 contextBridge.exposeInMainWorld('timelineApi', timelineApi);
+
+/**
+ * Praiseモード
+ */
+export const praiseApi = {
+    getSetList: () => ipcRenderer.invoke(PraiseChannels.getSetList),
+    storeSetList: (setList: { id: string, title: string }[]) => ipcRenderer.invoke(PraiseChannels.storeSetList, setList),
+};
+contextBridge.exposeInMainWorld('praiseApi', praiseApi);
 
 /**
  * 変換モード

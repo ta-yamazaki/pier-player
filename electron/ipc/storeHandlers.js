@@ -1,7 +1,7 @@
 import Store from 'electron-store';
 import {ipcMain} from "electron";
 import {withExistsAll} from "../utils/fileCheck.js";
-import {CgmChannels, FileChannels, ShowcaseChannels, TimelineChannels, VimeoChannels} from "./channels";
+import {CgmChannels, FileChannels, PraiseChannels, ShowcaseChannels, TimelineChannels, VimeoChannels} from "./channels";
 
 const store = new Store();
 
@@ -16,6 +16,8 @@ const keys = {
     timelineList: "timelineList",
     timelineHistory: "timelineHistory",
     timelineWaveformPeaks: "timelineWaveformPeaks",
+
+    praiseSetList: "praiseSetList",
 };
 
 // 波形ピークキャッシュの最大保持件数（1件あたり数KB。古いものから捨てる）
@@ -94,6 +96,16 @@ export const registerStoreHandlers = () => {
     ipcMain.handle(TimelineChannels.storeHistory, (_event, file) => {
         file.updatedAt = new Date()
         saveMap(keys.timelineHistory, file.name, file);
+    });
+
+    /**
+     * メイン画面 Praiseモード（チェックした曲のセットリスト）
+     */
+    ipcMain.handle(PraiseChannels.getSetList, () => {
+        return store.get(keys.praiseSetList, []);
+    });
+    ipcMain.handle(PraiseChannels.storeSetList, (_event, setList) => {
+        store.set(keys.praiseSetList, setList);
     });
 
     /**

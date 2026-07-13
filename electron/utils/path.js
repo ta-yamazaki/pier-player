@@ -9,4 +9,5 @@ export const MAIN_DIST = path.join(APP_ROOT, 'dist-electron');
 // Nuxtの静的生成出力
 export const VITE_PUBLIC = path.join(APP_ROOT, '.output/public');
 
-export const iconPath = path.join(__dirname, '../electron/assets/img/icon.png')
+// Windowsではマルチサイズ.icoを使うとタイトルバー/タスクバーで最適な解像度が選ばれる
+export const iconPath = path.join(__dirname, '../electron/assets/img/icon.ico')
