@@ -1,6 +1,5 @@
 <template>
   <div v-if="files.length === 0" class="empty-state">
-    <p class="eyebrow">No History</p>
     <p>履歴がありません</p>
   </div>
   <template v-else>

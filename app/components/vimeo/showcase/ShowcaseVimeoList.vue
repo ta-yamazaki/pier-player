@@ -2,7 +2,6 @@
   <nav class="level is-mobile mt-5 mb-2">
     <div class="level-left">
       <div>
-        <p class="eyebrow">Playlist</p>
         <h2 class="section-title">映像リスト</h2>
       </div>
     </div>

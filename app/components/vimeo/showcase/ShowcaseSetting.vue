@@ -1,5 +1,4 @@
 <template>
-  <p class="eyebrow">Showcase Settings</p>
   <h2 class="section-title mb-2">ショーケース設定</h2>
   <div class="box">
     <div class="field">
@@ -25,7 +24,7 @@
       </label>
       <button
           :class="{'is-loading': isGettingShowcaseVideos}"
-          class="button is-small is-primary is-outlined is-fullwidth"
+          class="button is-small is-primary is-outlined has-text-primary is-fullwidth"
           @click="getShowcaseVideoTitles()">
         ショーケースの映像一覧を取得
       </button>

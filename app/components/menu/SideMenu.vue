@@ -35,6 +35,12 @@
             <span>タイムライン</span>
           </NuxtLink>
         </li>
+        <li>
+          <NuxtLink to="/praise">
+            <NuxtIcon name="mdi:music-box-multiple-outline" size="17"/>
+            <span>Pier Praise</span>
+          </NuxtLink>
+        </li>
       </ul>
 
       <p class="dock-label mt-5">Tools — 変換</p>

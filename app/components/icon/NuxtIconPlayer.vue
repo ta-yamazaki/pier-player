@@ -19,7 +19,7 @@ interface Props {
 // color未指定時は currentColor を継承し、親のCSSで色を制御する
 withDefaults(defineProps<Props>(), {
   size: "24",
-  color: undefined
+  color: "var(--pp-cyan)"
 });
 </script>
 
