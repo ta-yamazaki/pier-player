@@ -8,6 +8,8 @@
               v-model="email"
               class="input is-small"
               type="email"
+              name="email"
+              autocomplete="email"
               placeholder="mail@example.com"
               @keyup.enter="login">
         </p>
