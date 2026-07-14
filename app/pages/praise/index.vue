@@ -65,14 +65,18 @@ const praiseApi = window.praiseApi;
 /**
  * init
  */
-const offAuth = PraiseAuth.onAuthStateChanged((authUser) => {
-  const wasLoggedOut = !user.value;
-  user.value = authUser;
-  authReady.value = true;
-  if (authUser && wasLoggedOut) getAudios();
+// 前回セッションの破棄が終わってから監視を始める（起動直後に一瞬ログイン扱いになるのを防ぐ）
+let offAuth: (() => void) | null = null;
+PraiseAuth.ready.then(() => {
+  offAuth = PraiseAuth.onAuthStateChanged((authUser) => {
+    const wasLoggedOut = !user.value;
+    user.value = authUser;
+    authReady.value = true;
+    if (authUser && wasLoggedOut) getAudios();
+  });
 });
 
-onUnmounted(() => offAuth());
+onUnmounted(() => offAuth?.());
 
 /**
  * methods
