@@ -2,7 +2,6 @@
   <div v-if="loading" class="dropArea loading">
     <NuxtIcon name="mdi:tray-arrow-down" size="20"/>
     <span class="drop-main">ここにファイルをドラッグ＆ドロップ</span>
-    <span class="drop-sub">DROP MEDIA FILES</span>
   </div>
   <template v-else>
     <div
@@ -15,7 +14,6 @@
     >
       <NuxtIcon name="mdi:tray-arrow-down" size="20"/>
       <span class="drop-main">ここにファイルをドラッグ＆ドロップ</span>
-      <span class="drop-sub">DROP MEDIA FILES</span>
     </div>
     <p class="help is-danger">{{ disallowedFileTypeMessage }}</p>
   </template>
@@ -85,7 +83,7 @@ function droppedFile(e: DragEvent) {
   gap: 0.2rem;
   width: 100%;
   margin: auto;
-  height: 6rem;
+  height: 4rem;
   border: 1.5px dashed hsla(190, 90%, 31%, 0.35);
   border-radius: 12px;
   background-color: hsla(190, 90%, 31%, 0.04);
@@ -102,13 +100,6 @@ function droppedFile(e: DragEvent) {
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--pp-text);
-}
-
-.drop-sub {
-  font-family: var(--pp-font-mono);
-  font-size: 0.55rem;
-  letter-spacing: 0.3em;
-  color: var(--pp-fog);
 }
 
 .dropArea.enter {
