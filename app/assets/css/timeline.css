@@ -1,5 +1,44 @@
 :root {
     --timeline-player-heght: 118px;
+    /* カット・フェードの数値入力が折り返さずに1行で収まる幅 */
+    --timeline-column-width: 560px;
+}
+
+/* ------------------------------------------------------------------
+ * 横並びレイアウト（1ファイル＝1列。横スクロールで全体を見渡す）
+ * 並び・間隔・タグはBulmaのクラスで組み、ここには代替のないものだけ置く
+ * ------------------------------------------------------------------ */
+/* 名前一覧のタグ: 長いファイル名は省略記号にする（Bulmaに省略のヘルパーがない） */
+.timeline-index-name {
+    max-width: 12rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.timeline-column {
+    flex: 0 0 var(--timeline-column-width);
+    width: var(--timeline-column-width);
+}
+
+/* アプリ全体ではスクロールバーを隠しているが、
+   横並びは続きがあることが分かるよう、はみ出るときだけ表示する */
+.timeline-columns::-webkit-scrollbar {
+    display: block;
+    height: 10px;
+}
+
+.timeline-columns::-webkit-scrollbar-track {
+    background: var(--pp-surface-2);
+    border-radius: 99px;
+}
+
+.timeline-columns::-webkit-scrollbar-thumb {
+    background: var(--pp-line);
+    border-radius: 99px;
+}
+
+.timeline-columns::-webkit-scrollbar-thumb:hover {
+    background: var(--pp-fog);
 }
 
 input.editInput {

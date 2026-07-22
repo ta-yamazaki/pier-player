@@ -112,6 +112,11 @@ a:hover {
     padding-top: 1rem;
 }
 
+/* 横並びなど、660pxに収まらない一覧を表示するとき */
+.page-shell.is-wide {
+    max-width: none;
+}
+
 .page-head {
     display: flex;
     align-items: center;

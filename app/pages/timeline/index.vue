@@ -1,14 +1,30 @@
 <template>
-  <div class="page-shell">
+  <div :class="{'is-wide': layout === 'columns'}" class="page-shell">
     <header class="page-head">
       <h1 class="page-title">タイムライン</h1>
-      <button class="button is-small" @click="reset()">表示リセット</button>
+      <div class="is-flex is-align-items-center is-gap-2">
+        <div class="buttons has-addons mb-0">
+          <button
+              :class="{'is-primary is-selected': layout === 'stack'}"
+              class="button is-small"
+              title="縦に積んで表示"
+              @click="layout = 'stack'">縦
+          </button>
+          <button
+              :class="{'is-primary is-selected': layout === 'columns'}"
+              class="button is-small"
+              title="横に並べて表示"
+              @click="layout = 'columns'">横
+          </button>
+        </div>
+        <button class="button is-small" @click="reset()">表示リセット</button>
+      </div>
     </header>
 
     <TimelineTabs v-model="selectedTabId"/>
 
     <div class="mb-2">
-      <NuxtLink class="is-size-7" to="/timeline/history">履歴から追加する →</NuxtLink>
+      <NuxtLink class="is-size-7" to="/timeline/history">履歴から追加 →</NuxtLink>
     </div>
     <FileDropInput multiple @dropped-files="selectFiles"/>
 
@@ -17,6 +33,7 @@
           v-if="selectedTabId"
           ref="timelineFileListRef"
           :key="selectedTabId"
+          :layout="layout"
           :tab-id="selectedTabId"
           @change-files="changeFiles"
       />
@@ -35,6 +52,7 @@ import FileDropInput from "~/components/input/FileDropInput.vue";
 const timelineFileListRef = ref<InstanceType<typeof TimelineFileList> | null>(null)
 
 const {selectedTabId} = useTimelineTab()
+const {layout} = useTimelineLayout()
 const files = ref<any[]>([])
 const timelineApi = window.timelineApi
 

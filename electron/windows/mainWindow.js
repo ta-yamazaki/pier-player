@@ -7,7 +7,7 @@ let mainWindow;
 export const createMainWindow = () => {
     mainWindow = new BrowserWindow({
         title: "Pier Player",
-        width: 900,
+        width: 1000,
         height: 700,
         backgroundColor: '#f3f7fb', // 起動時のちらつき防止（テーマ背景色に合わせる）
         icon: iconPath,
