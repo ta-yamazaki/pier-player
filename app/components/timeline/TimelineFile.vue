@@ -4,10 +4,10 @@
     <div :class="{'is-live': file.isPlaying}" class="box p-2 mb-1">
       <nav class="level is-mobile mb-0">
         <div class="level-left" style="max-width: calc(100% - 55px);">
-          <div style="line-break: anywhere">
+          <div class="is-flex">
             <NuxtIconVideo v-if="isVideo" class="mr-2"/>
             <NuxtIconAudio v-if="isAudio" class="mr-2"/>
-            <b class="is-size-6" style="word-break: break-all;">{{ file.name }}</b>
+            <b class="is-size-6">{{ file.name }}</b>
             <NuxtIconFolder
                 v-if="file.path"
                 class="has-text-grey ml-1 is-clickable"

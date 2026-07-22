@@ -22,10 +22,10 @@
             @dragover.prevent>
           <NuxtIcon class="m-0 drag-handle" name="ic:baseline-drag-indicator"/>
         </td>
-        <td class="cell-content">
+        <td class="cell-content pl-0 pr-2">
           <slot :index="i" :item="item"/>
         </td>
-        <td class="cell-delete">
+        <td class="cell-delete mx-1 px-0">
           <button class="delete" @click="emit('remove', i)"/>
         </td>
       </tr>
