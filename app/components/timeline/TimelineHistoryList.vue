@@ -8,7 +8,7 @@
         class="button is-primary is-fullwidth my-3"
         style="position: sticky; top: 7px; z-index:100;"
         @click="addTimeline">
-      タイムラインに追加する
+      「{{ tab.name }}」に追加する
       <span class="count-badge">{{ selectedFiles.length }}</span>
     </button>
 
@@ -56,6 +56,17 @@
 
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue'
+import type {TimelineTab} from '~/types/models'
+
+/**
+ * props
+ */
+interface Props {
+  /** 追加先のタブ */
+  tab: TimelineTab;
+}
+
+const props = defineProps<Props>();
 
 const files = ref<any[]>([])
 const selectedFiles = ref<any[]>([])
@@ -97,8 +108,8 @@ function isSelected(file: any) {
 
 async function addTimeline() {
   try {
-    await timelineApi.storeAdditionalFiles(JSON.parse(JSON.stringify(selectedFiles.value)))
-    notify(`タイムラインに ${selectedFiles.value.length}件 追加しました`)
+    await timelineApi.storeAdditionalFiles(props.tab.id, JSON.parse(JSON.stringify(selectedFiles.value)))
+    notify(`「${props.tab.name}」に ${selectedFiles.value.length}件 追加しました`)
   } catch {
     notifyError("追加に失敗しました")
   }

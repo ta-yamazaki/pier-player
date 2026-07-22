@@ -13,6 +13,7 @@ const keys = {
     vimeoShowcase: "vimeoShowcase",
     vimeoShowcasePlayList: "vimeoShowcasePlayList",
 
+    timelineTabs: "timelineTabs",
     timelineList: "timelineList",
     timelineHistory: "timelineHistory",
     timelineWaveformPeaks: "timelineWaveformPeaks",
@@ -25,6 +26,9 @@ const maxWaveformPeaksEntries = 200;
 
 // ファイルモードのタブ（getFiles/storeFiles がレンダラーから受け取れるキー）
 const fileTabs = ["sunday", "wednesday", "other"];
+
+// タイムラインのタブ導入前に保存されていたリストを引き継ぐタブのID
+const defaultTimelineTabId = "default";
 
 export const registerStoreHandlers = () => {
     /**
@@ -79,16 +83,34 @@ export const registerStoreHandlers = () => {
     /**
      * メイン画面 タイムラインモード
      */
-    ipcMain.handle(TimelineChannels.getFiles, (_event) => {
-        return withExistsAll(store.get(keys.timelineList, []));
+    ipcMain.handle(TimelineChannels.getTabs, (_event) => {
+        return loadTimelineTabs();
     });
-    ipcMain.handle(TimelineChannels.storeFiles, (_event, files) => {
-        store.set(keys.timelineList, files);
+    ipcMain.handle(TimelineChannels.storeTabs, (_event, tabs) => {
+        if (!Array.isArray(tabs) || tabs.length === 0) throw new Error("タブは1つ以上必要です");
+        store.set(keys.timelineTabs, tabs);
+
+        // 削除されたタブのファイルリストは残さない
+        const filesByTab = loadTimelineFilesByTab();
+        const tabIds = tabs.map(tab => tab.id);
+        for (const tabId of Object.keys(filesByTab)) {
+            if (!tabIds.includes(tabId)) delete filesByTab[tabId];
+        }
+        store.set(keys.timelineList, filesByTab);
     });
-    ipcMain.handle(TimelineChannels.storeAdditionalFiles, (_event, files) => {
-        const currentFiles = store.get(keys.timelineList, []);
-        const added = currentFiles.concat(files)
-        store.set(keys.timelineList, added);
+
+    ipcMain.handle(TimelineChannels.getFiles, (_event, tabId) => {
+        return withExistsAll(loadTimelineFilesByTab()[tabId] ?? []);
+    });
+    ipcMain.handle(TimelineChannels.storeFiles, (_event, tabId, files) => {
+        const filesByTab = loadTimelineFilesByTab();
+        filesByTab[tabId] = files;
+        store.set(keys.timelineList, filesByTab);
+    });
+    ipcMain.handle(TimelineChannels.storeAdditionalFiles, (_event, tabId, files) => {
+        const filesByTab = loadTimelineFilesByTab();
+        filesByTab[tabId] = (filesByTab[tabId] ?? []).concat(files);
+        store.set(keys.timelineList, filesByTab);
     });
     ipcMain.handle(TimelineChannels.getHistory, (_event) => {
         return loadMap(keys.timelineHistory);
@@ -126,6 +148,20 @@ export const registerStoreHandlers = () => {
         store.set(keys.timelineWaveformPeaks, Array.from(map.entries()));
     });
 };
+
+// タブ未保存（タブ導入前のデータ）なら、既存リストを引き継ぐ既定タブを1つ返す
+function loadTimelineTabs() {
+    const tabs = store.get(keys.timelineTabs, []);
+    if (Array.isArray(tabs) && tabs.length > 0) return tabs;
+    return [{id: defaultTimelineTabId, name: "タブ1"}];
+}
+
+// タブ導入前の形式（ファイルの配列）は、既定タブのリストとして読み込む
+function loadTimelineFilesByTab() {
+    const stored = store.get(keys.timelineList, {});
+    if (Array.isArray(stored)) return {[defaultTimelineTabId]: stored};
+    return stored;
+}
 
 // updatedAt が古いエントリから削除して max 件以下に抑える
 function pruneOldest(map, max) {

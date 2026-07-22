@@ -75,6 +75,9 @@ export const TimelineChannels = {
     paused: 'timelinePaused',
     ended: 'timelineEnded',
 
+    getTabs: 'getTimelineTabs',
+    storeTabs: 'storeTimelineTabs',
+
     getFiles: 'getTimelineFiles',
     storeFiles: 'storeTimelineFiles',
     storeAdditionalFiles: 'storeAdditionalTimelineFiles',

@@ -12,6 +12,12 @@ export interface FileMeta {
   isPlaying?: boolean
 }
 
+// タイムラインモードのタブ（タブごとにファイルリストを持つ）
+export interface TimelineTab {
+  id: string
+  name: string
+}
+
 // タイムラインモードのファイル情報（再生調整パラメータ付き）
 export interface TimelineFileMeta extends FileMeta {
   startTrimSec: number

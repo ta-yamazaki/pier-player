@@ -21,6 +21,16 @@ import {computed, watch} from 'vue'
 import SortableList from "~/components/common/SortableList.vue";
 
 /**
+ * props
+ */
+interface Props {
+  /** 表示するタブのID（タブごとにファイルリストを持つ） */
+  tabId: string;
+}
+
+const props = defineProps<Props>();
+
+/**
  * emits
  */
 type Emits = {
@@ -32,9 +42,14 @@ const timelineApi = window.timelineApi
 const {notifyError} = useNotification()
 
 const files = useStoredList<any>(
-    () => timelineApi.getFiles().then(ensureIds).then(ensureAudioFade),
-    (list) => timelineApi.storeFiles(list),
+    () => timelineApi.getFiles(props.tabId).then(ensureIds).then(ensureAudioFade).then(clearPlaying),
+    (list) => timelineApi.storeFiles(props.tabId, list),
 )
+
+// 再生中にタブを切り替えたり終了したりした場合の再生中フラグを持ち越さない
+function clearPlaying(list: any[]): any[] {
+  return list.map(f => ({...f, isPlaying: false}))
+}
 
 // 音声フェード導入前に保存されたデータには、音声フェードなし（0秒）を補完する
 function ensureAudioFade(list: any[]): any[] {

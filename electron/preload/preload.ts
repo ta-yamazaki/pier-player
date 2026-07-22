@@ -110,9 +110,13 @@ export const timelineApi = {
         ended: listen(TimelineChannels.ended),
     },
 
-    getFiles: () => ipcRenderer.invoke(TimelineChannels.getFiles),
-    storeFiles: (files: any) => ipcRenderer.invoke(TimelineChannels.storeFiles, files),
-    storeAdditionalFiles: (files: any[]) => ipcRenderer.invoke(TimelineChannels.storeAdditionalFiles, files),
+    getTabs: () => ipcRenderer.invoke(TimelineChannels.getTabs),
+    storeTabs: (tabs: any[]) => ipcRenderer.invoke(TimelineChannels.storeTabs, tabs),
+
+    getFiles: (tabId: string) => ipcRenderer.invoke(TimelineChannels.getFiles, tabId),
+    storeFiles: (tabId: string, files: any) => ipcRenderer.invoke(TimelineChannels.storeFiles, tabId, files),
+    storeAdditionalFiles: (tabId: string, files: any[]) =>
+        ipcRenderer.invoke(TimelineChannels.storeAdditionalFiles, tabId, files),
 
     getHistory: () => ipcRenderer.invoke(TimelineChannels.getHistory),
     storeHistory: (file: any) => ipcRenderer.invoke(TimelineChannels.storeHistory, file),

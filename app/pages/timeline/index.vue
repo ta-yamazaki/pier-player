@@ -5,6 +5,8 @@
       <button class="button is-small" @click="reset()">表示リセット</button>
     </header>
 
+    <TimelineTabs v-model="selectedTabId"/>
+
     <div class="mb-2">
       <NuxtLink class="is-size-7" to="/timeline/history">履歴から追加する →</NuxtLink>
     </div>
@@ -12,7 +14,10 @@
 
     <div class="mt-3">
       <TimelineFileList
+          v-if="selectedTabId"
           ref="timelineFileListRef"
+          :key="selectedTabId"
+          :tab-id="selectedTabId"
           @change-files="changeFiles"
       />
     </div>
@@ -22,14 +27,19 @@
 
 <script lang="ts" setup>
 import "@/assets/css/timeline.css"
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import TimelineFileList from "~/components/timeline/TimelineFileList.vue";
+import TimelineTabs from "~/components/timeline/TimelineTabs.vue";
 import FileDropInput from "~/components/input/FileDropInput.vue";
 
 const timelineFileListRef = ref<InstanceType<typeof TimelineFileList> | null>(null)
 
+const {selectedTabId} = useTimelineTab()
 const files = ref<any[]>([])
 const timelineApi = window.timelineApi
+
+// タブを切り替える前に、いま再生中のものを止めておく
+watch(selectedTabId, () => timelineFileListRef.value?.reset(), {flush: 'sync'})
 
 // ドロップされた順にリストへ追加するため、1件ずつ直列に処理する
 async function selectFiles(files: File[]) {
