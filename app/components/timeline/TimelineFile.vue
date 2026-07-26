@@ -3,19 +3,18 @@
   <template v-if="file.exists">
     <div :class="{'is-live': file.isPlaying}" class="box p-2 mb-1">
       <nav class="level is-mobile mb-0">
-        <div class="level-left" style="max-width: calc(100% - 55px);">
-          <div class="is-flex">
-            <NuxtIconVideo v-if="isVideo" class="mr-2"/>
-            <NuxtIconAudio v-if="isAudio" class="mr-2"/>
-            <b class="is-size-6">{{ file.name }}</b>
+        <div class="level-left is-flex-shrink-1">
+          <div class="is-flex is-align-items-center is-flex-shrink-1">
+            <NuxtIconVideo v-if="isVideo" class="mr-0 is-flex-shrink-0"/>
+            <NuxtIconAudio v-if="isAudio" class="mr-0 is-flex-shrink-0"/>
+            <b :title="file.name" class="is-size-6 file-name">{{ file.name }}</b>
             <NuxtIconFolder
                 v-if="file.path"
-                class="has-text-grey ml-1 is-clickable"
+                class="has-text-grey ml-1 is-clickable is-flex-shrink-0"
                 @click="openFolder()"/>
           </div>
         </div>
-        <div class="level-right" style="gap: 0.6rem;">
-          <span v-if="file.isPlaying" class="chip on-air"><span class="dot"/>ON AIR</span>
+        <div class="level-right is-flex-shrink-0" style="gap: 0.6rem;">
           <label v-if="!isLast" class="checkbox is-size-7 nowrap">
             <input v-model="file.continuousPlay" type="checkbox">
             次を自動再生
@@ -51,7 +50,7 @@
   <!-- ファイルが存在しない-->
   <div v-else class="box p-2 is-missing">
     <nav class="level is-mobile mb-0">
-      <div class="level-left" style="max-width: calc(100% - 55px);">
+      <div class="level-left is-flex-shrink-1">
         <NuxtIconVideo v-if="isVideo"/>
         <NuxtIconAudio v-if="isAudio"/>
         <span class="is-size-6" style="word-break: break-all;">{{ file.name }}</span>
@@ -153,6 +152,17 @@ function mediaEnded() {
 </script>
 
 <style scoped>
+/* level-left とその中身が縮めるように（ellipsisにはmin-width:0が必須） */
+.level-left,
+.level-left > .is-flex {
+  min-width: 0;
+}
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .editor {
   color: var(--pp-fog);

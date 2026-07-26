@@ -17,7 +17,6 @@
       >ファイルが開けませんでした。ファイルが無いか、アクセスできない場所にあります。</p>
     </div>
     <div class="ml-auto mr-0 is-flex is-align-items-center" style="gap: 0.6rem;">
-      <span v-if="file.isPlaying" class="chip on-air"><span class="dot"/>ON AIR</span>
       <button
           v-if="file.path && !file.isPlaying"
           :disabled="!file.exists"
