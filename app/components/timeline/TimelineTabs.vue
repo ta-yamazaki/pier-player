@@ -1,6 +1,6 @@
 <template>
   <div class="tabs timeline-tabs">
-    <ul>
+    <ul class="rounded-rectangle">
       <li
           v-for="tab in tabs" :key="tab.id"
           :class="{'is-active': tab.id === modelValue}">
@@ -139,8 +139,16 @@ function focusInput(el: any) {
 </script>
 
 <style scoped>
+/* Bulmaの .tabs は横1行＋横スクロール前提なので、折り返し表示に上書きする */
 .timeline-tabs {
-  margin-bottom: 0.75rem;
+  //margin-bottom: 0.75rem;
+  overflow: visible; /* overflow-x だけ visible にしても overflow-y: hidden に引きずられて auto になる */
+  white-space: normal;
+}
+
+.timeline-tabs ul {
+  flex-shrink: 1;
+  flex-wrap: wrap;
 }
 
 .timeline-tabs a {

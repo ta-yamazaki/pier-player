@@ -59,6 +59,6 @@ export default defineNuxtConfig({
     '@/assets/css/main.css'
   ],
   nitro: {
-    compatibilityDate: '2027-12-31', // 今日以降の日付ならOK
+    compatibilityDate: '2027-12-30', // 今日以降の日付ならOK
   }
 })

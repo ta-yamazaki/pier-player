@@ -108,13 +108,8 @@ a:hover {
 .page-shell {
     margin: 0 auto;
     width: 95%;
-    max-width: 660px;
+    /*max-width: 660px;*/
     padding-top: 1rem;
-}
-
-/* 横並びなど、660pxに収まらない一覧を表示するとき */
-.page-shell.is-wide {
-    max-width: none;
 }
 
 .page-head {
@@ -321,6 +316,10 @@ table, th, td {
     border-radius: 999px;
     padding: 4px;
     gap: 2px;
+}
+
+.tabs ul.rounded-rectangle {
+    border-radius: 7px;
 }
 
 .tabs li a {
