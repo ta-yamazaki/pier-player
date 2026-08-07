@@ -1,48 +1,43 @@
 {
   "name": "pier-player",
-  "version": "3.1.6",
+  "version": "3.4.0",
   "description": "",
-  "main": "src/main.js",
-  "type": "module",
+  "private": true,
+  "main": "dist-electron/main.js",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder --win --x64",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "release": "node release-force.js"
-  },
-  "author": "zakky",
-  "license": "MIT",
-  "devDependencies": {
-    "electron": "^37.2.6",
-    "electron-builder": "^26.0.12"
+    "dev": "npx nuxi dev",
+    "build:nuxt": "nuxi build",
+    "build": "nuxi generate && electron-builder --win --x64",
+    "build:electron": "electron-builder --win --x64",
+    "generate": "nuxi generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "release": "node release.js",
+    "release:force": "node release-force.js",
+    "test": "vitest run",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "electron-store": "^10.1.0",
-    "electron-updater": "^6.6.2"
+    "ffmpeg-static": "^5.2.0",
+    "ffprobe-static": "^3.1.0"
   },
-  "build": {
-    "productName": "PierPlayer",
-    "appId": "pier-player",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "src"
-    ],
-    "win": {
-      "icon": "src/static/img/icon.png",
-      "target": "nsis"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "ta-yamazaki",
-        "repo": "pier-player"
-      }
-    ]
+  "devDependencies": {
+    "@meersagor/wavesurfer-vue": "^2.0.0",
+    "@nuxt/eslint": "^1.9.0",
+    "@nuxt/icon": "^1.15.0",
+    "bulma": "^1.0.4",
+    "electron": "^29.3.0",
+    "electron-builder": "^24.13.3",
+    "electron-store": "^10.1.0",
+    "electron-updater": "^6.6.2",
+    "eslint": "^9.36.0",
+    "firebase": "^12.16.0",
+    "nuxt": "3.6.5",
+    "nuxt-electron": "^0.7.0",
+    "vite-plugin-electron": "^0.28.4",
+    "vite-plugin-electron-renderer": "^0.14.5",
+    "vitest": "^4.1.10",
+    "vue": "^3.4.27",
+    "vue-router": "^4.3.2"
   }
 }

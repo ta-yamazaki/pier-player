@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+</head>
+<style>
+    html {
+        background-color: black;
+    }
+
+    body {
+        margin: 0;
+        overflow: hidden;
+        opacity: 0;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes blackOut {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+
+    video {
+        width: 100%;
+    }
+</style>
+<body>
+<script>
+    const body = document.getElementsByTagName('body')[0]
+
+    let videoEl
+    let audioEl
+    const element = () => videoEl || audioEl;
+
+    let videoGainNode
+    let audioGainNode
+    const gainNode = () => videoEl ? videoGainNode : audioGainNode;
+
+    let file
+    let visualFadeOutStarted = false
+    let audioFadeOutStarted = false
+
+    const receiver = window.timelineReceiver
+    const mainCallback = receiver.mainPlayer
+    const timelineListener = receiver.listener
+
+    receiver.timelineWindowShow((event, param) => {
+        file = {...param.file}
+
+        body.innerHTML = ""
+        if (!file.type) return
+        if (file.type.match(/video\/.*/)) playVideo(event)
+        if (file.type.match(/audio\/.*/)) playAudio(event)
+    })
+
+    function playVideo(event) {
+        videoEl = createVideoEl()
+
+        videoGainSourceSetting() // ゲイン設定
+        videoEl.currentTime = file.startTrimSec // 再生位置
+
+        videoEl.play().then(() => {
+            fadeInSetting(`${file.startFadeSec}s`)
+            audioFadeIn()
+        }).catch((e) => console.error(e))
+
+        listeners(videoEl)
+    }
+
+    function createVideoEl() { // video要素生成
+        const source = document.createElement('source');
+        source.src = file.path
+        source.type = file.type
+
+        const video = document.createElement('video');
+        video.appendChild(source);
+        body.appendChild(video);
+        return video
+    }
+
+    function playAudio(event) {
+        audioEl = createAudioEl()
+
+        audioGainSourceSetting()
+        audioEl.currentTime = file.startTrimSec // 再生位置
+
+        audioEl.play().then(() => {
+            audioFadeIn()
+        }).catch((e) => console.error(e))
+
+        listeners(audioEl)
+    }
+
+    function createAudioEl() { // audio要素生成
+        const audio = document.createElement('audio');
+        audio.src = file.path
+        audio.type = file.type
+        body.appendChild(audio);
+        return audio
+    }
+
+    function listeners(mediaEl) {
+        mediaEl.addEventListener('ready', (event) => {
+            timelineListener.targetReady();
+        });
+        mediaEl.addEventListener('loadedmetadata', (event) => {
+            timelineListener.targetDuration(mediaEl.duration);
+        });
+        mediaEl.addEventListener('playing', (event) => {
+            timelineListener.targetPlaying();
+            // 一時停止からの再開時に画面と音量を戻す（フェードアウト域なら timeupdate で再フェードする）
+            visualFadeOutStarted = false
+            audioFadeOutStarted = false
+            fadeOutSetting(`1`, ``, ``)
+            audioFadeReset()
+        });
+        mediaEl.addEventListener('timeupdate', (event) => {
+            timelineListener.targetTimeupdate(file, mediaEl.currentTime, mediaEl.duration);
+
+            if (endTimeReached(mediaEl)) {
+                mediaEl.pause()
+                mediaEl.currentTime = file.startTrimSec
+                timelineListener.targetEnded();
+            }
+
+            // 映像フェードアウト（シークで域外に戻った場合は解除する）
+            if (visualFadeOutReached(mediaEl)) {
+                if (!visualFadeOutStarted) {
+                    visualFadeOutStarted = true
+                    fadeOutSetting(`0`, `blackOut`, `${file.endFadeSec}s`)
+                }
+            } else if (visualFadeOutStarted) {
+                visualFadeOutStarted = false
+                fadeOutSetting(`1`, ``, ``)
+            }
+
+            // 音声フェードアウト（同上）
+            if (audioFadeOutReached(mediaEl)) {
+                if (!audioFadeOutStarted) {
+                    audioFadeOutStarted = true
+                    audioFadeOut()
+                }
+            } else if (audioFadeOutStarted) {
+                audioFadeOutStarted = false
+                audioFadeReset()
+            }
+        });
+        mediaEl.addEventListener('pause', (event) => {
+            timelineListener.targetPaused();
+        });
+        mediaEl.addEventListener('ended', (event) => {
+            timelineListener.targetEnded();
+        });
+    }
+
+    function videoGainSourceSetting() {
+        videoGainNode = generateGainNode(videoEl)
+        videoGainNode.gain.value = file.gain;
+    }
+
+    function audioGainSourceSetting() {
+        audioGainNode = generateGainNode(audioEl)
+        audioGainNode.gain.value = file.gain;
+    }
+
+    function generateGainNode(element) {
+        // AudioContextの作成
+        const context = new (window.AudioContext || window.webkitAudioContext)();
+        // AudioContextのソースと接続
+        const source = context.createMediaElementSource(element);
+        // GainNodeの作成
+        const gainNode = context.createGain();
+
+        // 音声ソースをGainNodeに接続
+        source.connect(gainNode);
+        // GainNodeを出力に接続
+        gainNode.connect(context.destination);
+
+        return gainNode
+    }
+
+    // 音量フェードイン: 0 → 設定ゲイン まで startAudioFadeSec 秒でランプ
+    function audioFadeIn() {
+        const node = gainNode()
+        const fadeSec = Number(file.startAudioFadeSec) || 0
+        if (!node || fadeSec <= 0) return
+        const now = node.context.currentTime
+        node.gain.cancelScheduledValues(now)
+        node.gain.setValueAtTime(0, now)
+        node.gain.linearRampToValueAtTime(Number(file.gain) || 0, now + fadeSec)
+    }
+
+    // 音量フェードアウト: 現在音量 → 0 まで endAudioFadeSec 秒でランプ
+    function audioFadeOut() {
+        const node = gainNode()
+        const fadeSec = Number(file.endAudioFadeSec) || 0
+        if (!node || fadeSec <= 0) return
+        const now = node.context.currentTime
+        node.gain.cancelScheduledValues(now)
+        node.gain.setValueAtTime(node.gain.value, now)
+        node.gain.linearRampToValueAtTime(0, now + fadeSec)
+    }
+
+    // フェードを解除して設定ゲインに戻す
+    function audioFadeReset() {
+        const node = gainNode()
+        if (!node) return
+        node.gain.cancelScheduledValues(node.context.currentTime)
+        node.gain.value = Number(file.gain) || 0
+    }
+
+    function fadeInSetting(duration) {
+        body.style.opacity = "1"
+        body.style.animationName = "fadeIn"
+        body.style.animationDuration = duration
+    }
+
+    function fadeOutSetting(opacity, animationName, duration) {
+        body.style.opacity = opacity
+        body.style.animationName = animationName
+        body.style.animationDuration = duration
+    }
+
+    function visualFadeOutReached(mediaEl) {
+        // マージンで 30ms いれておく
+        return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - file.endFadeSec - 0.03;
+    }
+
+    function audioFadeOutReached(mediaEl) {
+        // マージンで 30ms いれておく
+        return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - file.endAudioFadeSec - 0.03;
+    }
+
+    function endTimeReached(mediaEl) {
+        // マージンで 30ms いれておく
+        return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - 0.03;
+    }
+
+    mainCallback.restart((event, param) => element().currentTime = 0)
+    mainCallback.rewind((event, param) => element().currentTime -= param.seekTime)
+    mainCallback.play((event, param) => element().play())
+    mainCallback.pause((event, param) => element().pause())
+    mainCallback.forward((event, param) => element().currentTime += param.seekTime)
+    mainCallback.toEnd((event, param) => element().currentTime = element().duration)
+    mainCallback.seek((event, param) => element().currentTime = param.newTime)
+    mainCallback.fileMetaChange((event, param) => {
+        file = {...param.file}
+        // フェードアウト中はランプを優先し、音量変更は反映しない
+        if (!audioFadeOutStarted) audioFadeReset()
+    })
+</script>
+
+</body>
+</html>
