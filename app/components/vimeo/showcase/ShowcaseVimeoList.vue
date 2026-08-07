@@ -1,25 +1,14 @@
 <template>
   <nav class="level is-mobile mt-5 mb-2">
     <div class="level-left">
-      <div>
-        <h2 class="section-title">映像リスト</h2>
-      </div>
+      <p class="note has-text-danger">※「再生」ボタンのあと少し時間がかかります。</p>
     </div>
     <div class="level-right">
       <button class="button is-small" @click="closeAll()">表示リセット</button>
     </div>
   </nav>
-  <p class="note mb-2">※最初の表示は少し時間がかかります。</p>
+
   <SortableList :items="vimeoList" @remove="removeRow">
-    <template #head>
-      <tr class="is-size-7" style="white-space: nowrap;">
-        <th/>
-        <th>
-          <span class="note">タイトル</span>
-        </th>
-        <th/>
-      </tr>
-    </template>
     <template #default="{ item }">
       <ShowcaseVimeo
           :password="password"

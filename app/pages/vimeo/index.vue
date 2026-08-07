@@ -14,7 +14,7 @@
       </ul>
     </div>
 
-    <p class="note mb-2">※最初の表示は少し時間がかかります。</p>
+    <p class="note has-text-danger mb-2">※「再生」ボタンのあと少し時間がかかります。</p>
     <VimeoList ref="vimeoListRef"/>
     <button class="button is-add is-fullwidth mt-4" @click="addRow()">
       ＋ 追加

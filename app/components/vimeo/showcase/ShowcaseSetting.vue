@@ -1,34 +1,33 @@
 <template>
-  <h2 class="section-title mb-2">ショーケース設定</h2>
+<!--  <h2 class="section-title mb-2">ショーケース設定</h2>-->
   <div class="box">
-    <div class="field">
-      <label class="label is-size-7">ショーケースURL</label>
-      <p class="control">
+    <div class="field mb-2">
+      <label class="label is-size-7 mb-0">ショーケースURL</label>
+      <p class="control mb-0">
         <input v-model="showcase.rawUrl" class="input is-small" placeholder="VimeoショーケースURL" type="url">
       </p>
       <p v-if="showcaseRawUrlExists && showcaseUrlInvalid" class="has-text-danger"
       >VimeoショーケースURLの形式が正しくありません。</p>
-      <small>{{ showcaseUrl }}</small>
+      <small class="is-size-7">{{ showcaseUrl }}</small>
     </div>
     <div class="field">
-      <label class="label is-size-7">パスワード</label>
+      <label class="label is-size-7 mb-0">パスワード</label>
       <p class="control">
         <input v-model="showcase.password" class="input is-small" placeholder="パスワード" type="text">
       </p>
     </div>
 
-    <div v-if="canGetTitles">
-      <label class="checkbox">
-        <input v-model="overrideVideoList" type="checkbox">
-        <small>映像一覧を上書きする</small>
-      </label>
       <button
           :class="{'is-loading': isGettingShowcaseVideos}"
           class="button is-small is-primary is-outlined has-text-primary is-fullwidth"
+          :disabled="!canGetTitles"
           @click="getShowcaseVideoTitles()">
         ショーケースの映像一覧を取得
       </button>
-    </div>
+      <label v-if="canGetTitles" class="checkbox has-text-right">
+        <input v-model="overrideVideoList" type="checkbox">
+        <small>映像一覧を上書きする</small>
+      </label>
   </div>
 </template>
 
