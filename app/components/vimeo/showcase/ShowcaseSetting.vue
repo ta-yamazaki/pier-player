@@ -39,7 +39,7 @@ import {computed, onMounted, reactive, ref, watch} from 'vue'
  * emits
  */
 type Emits = {
-  (event: "updateUrlWithPassword", value: any): void;
+  (event: "updateShowcase", url: string, password: string): void;
   (event: "getShowcaseVideoTitles", isOverride: boolean, titles: any[]): void;
 };
 const emit = defineEmits<Emits>();
@@ -55,6 +55,7 @@ const showcase = reactive({
 // API (Electron preload で expose 済みのやつを参照)
 const showcaseApi = window.showcaseApi
 const {notify, notifyError} = useNotification()
+const {fetchShowcaseVideos} = useShowcaseVideos()
 
 // computed
 const showcaseUrlInvalid = computed(() => {
@@ -64,22 +65,24 @@ const showcaseUrlInvalid = computed(() => {
 const showcaseRawUrlExists = computed(() => !!showcase.rawUrl)
 const showcasePasswordExists = computed(() => !!showcase.password)
 const canGetTitles = computed(() => !showcaseUrlInvalid.value && showcasePasswordExists.value)
+// 再生時に開くショーケースのページURL（クエリを落としただけのもの）
+const showcaseBaseUrl = computed(() => showcase.rawUrl.replace(/\?.*$/, ''))
+// 映像一覧の取得に使う埋め込みURL
 const showcaseUrl = computed(() => {
   if (!showcase.rawUrl) return ''
-  return showcase.rawUrl.replace(/\?.*$/, '') + '/embed'
+  return `${showcaseBaseUrl.value}/embed`
 })
-const showcaseUrlWithPassword = computed(() => `${showcaseUrl.value}?password=${showcase.password}`)
 
 // init
 onMounted(async () => {
   Object.assign(showcase, await showcaseApi.getShowcase())
-  emit('updateUrlWithPassword', showcaseUrlWithPassword.value) // 親に変更を通知
+  emit('updateShowcase', showcaseBaseUrl.value, showcase.password) // 親に変更を通知
 })
 
 // watchers
 watch(showcase, (newVal) => {
   showcaseApi.storeShowcase(toRaw(newVal))
-  emit('updateUrlWithPassword', showcaseUrlWithPassword.value) // 親に変更を通知
+  emit('updateShowcase', showcaseBaseUrl.value, showcase.password) // 親に変更を通知
 }, {deep: true})
 
 // methods
@@ -91,23 +94,27 @@ const getShowcaseVideoTitles = async () => {
 
   isGettingShowcaseVideos.value = true
   try {
-    const res = await fetch(showcaseUrlWithPassword.value)
-    const html = await res.text()
-    const match = html.match(/"clips"\s*:\s*(\[[\s\S]*?])/)
-    if (!match) {
+    const result = await fetchShowcaseVideos(showcaseUrl.value, showcase.password)
+    if (!result) {
       notifyError('映像一覧を取得できませんでした。URLとパスワードを確認してください。何度試しても取得できない場合は手動で追加してください。')
       return
     }
 
-    const clips = JSON.parse(match[1])
-    const titles = clips.map((clip: any) => ({
+    const titles = result.videos.map((video) => ({
       isPlaying: false,
       isViewed: false,
-      title: clip.title
+      title: video.title,
+      clipId: video.clipId
     }))
     emit('getShowcaseVideoTitles', overrideVideoList.value, titles)
 
-    notify('映像一覧を取得しました。')
+    notify(`映像一覧を取得しました。（${titles.length}件）`)
+
+    // 動画IDが取れないと再生時に映像を指定できないため、取りこぼしを知らせる
+    const noClipId = result.videos.filter((video) => !video.clipId).map((video) => video.title)
+    if (noClipId.length) {
+      notifyError(`次の映像は動画IDを取得できなかったため再生できない場合があります：${noClipId.join('、')}`)
+    }
   } catch (e) {
     console.error(e)
     notifyError('映像一覧の取得に失敗しました。手動で追加してください。')

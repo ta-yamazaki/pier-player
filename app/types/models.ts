@@ -59,6 +59,11 @@ export interface ShowcaseItem {
   title: string
   isViewed: boolean
   isPlaying: boolean
+  /**
+   * Vimeoの動画ID。ショーケースページを ?video=<clipId> で開いて映像を指定する。
+   * 映像一覧を取得し直していない既存データでは undefined になり、再生できない。
+   */
+  clipId?: string
 }
 
 // Vimeoショーケース設定

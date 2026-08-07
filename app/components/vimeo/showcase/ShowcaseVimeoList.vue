@@ -15,23 +15,20 @@
       <tr class="is-size-7" style="white-space: nowrap;">
         <th/>
         <th>
-          <span class="note">タイトル（完全一致）</span>
+          <span class="note">タイトル</span>
         </th>
         <th/>
       </tr>
     </template>
     <template #default="{ item }">
       <ShowcaseVimeo
-          :showcase-url-with-password="showcaseUrlWithPassword"
+          :password="password"
+          :showcase-url="showcaseUrl"
           :vimeo="item"
           @view="closeAll"
       />
     </template>
   </SortableList>
-
-  <button class="button is-add is-fullwidth mt-4" @click="addShowcaseVimeo()">
-    ＋ 追加
-  </button>
 </template>
 
 <script lang="ts" setup>
@@ -42,7 +39,8 @@ import SortableList from "~/components/common/SortableList.vue";
  * Props
  */
 interface Props {
-  showcaseUrlWithPassword: string,
+  showcaseUrl: string,
+  password: string,
 }
 
 defineProps<Props>();
@@ -64,15 +62,6 @@ const closeAll = () => {
   })
 }
 
-const addShowcaseVimeo = () => {
-  vimeoList.value.push({
-    id: newId(),
-    title: '',
-    isViewed: false,
-    isPlaying: false
-  })
-}
-
 const removeRow = (i: number) => {
   showcaseApi.closeVimeoShowcase()
   vimeoList.value.splice(i, 1)
@@ -84,5 +73,5 @@ const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {
   else vimeoList.value = [...toRaw(vimeoList.value), ...withIds]
 }
 
-defineExpose({closeAll, addShowcaseVimeo, getShowcaseVideoTitles})
+defineExpose({closeAll, getShowcaseVideoTitles})
 </script>

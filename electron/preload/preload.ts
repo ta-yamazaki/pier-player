@@ -69,7 +69,8 @@ contextBridge.exposeInMainWorld('vimeoApi', vimeoApi);
  * Vimeoモード（ショーケース）
  */
 export const showcaseApi = {
-    openVimeoShowcase: (vimeo: any, showcaseUrl: string) => ipcRenderer.invoke(ShowcaseChannels.open, vimeo, showcaseUrl),
+    openVimeoShowcase: (vimeo: any, showcaseUrl: string, password: string) =>
+        ipcRenderer.invoke(ShowcaseChannels.open, vimeo, showcaseUrl, password),
     playVimeoShowcase: () => ipcRenderer.invoke(ShowcaseChannels.play),
     closeVimeoShowcase: () => ipcRenderer.invoke(ShowcaseChannels.close),
 

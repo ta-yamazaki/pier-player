@@ -14,12 +14,13 @@
     </div>
 
     <ShowcaseSetting
-        @update-url-with-password="(val) => showcaseUrlWithPassword = val"
+        @update-showcase="updateShowcase"
         @get-showcase-video-titles="getShowcaseVideoTitles"
     />
     <ShowcaseVimeoList
         ref="showcaseVimeoListRef"
-        :showcase-url-with-password="showcaseUrlWithPassword"
+        :password="showcasePassword"
+        :showcase-url="showcaseUrl"
     />
   </div>
 </template>
@@ -32,9 +33,15 @@ import ShowcaseSetting from "~/components/vimeo/showcase/ShowcaseSetting.vue";
 const showcaseVimeoListRef = ref<InstanceType<typeof ShowcaseVimeoList> | null>(null)
 
 // state
-const showcaseUrlWithPassword = ref("")
+const showcaseUrl = ref("")
+const showcasePassword = ref("")
 
 // methods
+const updateShowcase = (url: string, password: string) => {
+  showcaseUrl.value = url
+  showcasePassword.value = password
+}
+
 const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {
   showcaseVimeoListRef.value?.getShowcaseVideoTitles(isOverride, titles)
 }
