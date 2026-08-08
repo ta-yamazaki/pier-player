@@ -3,10 +3,6 @@
     <header class="page-head">
       <h1 class="page-title">タイムライン</h1>
       <div class="is-flex is-align-items-center is-gap-2">
-        <label class="checkbox is-size-7" title="再生が終わったあと、デスクトップを見せずに黒画面のまま残します">
-          <input v-model="blackout" type="checkbox">
-          終了後は黒画面
-        </label>
         <div class="buttons has-addons mb-0">
           <button
               :class="{'is-primary is-selected': layout === 'stack'}"
@@ -42,6 +38,16 @@
           @change-files="changeFiles"
       />
     </div>
+
+    <!-- リストが長いとヘッダーの設定まで戻れないので、一番下でも切り替え・リセットできるようにする -->
+    <div class="is-flex is-flex-direction-column is-align-items-flex-end is-gap-2 mt-3">
+      <label class="checkbox is-size-7" title="再生が終わったあと、デスクトップを見せずに黒画面のまま残します">
+        <input v-model="blackout" type="checkbox">
+        終了後は黒画面
+      </label>
+      <button class="button is-small" title="再生を止めて、残っている黒画面も閉じます" @click="reset()">表示リセット</button>
+    </div>
+
     <div style="height: var(--timeline-player-heght);"/>
   </div>
 </template>
