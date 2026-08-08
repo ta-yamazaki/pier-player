@@ -34,7 +34,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x   # 完全一致指定にするとランナーのツールキャッシュに乗らずDL待ちが発生する
-          cache: npm           # node_modules キャッシュがミスしたときのフォールバック
+          # cache: npm は使わない。キーが package-lock.json のハッシュで node_modules キャッシュと
+          # 完全に一致するため両者は必ず同時にヒット/ミスし、フォールバックとして機能しない。
+          # 復元に7秒・保存に4秒かかるだけの純粋なオーバーヘッドだった（実測）。
 
       # ネイティブビルドを伴う依存がないため node_modules をそのまま再利用できる。
       # ffmpeg-static / ffprobe-static / electron がpostinstallで取得するバイナリも含まれる。
