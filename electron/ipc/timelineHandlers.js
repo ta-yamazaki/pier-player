@@ -1,6 +1,11 @@
 import fs from 'fs';
 import {ipcMain} from 'electron';
-import {createTimelineWindow, getTimelineWindow, loadTimelineWindow} from "../windows/timelineWindow.js";
+import {
+    createTimelineWindow,
+    getTimelineWindow,
+    loadBlackoutWindow,
+    loadTimelineWindow
+} from "../windows/timelineWindow.js";
 import {getMainWindow} from "../windows/mainWindow.js";
 import {TimelineChannels} from "./channels";
 
@@ -25,6 +30,14 @@ export const registerTimelineHandlers = () => {
         await loadTimelineWindow(newWindow, nextFileMeta);
         currentWindow.destroy();
         return true;
+    });
+
+    // 再生終了後、プレイヤーを黒画面ウィンドウに差し替える（切れ目でデスクトップを見せない）
+    ipcMain.handle(TimelineChannels.blackout, async () => {
+        const currentWindow = getTimelineWindow();
+        const newWindow = createTimelineWindow();
+        await loadBlackoutWindow(newWindow);
+        currentWindow?.destroy();
     });
 
     // player from mainPage

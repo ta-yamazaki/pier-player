@@ -103,6 +103,7 @@ const emit = defineEmits<Emits>();
 
 const timelineApi = window.timelineApi
 const {notifyError} = useNotification()
+const {blackout} = useTimelineBlackout()
 
 const files = useStoredList<any>(
     () => timelineApi.getFiles(props.tabId).then(ensureIds).then(ensureAudioFade).then(clearPlaying),
@@ -189,13 +190,22 @@ function mediaEnded(i: number) {
   const currentFile = files.value[i]
   currentFile.isPlaying = false
 
-  // 自動再生オフ、または最後のファイルなら再生を終了してウィンドウを閉じる
+  // 自動再生オフ、または最後のファイルなら再生を終了する
   const nextFile = files.value[i + 1]
   if (!currentFile.continuousPlay || !nextFile) {
-    timelineApi.closeTimelineWindow()
+    endPlayback()
     return
   }
   continuousPlay(nextFile)
+}
+
+// 設定に応じて、黒画面を残すか、ウィンドウごと閉じるか
+function endPlayback() {
+  if (blackout.value) {
+    timelineApi.blackoutTimelineWindow()
+    return
+  }
+  timelineApi.closeTimelineWindow()
 }
 
 function continuousPlay(nextFile: any) {

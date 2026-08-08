@@ -88,6 +88,7 @@ export const timelineApi = {
     openTimelineWindow: (fileMeta: any) => ipcRenderer.invoke(TimelineChannels.openWindow, fileMeta),
     closeTimelineWindow: () => ipcRenderer.invoke(TimelineChannels.closeWindow),
     continuousPlay: (nextFileMeta: any) => ipcRenderer.invoke(TimelineChannels.continuousPlay, nextFileMeta),
+    blackoutTimelineWindow: () => ipcRenderer.invoke(TimelineChannels.blackout),
     checkFilePath: (file: any) => ipcRenderer.invoke(FileChannels.checkFilePath, file),
 
     // player from mainPage

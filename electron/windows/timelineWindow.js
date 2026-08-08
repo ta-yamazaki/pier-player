@@ -35,4 +35,18 @@ export const loadTimelineWindow = async (timelineWindow, fileMeta) => {
     });
 };
 
+// 再生終了後にデスクトップが見えないよう、黒画面だけのウィンドウを表示する
+export const loadBlackoutWindow = async (blackoutWindow) => {
+    if (process.env.VITE_DEV_SERVER_URL) {
+        await blackoutWindow.loadURL(path.join(process.env.VITE_DEV_SERVER_URL, 'timeline/blackout.html'))
+    } else {
+        await blackoutWindow.loadFile(path.join(VITE_PUBLIC, 'timeline', 'blackout.html'))
+    }
+
+    blackoutWindow.showInactive();
+    blackoutWindow.moveTop();
+    blackoutWindow.setTitle('');
+    blackoutWindow.setOpacity(1);
+};
+
 export const getTimelineWindow = () => timelineWindow;

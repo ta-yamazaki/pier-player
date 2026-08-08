@@ -48,6 +48,7 @@ export const TimelineChannels = {
     openWindow: 'openTimelineWindow',
     closeWindow: 'closeTimelineWindow',
     continuousPlay: 'timelineContinuousPlay',
+    blackout: 'timelineBlackout',
     windowShow: 'timelineWindowShow',
 
     // メイン画面 → プレイヤーウィンドウの操作
