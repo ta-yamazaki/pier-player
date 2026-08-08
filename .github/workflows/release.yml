@@ -4,39 +4,66 @@ on:
   push:
     tags:
       - 'v*'   # v1.0.0 のようなタグで起動
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'GitHub Releases に公開する（オフならビルドのみ。CI時間の計測用）'
+        type: boolean
+        default: false
 
 jobs:
   release:
     runs-on: windows-latest
 
+    env:
+      # タグpushなら常に公開。手動実行は inputs.publish に従う（既定はビルドのみ）
+      PUBLISH: ${{ (github.event_name == 'push' || github.event.inputs.publish == 'true') && 'always' || 'never' }}
+
     steps:
+      # 大量ファイルの展開・コピーがDefenderのリアルタイムスキャンで律速されるため除外する。
+      # 成果物には影響しない。効果がなければこのステップごと削除してよい。
+      - name: Exclude workspace from Defender scanning
+        continue-on-error: true
+        run: |
+          Add-MpPreference -ExclusionPath "${{ github.workspace }}", "$env:LOCALAPPDATA\npm-cache"
+
       - name: Check out Git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20.11.0
+          node-version: 20.x   # 完全一致指定にするとランナーのツールキャッシュに乗らずDL待ちが発生する
+          cache: npm           # node_modules キャッシュがミスしたときのフォールバック
+
+      # ネイティブビルドを伴う依存がないため node_modules をそのまま再利用できる。
+      # ffmpeg-static / ffprobe-static / electron がpostinstallで取得するバイナリも含まれる。
+      - name: Restore node_modules
+        id: node-modules-cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node20-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
-        run: npm ci
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      # キャッシュヒット時は postinstall（nuxt prepare）が走らないため明示的に実行する
+      - name: Prepare Nuxt
+        if: steps.node-modules-cache.outputs.cache-hit == 'true'
+        run: npx nuxt prepare
 
       - name: Build & Publish (Windows)
-        run: npm run build -- --publish always
+        run: npm run build -- --publish $env:PUBLISH
         env:
           GH_TOKEN: ${{ secrets.github_token }}
 
-      - name: Publish draft release # 最新の draft release を取得
+      - name: Publish draft release
+        if: env.PUBLISH == 'always'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $latestDraft = gh release list --json tagName --limit 1 | ConvertFrom-Json
-
-          if ($null -ne $latestDraft) {
-            Write-Output "Latest draft release: $($latestDraft.tagName)"
-            gh release edit $latestDraft.tagName --draft=false --prerelease=false
-            Write-Output "Draft release '$($latestDraft.tagName)' is now published as latest."
-          }
-          else {
-            Write-Output "No draft release found."
-          }
+          # electron-builder が draft を作るタグ名は package.json の version と一致する
+          $tag = "v$(node -p "require('./package.json').version")"
+          gh release edit $tag --draft=false --prerelease=false --latest
