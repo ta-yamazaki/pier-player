@@ -51,6 +51,7 @@
     let file
     let visualFadeOutStarted = false
     let audioFadeOutStarted = false
+    let ended = false // 終了後〜次ファイル読み込みまで（巻き戻しシークでフェードを解除しないため）
 
     const receiver = window.timelineReceiver
     const mainCallback = receiver.mainPlayer
@@ -58,6 +59,7 @@
 
     receiver.timelineWindowShow((event, param) => {
         file = {...param.file}
+        ended = false
 
         body.innerHTML = ""
         if (!file.type) return
@@ -121,6 +123,7 @@
         mediaEl.addEventListener('playing', (event) => {
             timelineListener.targetPlaying();
             // 一時停止からの再開時に画面と音量を戻す（フェードアウト域なら timeupdate で再フェードする）
+            ended = false
             visualFadeOutStarted = false
             audioFadeOutStarted = false
             fadeOutSetting(`1`, ``, ``)
@@ -129,11 +132,15 @@
         mediaEl.addEventListener('timeupdate', (event) => {
             timelineListener.targetTimeupdate(file, mediaEl.currentTime, mediaEl.duration);
 
-            if (endTimeReached(mediaEl)) {
+            if (!ended && endTimeReached(mediaEl)) {
+                ended = true
                 mediaEl.pause()
                 mediaEl.currentTime = file.startTrimSec
                 timelineListener.targetEnded();
             }
+
+            // 終了後は巻き戻し済みのため、フェード状態を触らない（前ファイルの先頭フレームが一瞬映るのを防ぐ）
+            if (ended) return
 
             // 映像フェードアウト（シークで域外に戻った場合は解除する）
             if (visualFadeOutReached(mediaEl)) {
@@ -161,6 +168,8 @@
             timelineListener.targetPaused();
         });
         mediaEl.addEventListener('ended', (event) => {
+            if (ended) return
+            ended = true
             timelineListener.targetEnded();
         });
     }
@@ -248,13 +257,19 @@
         return mediaEl.currentTime >= mediaEl.duration - file.endTrimSec - 0.03;
     }
 
-    mainCallback.restart((event, param) => element().currentTime = 0)
-    mainCallback.rewind((event, param) => element().currentTime -= param.seekTime)
+    // 手動シークは終了状態を解除する（フェード状態を timeupdate で再評価させる）
+    const manualSeek = (fn) => (event, param) => {
+        ended = false
+        fn(event, param)
+    }
+
+    mainCallback.restart(manualSeek((event, param) => element().currentTime = 0))
+    mainCallback.rewind(manualSeek((event, param) => element().currentTime -= param.seekTime))
     mainCallback.play((event, param) => element().play())
     mainCallback.pause((event, param) => element().pause())
-    mainCallback.forward((event, param) => element().currentTime += param.seekTime)
-    mainCallback.toEnd((event, param) => element().currentTime = element().duration)
-    mainCallback.seek((event, param) => element().currentTime = param.newTime)
+    mainCallback.forward(manualSeek((event, param) => element().currentTime += param.seekTime))
+    mainCallback.toEnd(manualSeek((event, param) => element().currentTime = element().duration))
+    mainCallback.seek(manualSeek((event, param) => element().currentTime = param.newTime))
     mainCallback.fileMetaChange((event, param) => {
         file = {...param.file}
         // フェードアウト中はランプを優先し、音量変更は反映しない
