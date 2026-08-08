@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-**Pier Player** は Nuxt 3 + Vue 3 + Electron で構築されたデスクトップメディアプレイヤーアプリケーション（Windows向け）。複数の再生モード（ファイル、CGM動画、Vimeo、タイムライン）と音声処理機能を持つ。
+**Pier Player** は Nuxt 3 + Vue 3 + Electron で構築されたデスクトップメディアプレイヤーアプリケーション（Windows向け）。複数の再生モード（ファイル、CGM動画、Vimeo個別/ショーケース、タイムライン、賛美＝praise）と音声処理機能を持つ。
+
+`docs/development.md`（開発手順・IPC追加手順）と `docs/release.md`（リリース手順）に詳細あり。
 
 ## コマンド
 
@@ -30,8 +32,11 @@ npx vitest run tests/utils.test.ts
 # リント
 npm run lint
 
-# リリース（gitタグ作成 & pushでGitHub Releasesをトリガー）
+# リリース（package.json の version から gitタグ作成 & push → GitHub Releasesをトリガー）
 npm run release
+
+# 同バージョンのタグを打ち直してリリースやり直し
+npm run release:force
 ```
 
 テストは `tests/` にあるユーティリティ・composableの単体テストのみ（vitest）。Electron側やコンポーネントのテストはない。
@@ -48,8 +53,8 @@ ESLintは `@nuxt/eslint-config` を直接使うスタンドアロン構成（Nux
   - `composables/` — Vue 3 Composition API フック（`useDragSort`, `useStoredList`, `useNotification`）
   - `utils/` — 純粋関数ユーティリティ（`format.ts`, `media.ts` など、テスト対象）
   - `types/` — 共有型定義（`models.ts`, `window.d.ts` = preload公開APIの型）
-  - `assets/css/` — グローバルCSS（Bulma + カスタム）
-  - `public/sub/` と `public/timeline/` — サブウィンドウ用HTMLファイル（Nuxt管轄外の素のHTML+JS）
+  - `assets/css/` — グローバルCSS（Bulma + カスタム）。UIはカスタムCSSより先にBulmaのクラス・ヘルパーで組む。`nuxt.config.ts` で `data-theme="light"` を固定しており、OSのダークモードには追従しない
+  - `app/public/sub/` と `app/public/timeline/` — サブウィンドウ／タイムラインプレイヤー用HTML（Nuxt管轄外の素のHTML+JS。ルート直下の `public/` ではないので注意）
 - `electron/` — Electronメインプロセス
   - `main.ts` — エントリポイント、ウィンドウ初期化とIPCセットアップ
   - `ipc/` — IPCハンドラ（機能別に分割: `mainHandlers.js`, `timelineHandlers.js` など）
@@ -59,7 +64,8 @@ ESLintは `@nuxt/eslint-config` を直接使うスタンドアロン構成（Nux
 - `tests/` — vitest単体テスト
 - `dist-electron/` — コンパイル済みElectronファイル（自動生成）
 - `.output/` — Nuxtビルド出力（自動生成）
-- `REFACTORING.md` — リファクタリング課題の一覧と対応状況
+
+各モードは「`app/pages/` のページ」と「`electron/ipc/<機能>Handlers.js`」がペアになっている（対応表は `docs/development.md`）。
 
 ### マルチウィンドウ構成
 
@@ -81,6 +87,7 @@ ESLintは `@nuxt/eslint-config` を直接使うスタンドアロン構成（Nux
 | `window.vimeoApi` | Vimeo個別再生 |
 | `window.showcaseApi` | Vimeoショーケース |
 | `window.timelineApi` | タイムラインプレイヤー |
+| `window.praiseApi` | 賛美モードのセットリスト永続化 |
 | `window.convertApi` | 音声変換（ピッチ、ラウドネス） |
 | `window.commonApi` | バージョン、アップデート、フォルダ |
 
@@ -88,9 +95,15 @@ ESLintは `@nuxt/eslint-config` を直接使うスタンドアロン構成（Nux
 
 `ipcRenderer.on` 系のAPIは解除関数を返す（`const off = api.on(...)` パターン）。コンポーネント側は `onUnmounted` で解除し、リスナーの多重登録を防ぐこと。
 
+IPC APIを追加する手順: ①`electron/ipc/channels.ts` にチャンネル名を追加 → ②`electron/ipc/<機能>Handlers.js` にハンドラ → ③`electron/ipc/handlers.js` で登録 → ④`electron/preload/preload.ts` で公開 → ⑤`app/types/window.d.ts` に型を追加。
+
+### 賛美（praise）モード
+
+他モードと違い、データソースはElectron側ではなくレンダラーから直接叩く Firebase（`app/utils/praise/`）。`pier-praise` プロジェクトの Firestore / Storage / Auth を使い、認証は `inMemoryPersistence` 固定でアプリ終了時にセッションが消える設計（起動時に既存セッションを明示的に `signOut` する）。`onAuthStateChanged` を登録する前に必ず `PraiseAuth.ready` を await すること。Electron側に持つのはセットリストの永続化（`praiseApi`）のみ。
+
 ### データ永続化
 
-`electron-store` を使用してJSON形式で永続化。`electron/ipc/storeHandlers.js` で一元管理（保存キーはホワイトリスト検証あり）。ファイルリスト、CGMリスト、Vimeoリスト、タイムライン履歴などを保存。リスト項目には安定した `id` を付与する（追加時に採番、既存データはロード時に補完）。
+`electron-store` を使用してJSON形式で永続化。`electron/ipc/storeHandlers.js` で一元管理（レンダラーから渡されるタブ名などのキーはホワイトリスト検証あり）。ファイルリスト、CGMリスト、Vimeoリスト、タイムライン履歴・波形ピークキャッシュ（件数上限あり）などを保存。リスト項目には安定した `id` を付与する（追加時に採番、既存データはロード時に補完）。ファイルパスを持つリストは読み出し時に存在チェック（`electron/utils/fileCheck.js`）を通す。
 
 ### FFmpeg統合
 
