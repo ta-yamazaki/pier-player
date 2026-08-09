@@ -47,6 +47,9 @@ export const cgmApi = {
     getCgmList: () => ipcRenderer.invoke(CgmChannels.getList),
     storeCgmList: (cgmList: any) => ipcRenderer.invoke(CgmChannels.storeList, cgmList),
 
+    getCgmPresets: () => ipcRenderer.invoke(CgmChannels.getPresets),
+    storeCgmPresets: (presets: any) => ipcRenderer.invoke(CgmChannels.storePresets, presets),
+
     // CGM windowからイベントを受け取る
     errorCgmOpen: listen(CgmChannels.errorOpen),
 }

@@ -15,6 +15,7 @@
 
 <script lang="ts" setup>
 import SortableList from "~/components/common/SortableList.vue";
+import type {CgmItem} from "~/types/models";
 
 // --------------------------------------------------
 // state
@@ -56,6 +57,11 @@ function addCgm() {
   })
 }
 
+// 保存リストからまとめて追加する
+function addCgmItems(items: CgmItem[]) {
+  cgmList.value.push(...items)
+}
+
 function removeRow(i: number) {
   cgmApi.closeCgm()
   cgmList.value.splice(i, 1)
@@ -65,5 +71,5 @@ function preview(cgm: any) {
   emit("preview", cgm)
 }
 
-defineExpose({addCgm, closeStatusAll})
+defineExpose({addCgm, addCgmItems, closeStatusAll})
 </script>

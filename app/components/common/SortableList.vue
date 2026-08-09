@@ -14,13 +14,15 @@
             'is-live': item.isPlaying
           }">
         <td
+            :class="{'is-draggable': draggable}"
             :draggable="draggable"
-            class="cell-drag is-draggable"
+            class="cell-drag"
             @dragend="dragEnd()"
             @dragenter="dragEnter(i)"
             @dragstart="dragStart(i)"
             @dragover.prevent>
-          <NuxtIcon class="m-0 drag-handle" name="ic:baseline-drag-indicator"/>
+          <!-- 並べ替え不可のときも、行がずれないよう場所は空けたまま隠す -->
+          <NuxtIcon :class="{'is-invisible': !draggable}" class="m-0 drag-handle" name="ic:baseline-drag-indicator"/>
         </td>
         <td class="cell-content pl-0 pr-2">
           <slot :index="i" :item="item"/>

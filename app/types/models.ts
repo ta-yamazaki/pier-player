@@ -42,6 +42,13 @@ export interface CgmItem {
   isPlaying: boolean
 }
 
+// CGM映像の保存リスト（メインリストへ追加するためのストック）
+export interface CgmPreset {
+  id?: string
+  path: string
+  title: string
+}
+
 // Vimeo個別動画
 export interface VimeoItem {
   id?: string

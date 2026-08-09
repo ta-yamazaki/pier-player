@@ -20,6 +20,8 @@ export const CgmChannels = {
     close: 'closeCgm',
     getList: 'getCgmList',
     storeList: 'storeCgmList',
+    getPresets: 'getCgmPresets',
+    storePresets: 'storeCgmPresets',
     errorOpen: 'errorCgmOpen',
 } as const
 

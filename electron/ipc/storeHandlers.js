@@ -7,6 +7,7 @@ const store = new Store();
 
 const keys = {
     cgmList: "cgmList",
+    cgmPresets: "cgmPresets",
 
     vimeoList: "vimeoList",
 
@@ -51,6 +52,14 @@ export const registerStoreHandlers = () => {
     });
     ipcMain.handle(CgmChannels.storeList, (_event, cgmList) => {
         store.set(keys.cgmList, cgmList);
+    });
+
+    // 保存リスト（メインリストへ流し込むための保管庫）
+    ipcMain.handle(CgmChannels.getPresets, () => {
+        return store.get(keys.cgmPresets, []);
+    });
+    ipcMain.handle(CgmChannels.storePresets, (_event, presets) => {
+        store.set(keys.cgmPresets, presets);
     });
 
     /**
