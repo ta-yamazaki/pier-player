@@ -2,8 +2,13 @@
   <div class="tabs timeline-tabs">
     <ul class="rounded-rectangle">
       <li
-          v-for="tab in tabs" :key="tab.id"
-          :class="{'is-active': tab.id === modelValue}">
+          v-for="(tab, i) in tabs" :key="tab.id"
+          :class="{'is-active': tab.id === modelValue, 'is-dragging': i === dragIndex}"
+          :draggable="renamingId === null"
+          @dragend="dragEnd()"
+          @dragenter="dragEnter(i)"
+          @dragstart="dragStart(i)"
+          @dragover.prevent>
         <a @click="select(tab.id)" @dblclick="startRename(tab)">
           <input
               v-if="renamingId === tab.id"
@@ -72,6 +77,9 @@ const tabs = useStoredList<TimelineTab>(
 
 const renamingId = ref<string | null>(null)
 const renamingName = ref("")
+
+// リネーム入力中は誤ってタブを掴まないようにする
+const {dragIndex, dragStart, dragEnter, dragEnd} = useDragSort(tabs, () => renamingId.value === null)
 
 /* -------------------- computed -------------------- */
 // タブが1つだけのときは削除できない
@@ -165,6 +173,14 @@ function focusInput(el: any) {
   font-size: inherit;
   padding: 0 0.35em;
   text-align: center;
+}
+
+.timeline-tabs li[draggable="true"] a {
+  cursor: grab;
+}
+
+.timeline-tabs li.is-dragging {
+  opacity: 0.5;
 }
 
 .tab-add {
