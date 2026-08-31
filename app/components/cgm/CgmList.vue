@@ -27,6 +27,20 @@ const cgmList = useStoredList<any>(
     (list) => cgmApi.storeCgmList(list),
 )
 
+// --------------------------------------------------
+// lifecycle
+// --------------------------------------------------
+let offCgmEnded: (() => void) | null = null
+
+onMounted(() => {
+  // 再生が終わるとメインプロセス側でウィンドウを閉じるため、ボタンの表示だけ戻す
+  offCgmEnded = cgmApi.cgmEnded(() => resetStatusAll())
+})
+
+onUnmounted(() => {
+  offCgmEnded?.()
+})
+
 /**
  * emits
  */
@@ -41,6 +55,11 @@ const emit = defineEmits<Emits>();
 // --------------------------------------------------
 function closeStatusAll() {
   cgmApi.closeCgm()
+  resetStatusAll()
+}
+
+// ウィンドウが既に閉じている場合の状態戻し（再生終了時など）
+function resetStatusAll() {
   cgmList.value.forEach((cgm) => {
     cgm.isViewed = false
     cgm.isPlaying = false

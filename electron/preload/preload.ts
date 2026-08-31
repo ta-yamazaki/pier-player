@@ -52,6 +52,7 @@ export const cgmApi = {
 
     // CGM windowからイベントを受け取る
     errorCgmOpen: listen(CgmChannels.errorOpen),
+    cgmEnded: listen(CgmChannels.ended),
 }
 contextBridge.exposeInMainWorld('cgmApi', cgmApi);
 

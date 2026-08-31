@@ -23,6 +23,7 @@ export const CgmChannels = {
     getPresets: 'getCgmPresets',
     storePresets: 'storeCgmPresets',
     errorOpen: 'errorCgmOpen',
+    ended: 'cgmEnded',
 } as const
 
 // Vimeoモード（個別動画）

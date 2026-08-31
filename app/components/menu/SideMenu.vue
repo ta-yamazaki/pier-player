@@ -14,7 +14,7 @@
         <li>
           <NuxtLink to="/">
             <NuxtIcon name="mdi:folder-play-outline" size="17"/>
-            <span>ファイル</span>
+            <span>ファイル再生</span>
           </NuxtLink>
         </li>
         <li>
