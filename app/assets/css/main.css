@@ -263,13 +263,13 @@ table, th, td {
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.button:not(.is-primary):not(.is-danger):not(.is-link):not(.is-success):not(.is-warning):not(.is-static):not(.is-add) {
+.button:not(.is-primary):not(.is-danger):not(.is-link):not(.is-success):not(.is-warning):not(.is-static):not(.is-add):not(.is-secondary) {
     background-color: var(--pp-surface-2);
     border-color: var(--pp-line);
     color: var(--pp-text);
 }
 
-.button:not(.is-primary):not(.is-danger):not(.is-link):not(.is-success):not(.is-warning):not(.is-static):not(.is-add):hover {
+.button:not(.is-primary):not(.is-danger):not(.is-link):not(.is-success):not(.is-warning):not(.is-static):not(.is-add):not(.is-secondary):hover {
     border-color: var(--pp-fog);
 }
 
@@ -289,6 +289,31 @@ table, th, td {
 .button.is-primary {
     color: #ffffff;
     box-shadow: 0 4px 14px hsla(190, 90%, 31%, 0.22);
+}
+
+/* セカンダリボタン（灯台シアンの控えめ版・is-primary の副操作） */
+.button.is-secondary {
+    background-color: var(--pp-cyan-soft);
+    border-color: hsla(190, 90%, 31%, 0.35);
+    color: var(--pp-cyan);
+    box-shadow: none;
+}
+
+.button.is-secondary:hover {
+    background-color: hsla(190, 90%, 31%, 0.16);
+    border-color: var(--pp-cyan);
+    color: hsl(190, 90%, 24%);
+}
+
+.button.is-secondary:active {
+    background-color: hsla(190, 90%, 31%, 0.24);
+}
+
+.button.is-secondary[disabled],
+.button.is-secondary.is-static {
+    background-color: var(--pp-surface-2);
+    border-color: var(--pp-line);
+    color: var(--pp-fog);
 }
 
 .button.is-danger {

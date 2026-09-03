@@ -1,20 +1,22 @@
 <template>
   <!-- 件数が増えてもスクロールで見失わないよう先頭に貼り付ける -->
-  <div class="is-flex is-align-items-center mb-2 search-bar">
-    <input
-        v-model="searchText"
-        class="input is-small is-flex-grow-1 mr-2"
-        placeholder="タイトル・URLで検索..."
-        type="text">
+  <div class="is-flex is-align-items-center mb-1 search-bar">
+      <div  class="is-flex-grow-1 mr-2">チェックを入れて「CGM映像リストに追加」をクリック</div>
     <button
         :disabled="selectedIds.length === 0"
         class="button is-small is-primary"
         style="white-space: nowrap;"
         @click="addToMain">
-      リストに追加
+      CGM映像リストに追加
       <span class="count-badge">{{ selectedIds.length }}</span>
     </button>
   </div>
+
+  <input
+      v-model="searchText"
+      class="input is-small mb-2"
+      placeholder="タイトルで検索..."
+      type="text">
 
   <div v-if="presets.length === 0" class="empty-state">
     <p>保存リストが空です</p>
@@ -56,7 +58,7 @@
   </SortableList>
 
   <button class="button is-add is-small is-fullwidth mt-2" @click="addPreset()">
-    ＋ 保存リストに追加
+    ＋ 新たにR指揮曲を保存
   </button>
 </template>
 
@@ -98,8 +100,7 @@ const selectedIds = ref<string[]>([])
 const filteredPresets = computed(() => {
   if (!isPresent(searchText.value)) return presets.value
   const keyword = searchText.value.toLowerCase()
-  return presets.value.filter(preset =>
-      `${preset.title} ${preset.path}`.toLowerCase().includes(keyword))
+  return presets.value.filter(preset => preset.title.toLowerCase().includes(keyword))
 })
 
 // --------------------------------------------------

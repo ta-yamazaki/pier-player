@@ -2,15 +2,14 @@
   <div class="page-shell">
     <header class="page-head">
       <h1 class="page-title">CGM映像</h1>
-      <button class="button is-small" @click="reset()">表示リセット</button>
+      <div>
+          <button class="button is-small is-secondary mr-3" @click="isPresetOpen = true">
+            <NuxtIcon class="mr-1" name="mdi:bookmark-multiple-outline" size="15"/>
+            R指揮曲から追加
+          </button>
+          <button class="button is-small" @click="reset()">表示リセット</button>
+      </div>
     </header>
-
-    <div class="is-flex is-justify-content-flex-end mb-2">
-      <button class="button is-small" @click="isPresetOpen = true">
-        <NuxtIcon class="mr-1" name="mdi:bookmark-multiple-outline" size="15"/>
-        保存リストから追加
-      </button>
-    </div>
 
     <CgmList ref="cgmListRef" @preview="preview"/>
     <button class="button is-add is-fullwidth mt-4" @click="addRow()">
@@ -28,13 +27,13 @@
       <p class="note mt-2">※プレビューを再生すると音が出ます。</p>
     </section>
 
-    <!-- 件数が増えても扱えるよう、保存リストは右からのドロワーで開く -->
+    <!-- 件数が増えても扱えるよう、R指揮曲は右からのドロワーで開く -->
     <!-- 閉じても入力途中の行を残すため、v-if ではなく is-active の付け外しで開閉する -->
     <div :class="{'is-open': isPresetOpen}" class="drawer-overlay">
       <div class="drawer-scrim" @click="isPresetOpen = false"/>
       <aside class="drawer-panel">
         <header class="drawer-head">
-          <p class="is-size-6 has-text-weight-bold">保存リスト</p>
+          <p class="is-size-6 has-text-weight-bold">R指揮曲</p>
           <button aria-label="close" class="delete" @click="isPresetOpen = false"/>
         </header>
         <div class="drawer-body">
