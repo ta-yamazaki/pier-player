@@ -60,6 +60,26 @@
   <button class="button is-add is-small is-fullwidth mt-2" @click="addPreset()">
     ＋ 新たにR指揮曲を保存
   </button>
+
+  <hr>
+
+  <div>
+    <p class="has-text-weight-semibold mb-1">まとめて保存</p>
+    <p class="help mt-0 mb-2">
+      1行につき1件、「タイトル,URL」の形式で入力してください（カンマ・タブ区切り）。
+    </p>
+    <textarea
+        v-model="bulkText"
+        class="textarea is-small mb-2"
+        placeholder="タイトル,URL&#10;タイトル,URL"
+        rows="6"/>
+    <div class="is-flex is-align-items-center">
+      <span class="is-size-7 is-flex-grow-1">{{ bulkRows.length }}件を保存できます</span>
+      <button :disabled="bulkRows.length === 0" class="button is-small is-primary" @click="addBulkPresets">
+        まとめて保存
+      </button>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -93,6 +113,7 @@ const presets = useStoredList<CgmPreset>(
 
 const searchText = ref("")
 const selectedIds = ref<string[]>([])
+const bulkText = ref("")
 
 // --------------------------------------------------
 // computed
@@ -103,11 +124,45 @@ const filteredPresets = computed(() => {
   return presets.value.filter(preset => preset.title.toLowerCase().includes(keyword))
 })
 
+// 一括入力欄をパースした結果。件数表示と保存の両方で使う
+const bulkRows = computed(() => parseBulkText(bulkText.value))
+
 // --------------------------------------------------
 // methods
 // --------------------------------------------------
 function addPreset() {
   presets.value.push({id: newId(), path: "", title: ""})
+}
+
+/**
+ * 「タイトル,URL」形式の複数行テキストをプリセットの元データに変換する。
+ * タイトルにカンマが含まれてもよいよう、最後の区切り文字でURLを切り出す。
+ */
+function parseBulkText(text: string): { title: string; path: string }[] {
+  return text
+      .split(/\r?\n/)
+      .map(line => line.trim())
+      .filter(line => line !== "")
+      .map(line => {
+        const index = Math.max(line.lastIndexOf(","), line.lastIndexOf("\t"))
+        // 区切りがない行はURLだけの入力とみなす
+        if (index < 0) return {title: "", path: line}
+        return {
+          title: line.slice(0, index).trim(),
+          path: line.slice(index + 1).trim(),
+        }
+      })
+      .filter(row => isPresent(row.path))
+}
+
+function addBulkPresets() {
+  const rows = bulkRows.value
+  if (rows.length === 0) return
+
+  presets.value.push(...rows.map(row => ({id: newId(), path: row.path, title: row.title})))
+  notify(`保存リストに ${rows.length}件 追加しました`)
+
+  bulkText.value = ""
 }
 
 // SortableList のindexは絞り込み後のものなので、idで元リストを引き直す
