@@ -388,6 +388,17 @@ table, th, td {
     opacity: 0.6;
 }
 
+/* Bulma 1.x の .is-danger.input は変数を差し替えるだけで、上書きした border-color には効かないので明示する */
+.input.is-danger, .textarea.is-danger {
+    border-color: var(--pp-red);
+    background-color: var(--pp-red-soft);
+}
+
+.input.is-danger:focus, .textarea.is-danger:focus {
+    border-color: var(--pp-red);
+    box-shadow: 0 0 0 3px var(--pp-red-soft);
+}
+
 /* フィールド先頭のラベルチップ */
 .field-tag {
     background-color: var(--pp-surface-2) !important;

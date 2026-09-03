@@ -28,10 +28,10 @@
   <SortableList :draggable="false" :items="filteredPresets" @remove="removeRow">
     <template #default="{ item }">
       <div class="is-flex is-align-items-center">
-        <label class="checkbox is-clickable mr-3">
+        <label :class="isInvalid(item) ? '' : 'is-clickable'" class="checkbox mr-3">
           <input
               :checked="isSelected(item)"
-              class="is-clickable"
+              :disabled="isInvalid(item)"
               type="checkbox"
               @change="toggle(item)">
         </label>
@@ -41,7 +41,12 @@
               <span class="button is-small is-static field-tag">タイトル</span>
             </p>
             <p class="control is-expanded">
-              <input v-model="item.title" class="input is-small" placeholder="映像タイトル（任意）" type="text">
+              <input
+                  v-model="item.title"
+                  :class="{'is-danger': hasInvalidTitle(item)}"
+                  class="input is-small"
+                  placeholder="映像タイトル"
+                  type="text">
             </p>
           </div>
           <div class="field has-addons mb-0">
@@ -49,7 +54,12 @@
               <span class="button is-small is-static field-tag">URL</span>
             </p>
             <p class="control is-expanded">
-              <input v-model="item.path" class="input is-small" placeholder="CGM映像URL" type="url">
+              <input
+                  v-model="item.path"
+                  :class="{'is-danger': hasInvalidPath(item)}"
+                  class="input is-small"
+                  placeholder="CGM映像URL"
+                  type="url">
             </p>
           </div>
         </div>
@@ -74,7 +84,12 @@
         placeholder="タイトル,URL&#10;タイトル,URL"
         rows="6"/>
     <div class="is-flex is-align-items-center">
-      <span class="is-size-7 is-flex-grow-1">{{ bulkRows.length }}件を保存できます</span>
+      <span class="is-size-7 is-flex-grow-1">
+        {{ bulkRows.length }}件を保存できます
+        <span v-if="invalidBulkCount > 0" class="has-text-grey">
+          （うち{{ invalidBulkCount }}件は入力に不備があります）
+        </span>
+      </span>
       <button :disabled="bulkRows.length === 0" class="button is-small is-primary" @click="addBulkPresets">
         まとめて保存
       </button>
@@ -83,7 +98,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref} from "vue"
+import {computed, ref, watch} from "vue"
 import SortableList from "~/components/common/SortableList.vue";
 import type {CgmItem, CgmPreset} from "~/types/models";
 
@@ -99,6 +114,9 @@ type Emits = {
   (event: "add", value: CgmItem[]): void;
 };
 const emit = defineEmits<Emits>();
+
+// 保存済みプリセットと一括入力の行、どちらも同じルールで検証する
+type PresetInput = { title: string; path: string };
 
 // --------------------------------------------------
 // state
@@ -127,6 +145,40 @@ const filteredPresets = computed(() => {
 // 一括入力欄をパースした結果。件数表示と保存の両方で使う
 const bulkRows = computed(() => parseBulkText(bulkText.value))
 
+const invalidBulkCount = computed(() => bulkRows.value.filter(row => isInvalid(row)).length)
+
+// --------------------------------------------------
+// watch
+// --------------------------------------------------
+// 選択後に編集して不備が出た項目は、追加対象から自動的に外す
+watch(presets, (list) => {
+  const invalidIds = list.filter(preset => isInvalid(preset)).map(preset => preset.id)
+  selectedIds.value = selectedIds.value.filter(id => !invalidIds.includes(id))
+}, {deep: true})
+
+// --------------------------------------------------
+// validation
+// --------------------------------------------------
+function hasInvalidTitle(preset: PresetInput) {
+  return !isPresent(preset.title.trim())
+}
+
+function hasInvalidPath(preset: PresetInput) {
+  const path = preset.path.trim()
+  if (!isPresent(path)) return true
+
+  try {
+    const url = new URL(path)
+    return url.protocol !== "http:" && url.protocol !== "https:"
+  } catch {
+    return true
+  }
+}
+
+function isInvalid(preset: PresetInput) {
+  return hasInvalidTitle(preset) || hasInvalidPath(preset)
+}
+
 // --------------------------------------------------
 // methods
 // --------------------------------------------------
@@ -138,7 +190,7 @@ function addPreset() {
  * 「タイトル,URL」形式の複数行テキストをプリセットの元データに変換する。
  * タイトルにカンマが含まれてもよいよう、最後の区切り文字でURLを切り出す。
  */
-function parseBulkText(text: string): { title: string; path: string }[] {
+function parseBulkText(text: string): PresetInput[] {
   return text
       .split(/\r?\n/)
       .map(line => line.trim())
@@ -193,7 +245,7 @@ function deselect(preset: CgmPreset) {
 function addToMain() {
   // 表示順（絞り込み前の並び）のまま追加する
   const items: CgmItem[] = presets.value
-      .filter(preset => isSelected(preset))
+      .filter(preset => isSelected(preset) && !isInvalid(preset))
       .map(preset => ({
         id: newId(),
         path: preset.path,
