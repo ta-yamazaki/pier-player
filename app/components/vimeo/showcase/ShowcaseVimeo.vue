@@ -1,40 +1,34 @@
 <template>
-  <div :class="{'has-text-grey-light': isNotPlayable}" class="field has-addons" style="white-space: nowrap;">
-    <p class="control is-expanded">
-      <input
-          v-model="vimeo.title"
-          :disabled="isNotPlayable"
-          class="input"
-          placeholder="映像タイトル"
-          type="text">
-      <span v-if="isNotPlayable" class="help is-danger" style="white-space: normal;">
-        動画IDが無いため再生できません。「ショーケースの映像一覧を取得」で取得し直してください。
-      </span>
-    </p>
-    <p>
+  <div class="is-flex is-align-items-center">
+    <div class="is-flex-grow-1" style="min-width: 0;">
+      <p :class="{'has-text-grey-light': isNotPlayable}" class="video-title">{{ vimeo.title || '（タイトルなし）' }}</p>
+      <p v-if="isNotPlayable" class="note">動画IDが無いため再生できません。「映像一覧を取得し直す」で取得し直してください。</p>
+    </div>
+    <!-- ボタンの有無で行ごとにタイトル幅が変わらないよう、操作欄は固定幅にする -->
+    <div class="actions ml-2">
       <button
-          v-if="isPresent(vimeo.title) && !vimeo.isViewed"
+          v-if="!vimeo.isViewed"
           :class="{'is-loading': isLoading}"
           :disabled="isNotPlayable"
-          class="button is-link is-outlined ml-2 action-btn"
+          class="button is-link is-outlined action-btn"
           @click="view()"
       >表示
       </button>
       <button
-          v-if="isViewedBeforePlay"
-          :class="{'is-loading': isLoading}"
-          :disabled="isNotPlayable"
-          class="button is-primary ml-2 action-btn"
+          v-else-if="isViewedBeforePlay"
+          class="button is-primary action-btn"
           @click="play()"
       >再生
       </button>
       <button
-          v-if="isPlaying"
-          class="button is-danger ml-2 action-btn"
+          v-if="vimeo.isViewed"
+          :class="{'ml-2': isViewedBeforePlay}"
+          class="button is-danger action-btn"
+          :title="isViewedBeforePlay ? '表示をやめてウィンドウを閉じます' : undefined"
           @click="close()"
       >閉じる
       </button>
-    </p>
+    </div>
   </div>
 </template>
 
@@ -72,7 +66,6 @@ const {notifyError} = useNotification()
 
 // computed
 const isViewedBeforePlay = computed(() => vimeo.value.isViewed && !vimeo.value.isPlaying)
-const isPlaying = computed(() => vimeo.value.isPlaying)
 // 再生は ?video=<clipId> で映像を指定するため、動画IDが無い項目は操作させない
 const isNotPlayable = computed(() => !vimeo.value.clipId)
 
@@ -104,6 +97,17 @@ const close = () => {
 </script>
 
 <style scoped>
+.video-title {
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  width: 10.5rem; /* ボタン2つ分（表示後は「再生」「閉じる」が並ぶ） */
+}
+
 .action-btn {
   width: 5rem;
 }

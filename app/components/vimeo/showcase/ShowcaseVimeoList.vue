@@ -1,14 +1,14 @@
 <template>
   <nav class="level is-mobile mt-5 mb-2">
     <div class="level-left">
-      <p class="note has-text-danger">※「再生」ボタンのあと少し時間がかかります。</p>
+      <p v-if="items.length > 0" class="note">{{ items.length }}件 ・ 「再生」ボタンのあと少し時間がかかります。</p>
     </div>
     <div class="level-right">
       <button class="button is-small" @click="closeAll()">表示リセット</button>
     </div>
   </nav>
 
-  <SortableList :items="items" @remove="removeRow">
+  <SortableList v-if="items.length > 0" :items="items" @remove="removeRow">
     <template #default="{ item }">
       <ShowcaseVimeo
           :password="password"
@@ -18,6 +18,10 @@
       />
     </template>
   </SortableList>
+  <div v-else class="box has-text-centered py-6">
+    <p class="has-text-grey">映像がまだありません。</p>
+    <p class="note mt-1">上の欄にショーケースURLとパスワードを入れて「映像一覧を取得」を押してください。</p>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -57,8 +61,14 @@ const closeAll = () => {
   })
 }
 
+// 表示中・再生中の行を消すときだけ確認してウィンドウを閉じる（他の行を消しても投影は止めない）
 const removeRow = (i: number) => {
-  showcaseApi.closeVimeoShowcase()
+  const item = items.value[i]
+  if (!item) return
+  if (item.isViewed || item.isPlaying) {
+    if (!confirm(`「${item.title}」は表示中です。映像を閉じて一覧から削除しますか？`)) return
+    showcaseApi.closeVimeoShowcase()
+  }
   items.value.splice(i, 1)
 }
 

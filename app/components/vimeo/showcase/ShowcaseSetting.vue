@@ -1,40 +1,57 @@
 <template>
-<!--  <h2 class="section-title mb-2">ショーケース設定</h2>-->
-  <div class="box">
-    <div class="field mb-2">
-      <label class="label is-size-7 mb-0">ショーケースURL</label>
-      <p class="control mb-0">
-        <input v-model="showcase.rawUrl" class="input is-small" placeholder="VimeoショーケースURL" type="url">
+  <div>
+    <!-- 設定済みなら1行に畳み、一覧をすぐ見られるようにする -->
+    <div v-if="!isEditing" class="is-flex is-align-items-center is-gap-2 mb-3">
+      <p class="is-size-7 has-text-grey is-flex-grow-1" style="min-width: 0; overflow-wrap: anywhere;">
+        ショーケース <strong class="has-text-grey-dark">{{ showcaseId }}</strong>
       </p>
-      <p v-if="showcaseRawUrlExists && showcaseUrlInvalid" class="has-text-danger"
-      >VimeoショーケースURLの形式が正しくありません。</p>
-      <small class="is-size-7">{{ showcaseUrl }}</small>
-    </div>
-    <div class="field">
-      <label class="label is-size-7 mb-0">パスワード</label>
-      <p class="control">
-        <input v-model="showcase.password" class="input is-small" placeholder="パスワード" type="text">
-      </p>
+      <button class="button is-small is-text" @click="isEditing = true">設定を編集</button>
     </div>
 
+    <template v-else>
+      <div class="field mb-2">
+        <label class="label is-size-7 mb-0">ショーケースURL</label>
+        <p class="control mb-0">
+          <input v-model="showcase.rawUrl" class="input is-small" placeholder="https://vimeo.com/showcase/12345678" type="url">
+        </p>
+        <p v-if="showcaseRawUrlExists && showcaseUrlInvalid" class="help is-danger">
+          VimeoショーケースURLの形式が正しくありません（例：https://vimeo.com/showcase/12345678）。
+        </p>
+      </div>
+      <div class="field mb-3">
+        <label class="label is-size-7 mb-0">パスワード</label>
+        <p class="control">
+          <input v-model="showcase.password" class="input is-small" placeholder="パスワード" type="text">
+        </p>
+      </div>
+    </template>
+
+    <div class="buttons mb-0">
       <button
-          :class="{'is-loading': isGettingShowcaseVideos}"
-          class="button is-small is-primary is-outlined has-text-primary is-fullwidth"
-          :disabled="!canGetTitles"
-          @click="getShowcaseVideoTitles()">
-        ショーケースの映像一覧を取得
+          :class="{'is-loading': isGettingShowcaseVideos && !isAppending}"
+          :disabled="!canGetTitles || isGettingShowcaseVideos"
+          class="button is-small is-primary is-outlined has-text-primary is-flex-grow-1 mb-0"
+          @click="getShowcaseVideoTitles(false)">
+        {{ hasPlayList ? '映像一覧を取得し直す' : '映像一覧を取得' }}
       </button>
-      <label v-if="canGetTitles" class="checkbox has-text-right">
-        <input v-model="overrideVideoList" type="checkbox">
-        <small>映像一覧を上書きする</small>
-      </label>
+      <button
+          v-if="hasPlayList"
+          :class="{'is-loading': isGettingShowcaseVideos && isAppending}"
+          :disabled="!canGetTitles || isGettingShowcaseVideos"
+          class="button is-small mb-0"
+          title="いまの一覧を残したまま、取得した映像を末尾に追加します"
+          @click="getShowcaseVideoTitles(true)">
+        末尾に追加
+      </button>
+    </div>
+    <p v-if="!canGetTitles" class="note mt-1">ショーケースURLとパスワードを入力すると取得できます。</p>
   </div>
 </template>
 
 <script lang="ts" setup>
 import {computed, ref, toRef} from 'vue'
 import type {ShowcaseTab} from "~/types/models";
-import {isValidShowcaseEmbedUrl, showcaseEmbedUrl} from "~/utils/vimeo";
+import {isValidShowcaseEmbedUrl, parseShowcaseId, showcaseEmbedUrl} from "~/utils/vimeo";
 
 /**
  * 選択中タブのショーケース設定（URL・パスワード）の入力と、映像一覧の取得。
@@ -51,8 +68,8 @@ interface Props {
 const props = defineProps<Props>();
 
 // state
-const overrideVideoList = ref(true)
 const isGettingShowcaseVideos = ref(false)
+const isAppending = ref(false)
 const showcase = toRef(props, 'showcase')
 
 const {notify, notifyError} = useNotification()
@@ -65,22 +82,27 @@ const showcaseUrlInvalid = computed(() => !isValidShowcaseEmbedUrl(showcaseUrl.v
 const showcaseRawUrlExists = computed(() => !!showcase.value.rawUrl)
 const showcasePasswordExists = computed(() => !!showcase.value.password)
 const canGetTitles = computed(() => !showcaseUrlInvalid.value && showcasePasswordExists.value)
+const showcaseId = computed(() => parseShowcaseId(showcaseUrl.value) ?? '')
+const hasPlayList = computed(() => showcase.value.playList.length > 0)
+
+// 設定済みのタブは畳んだ状態で開く（タブ切替時は key で作り直される）
+const isEditing = ref(!canGetTitles.value)
 
 // methods
-const getShowcaseVideoTitles = async () => {
-  if (overrideVideoList.value) {
-    const ok = confirm('映像一覧を取得し、上書きしてもよいですか？')
+const getShowcaseVideoTitles = async (append: boolean) => {
+  // 取得中にタブを切り替えても、取得を始めたタブに書き込む
+  const target = showcase.value
+  if (!append && target.playList.length > 0) {
+    const ok = confirm(`いまの映像一覧（${target.playList.length}件）を、取得した一覧で置き換えます。よろしいですか？`)
     if (!ok) return
   }
 
-  // 取得中にタブを切り替えても、取得を始めたタブに書き込む
-  const target = showcase.value
-  const isOverride = overrideVideoList.value
+  isAppending.value = append
   isGettingShowcaseVideos.value = true
   try {
     const result = await fetchShowcaseVideos(showcaseEmbedUrl(target.rawUrl), target.password)
     if (!result) {
-      notifyError('映像一覧を取得できませんでした。URLとパスワードを確認してください。何度試しても取得できない場合は手動で追加してください。')
+      notifyError('映像一覧を取得できませんでした。URLとパスワードを確認してください。何度試しても取得できない場合は「個別映像」から再生してください。')
       return
     }
 
@@ -91,7 +113,8 @@ const getShowcaseVideoTitles = async () => {
       title: video.title,
       clipId: video.clipId
     }))
-    target.playList = isOverride ? titles : [...target.playList, ...titles]
+    target.playList = append ? [...target.playList, ...titles] : titles
+    isEditing.value = false
 
     notify(`映像一覧を取得しました。（${titles.length}件）`)
 
@@ -102,12 +125,9 @@ const getShowcaseVideoTitles = async () => {
     }
   } catch (e) {
     console.error(e)
-    notifyError('映像一覧の取得に失敗しました。手動で追加してください。')
+    notifyError('映像一覧の取得に失敗しました。時間をおいて再度お試しいただくか、「個別映像」から再生してください。')
   } finally {
     isGettingShowcaseVideos.value = false
   }
 }
 </script>
-
-<style scoped>
-</style>
