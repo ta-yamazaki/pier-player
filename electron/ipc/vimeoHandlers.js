@@ -16,7 +16,23 @@ const SHOWCASE_PAGE_CSS = `
       background: #000 !important;
     }
 
+    /* z-indexで上に被せるだけだと、レイアウト次第でサイトのヘッダーが前面に出てしまう。
+       プレイヤー以外は不可視にする（visibilityは子で上書きできる） */
+    body * {
+      visibility: hidden !important;
+    }
+
+    /* iframeの祖先が重なりの基準や fixed の基準を作ると、iframeが全画面を覆えなくなるため打ち消す */
+    :has(iframe[src*="player.vimeo.com"]) {
+      transform: none !important;
+      filter: none !important;
+      will-change: auto !important;
+      contain: none !important;
+      z-index: auto !important;
+    }
+
     iframe[src*="player.vimeo.com"] {
+      visibility: visible !important;
       position: fixed !important;
       inset: 0 !important;
       width: 100vw !important;
