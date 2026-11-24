@@ -4,7 +4,10 @@ import {
   parseClipId,
   parseJwtToken,
   parseShowcaseClips,
+  isValidShowcaseEmbedUrl,
   parseShowcaseId,
+  showcaseEmbedUrl,
+  showcasePageUrl,
   sliceClipsJson,
   toShowcaseVideos,
 } from '../app/utils/vimeo'
@@ -131,5 +134,23 @@ describe('clipsToShowcaseVideos', () => {
       {title: 'A', clipId: '1156727297'},
       {title: 'B', clipId: ''},
     ])
+  })
+})
+
+describe('showcasePageUrl / showcaseEmbedUrl', () => {
+  it('クエリを落としたページURLと埋め込みURLを作る', () => {
+    const raw = 'https://vimeo.com/showcase/11223344?share=copy'
+    expect(showcasePageUrl(raw)).toBe('https://vimeo.com/showcase/11223344')
+    expect(showcaseEmbedUrl(raw)).toBe('https://vimeo.com/showcase/11223344/embed')
+    expect(isValidShowcaseEmbedUrl(showcaseEmbedUrl(raw))).toBe(true)
+  })
+
+  it('末尾スラッシュや前後の空白を除く', () => {
+    expect(showcaseEmbedUrl(' https://vimeo.com/showcase/1/ ')).toBe('https://vimeo.com/showcase/1/embed')
+  })
+
+  it('空欄なら空文字、形式違いは不正とする', () => {
+    expect(showcaseEmbedUrl('')).toBe('')
+    expect(isValidShowcaseEmbedUrl(showcaseEmbedUrl('https://vimeo.com/123456'))).toBe(false)
   })
 })

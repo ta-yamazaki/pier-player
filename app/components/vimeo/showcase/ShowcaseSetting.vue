@@ -32,57 +32,39 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, onMounted, reactive, ref, watch} from 'vue'
+import {computed, ref, toRef} from 'vue'
+import type {ShowcaseTab} from "~/types/models";
+import {isValidShowcaseEmbedUrl, showcaseEmbedUrl} from "~/utils/vimeo";
 
 /**
- * emits
+ * 選択中タブのショーケース設定（URL・パスワード）の入力と、映像一覧の取得。
+ * showcase（タブ）は直接変更する（永続化は親がタブ一覧を監視して行う）。
  */
-type Emits = {
-  (event: "updateShowcase", url: string, password: string): void;
-  (event: "getShowcaseVideoTitles", isOverride: boolean, titles: any[]): void;
-};
-const emit = defineEmits<Emits>();
+
+/**
+ * Props
+ */
+interface Props {
+  showcase: ShowcaseTab,
+}
+
+const props = defineProps<Props>();
 
 // state
 const overrideVideoList = ref(true)
 const isGettingShowcaseVideos = ref(false)
-const showcase = reactive({
-  rawUrl: '',
-  password: ''
-})
+const showcase = toRef(props, 'showcase')
 
-// API (Electron preload で expose 済みのやつを参照)
-const showcaseApi = window.showcaseApi
 const {notify, notifyError} = useNotification()
 const {fetchShowcaseVideos} = useShowcaseVideos()
 
 // computed
-const showcaseUrlInvalid = computed(() => {
-  const pattern = /^https:\/\/vimeo\.com\/showcase\/\d+\/embed$/
-  return !pattern.test(showcaseUrl.value)
-})
-const showcaseRawUrlExists = computed(() => !!showcase.rawUrl)
-const showcasePasswordExists = computed(() => !!showcase.password)
-const canGetTitles = computed(() => !showcaseUrlInvalid.value && showcasePasswordExists.value)
-// 再生時に開くショーケースのページURL（クエリを落としただけのもの）
-const showcaseBaseUrl = computed(() => showcase.rawUrl.replace(/\?.*$/, ''))
 // 映像一覧の取得に使う埋め込みURL
-const showcaseUrl = computed(() => {
-  if (!showcase.rawUrl) return ''
-  return `${showcaseBaseUrl.value}/embed`
-})
-
-// init
-onMounted(async () => {
-  Object.assign(showcase, await showcaseApi.getShowcase())
-  emit('updateShowcase', showcaseBaseUrl.value, showcase.password) // 親に変更を通知
-})
-
-// watchers
-watch(showcase, (newVal) => {
-  showcaseApi.storeShowcase(toRaw(newVal))
-  emit('updateShowcase', showcaseBaseUrl.value, showcase.password) // 親に変更を通知
-}, {deep: true})
+const showcaseUrl = computed(() => showcaseEmbedUrl(showcase.value.rawUrl))
+const showcaseUrlInvalid = computed(() => !isValidShowcaseEmbedUrl(showcaseUrl.value))
+const showcaseRawUrlExists = computed(() => !!showcase.value.rawUrl)
+const showcasePasswordExists = computed(() => !!showcase.value.password)
+const canGetTitles = computed(() => !showcaseUrlInvalid.value && showcasePasswordExists.value)
 
 // methods
 const getShowcaseVideoTitles = async () => {
@@ -91,21 +73,25 @@ const getShowcaseVideoTitles = async () => {
     if (!ok) return
   }
 
+  // 取得中にタブを切り替えても、取得を始めたタブに書き込む
+  const target = showcase.value
+  const isOverride = overrideVideoList.value
   isGettingShowcaseVideos.value = true
   try {
-    const result = await fetchShowcaseVideos(showcaseUrl.value, showcase.password)
+    const result = await fetchShowcaseVideos(showcaseEmbedUrl(target.rawUrl), target.password)
     if (!result) {
       notifyError('映像一覧を取得できませんでした。URLとパスワードを確認してください。何度試しても取得できない場合は手動で追加してください。')
       return
     }
 
     const titles = result.videos.map((video) => ({
+      id: newId(),
       isPlaying: false,
       isViewed: false,
       title: video.title,
       clipId: video.clipId
     }))
-    emit('getShowcaseVideoTitles', overrideVideoList.value, titles)
+    target.playList = isOverride ? titles : [...target.playList, ...titles]
 
     notify(`映像一覧を取得しました。（${titles.length}件）`)
 

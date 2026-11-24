@@ -12,6 +12,22 @@ export type ShowcaseVideo = {
   clipId: string
 }
 
+// 再生時に開くショーケースのページURL（入力URLのクエリを落としただけのもの）
+export function showcasePageUrl(rawUrl: string): string {
+  return rawUrl.trim().replace(/[?#].*$/, '').replace(/\/+$/, '')
+}
+
+// 映像一覧の取得に使う埋め込みURL
+export function showcaseEmbedUrl(rawUrl: string): string {
+  const pageUrl = showcasePageUrl(rawUrl)
+  return pageUrl ? `${pageUrl}/embed` : ''
+}
+
+// 埋め込みURLとして正しい形式か
+export function isValidShowcaseEmbedUrl(url: string): boolean {
+  return /^https:\/\/vimeo\.com\/showcase\/\d+\/embed$/.test(url)
+}
+
 // ショーケースURLからショーケースID（数値部分）を取り出す
 export function parseShowcaseId(url: string): string | null {
   const m = url.match(/\/showcase\/(\d+)/)

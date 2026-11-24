@@ -8,7 +8,7 @@
     </div>
   </nav>
 
-  <SortableList :items="vimeoList" @remove="removeRow">
+  <SortableList :items="items" @remove="removeRow">
     <template #default="{ item }">
       <ShowcaseVimeo
           :password="password"
@@ -21,31 +21,37 @@
 </template>
 
 <script lang="ts" setup>
+import {toRef} from "vue";
 import ShowcaseVimeo from "~/components/vimeo/showcase/ShowcaseVimeo.vue";
 import SortableList from "~/components/common/SortableList.vue";
+import type {ShowcaseItem} from "~/types/models";
+
+/**
+ * 選択中タブの映像一覧。
+ * items は直接変更する（永続化は親がタブ一覧を監視して行う）。
+ */
 
 /**
  * Props
  */
 interface Props {
+  items: ShowcaseItem[],
   showcaseUrl: string,
   password: string,
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 // API (Electron preload で expose 済みのやつを参照)
 const showcaseApi = window.showcaseApi
 
 // state
-const vimeoList = useStoredList<any>(
-    () => showcaseApi.getPlayList().then(ensureIds),
-    (list) => showcaseApi.storePlayList(list),
-)
+const items = toRef(props, 'items')
+
 // methods
 const closeAll = () => {
   showcaseApi.closeVimeoShowcase()
-  vimeoList.value.forEach(v => {
+  items.value.forEach(v => {
     v.isViewed = false
     v.isPlaying = false
   })
@@ -53,14 +59,8 @@ const closeAll = () => {
 
 const removeRow = (i: number) => {
   showcaseApi.closeVimeoShowcase()
-  vimeoList.value.splice(i, 1)
+  items.value.splice(i, 1)
 }
 
-const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {
-  const withIds = ensureIds(toRaw(titles))
-  if (isOverride) vimeoList.value = withIds
-  else vimeoList.value = [...toRaw(vimeoList.value), ...withIds]
-}
-
-defineExpose({closeAll, getShowcaseVideoTitles})
+defineExpose({closeAll})
 </script>

@@ -11,8 +11,9 @@ const keys = {
 
     vimeoList: "vimeoList",
 
-    vimeoShowcase: "vimeoShowcase",
-    vimeoShowcasePlayList: "vimeoShowcasePlayList",
+    vimeoShowcase: "vimeoShowcase", // タブ導入前の設定（移行元）
+    vimeoShowcasePlayList: "vimeoShowcasePlayList", // タブ導入前の映像一覧（移行元）
+    vimeoShowcaseTabs: "vimeoShowcaseTabs",
 
     timelineTabs: "timelineTabs",
     timelineList: "timelineList",
@@ -75,18 +76,12 @@ export const registerStoreHandlers = () => {
     /**
      * メイン画面 Vimeoモード（ショーケース）
      */
-    ipcMain.handle(ShowcaseChannels.getShowcase, () => {
-        return store.get(keys.vimeoShowcase, {rawUrl: "", password: ""});
+    ipcMain.handle(ShowcaseChannels.getTabs, () => {
+        return loadShowcaseTabs();
     });
-    ipcMain.handle(ShowcaseChannels.storeShowcase, (_event, showcase) => {
-        store.set(keys.vimeoShowcase, showcase);
-    });
-
-    ipcMain.handle(ShowcaseChannels.getPlayList, () => {
-        return store.get(keys.vimeoShowcasePlayList, [{title: "", isViewed: false, isPlaying: false}]);
-    });
-    ipcMain.handle(ShowcaseChannels.storePlayList, (_event, vimeoList) => {
-        store.set(keys.vimeoShowcasePlayList, vimeoList);
+    ipcMain.handle(ShowcaseChannels.storeTabs, (_event, tabs) => {
+        if (!Array.isArray(tabs) || tabs.length === 0) throw new Error("タブは1つ以上必要です");
+        store.set(keys.vimeoShowcaseTabs, tabs);
     });
 
     /**
@@ -157,6 +152,16 @@ export const registerStoreHandlers = () => {
         store.set(keys.timelineWaveformPeaks, Array.from(map.entries()));
     });
 };
+
+// タブ未保存（タブ導入前のデータ）なら、以前の設定と映像一覧を引き継ぐタブを1つ返す
+function loadShowcaseTabs() {
+    const tabs = store.get(keys.vimeoShowcaseTabs, []);
+    if (Array.isArray(tabs) && tabs.length > 0) return tabs;
+
+    const showcase = store.get(keys.vimeoShowcase, {rawUrl: "", password: ""});
+    const playList = store.get(keys.vimeoShowcasePlayList, [{title: "", isViewed: false, isPlaying: false}]);
+    return [{id: "default", name: "タブ1", rawUrl: showcase.rawUrl ?? "", password: showcase.password ?? "", playList}];
+}
 
 // タブ未保存（タブ導入前のデータ）なら、既存リストを引き継ぐ既定タブを1つ返す
 function loadTimelineTabs() {

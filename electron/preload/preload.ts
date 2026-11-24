@@ -78,10 +78,8 @@ export const showcaseApi = {
     playVimeoShowcase: () => ipcRenderer.invoke(ShowcaseChannels.play),
     closeVimeoShowcase: () => ipcRenderer.invoke(ShowcaseChannels.close),
 
-    getPlayList: () => ipcRenderer.invoke(ShowcaseChannels.getPlayList),
-    storePlayList: (vimeoList: any) => ipcRenderer.invoke(ShowcaseChannels.storePlayList, vimeoList),
-    getShowcase: () => ipcRenderer.invoke(ShowcaseChannels.getShowcase),
-    storeShowcase: (showcase: any) => ipcRenderer.invoke(ShowcaseChannels.storeShowcase, showcase),
+    getTabs: () => ipcRenderer.invoke(ShowcaseChannels.getTabs),
+    storeTabs: (tabs: any) => ipcRenderer.invoke(ShowcaseChannels.storeTabs, tabs),
 }
 contextBridge.exposeInMainWorld('showcaseApi', showcaseApi);
 

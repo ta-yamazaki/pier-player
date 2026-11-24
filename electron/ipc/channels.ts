@@ -40,10 +40,8 @@ export const ShowcaseChannels = {
     open: 'openShowcaseVimeo',
     play: 'playShowcaseVimeo',
     close: 'closeShowcaseVimeo',
-    getPlayList: 'getShowcasePlayList',
-    storePlayList: 'storeShowcasePlayList',
-    getShowcase: 'getShowcase',
-    storeShowcase: 'storeShowcase',
+    getTabs: 'getShowcaseTabs',
+    storeTabs: 'storeShowcaseTabs',
 } as const
 
 // タイムラインモード

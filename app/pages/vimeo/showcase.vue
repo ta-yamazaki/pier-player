@@ -13,39 +13,56 @@
       </ul>
     </div>
 
-    <ShowcaseSetting
-        @update-showcase="updateShowcase"
-        @get-showcase-video-titles="getShowcaseVideoTitles"
-    />
-    <ShowcaseVimeoList
-        ref="showcaseVimeoListRef"
-        :password="showcasePassword"
-        :showcase-url="showcaseUrl"
-    />
+    <EditableTabs
+        v-model="selectedTabId"
+        :create-tab="createTab"
+        :remove-message="removeMessage"
+        :tabs="tabs"/>
+
+    <template v-if="selectedTab">
+      <ShowcaseSetting
+          :key="selectedTab.id"
+          :showcase="selectedTab"
+      />
+      <ShowcaseVimeoList
+          ref="showcaseVimeoListRef"
+          :items="selectedTab.playList"
+          :password="selectedTab.password"
+          :showcase-url="showcasePageUrl(selectedTab.rawUrl)"
+      />
+    </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
+import {computed, ref, watch} from 'vue'
+import EditableTabs from "~/components/common/EditableTabs.vue";
 import ShowcaseVimeoList from "~/components/vimeo/showcase/ShowcaseVimeoList.vue";
 import ShowcaseSetting from "~/components/vimeo/showcase/ShowcaseSetting.vue";
+import type {ShowcaseTab} from "~/types/models";
+import {showcasePageUrl} from "~/utils/vimeo";
 
 const showcaseVimeoListRef = ref<InstanceType<typeof ShowcaseVimeoList> | null>(null)
+const showcaseApi = window.showcaseApi
 
 // state
-const showcaseUrl = ref("")
-const showcasePassword = ref("")
+// タブごとにショーケースのURL・パスワードと映像一覧を持つ
+const tabs = useStoredList<ShowcaseTab>(
+    () => showcaseApi.getTabs().then((list: ShowcaseTab[]) =>
+        list.map(tab => ({...tab, playList: ensureIds(tab.playList ?? [])}))),
+    (list) => showcaseApi.storeTabs(list),
+)
+const {selectedTabId} = useShowcaseTab()
+
+const selectedTab = computed(() => tabs.value.find(tab => tab.id === selectedTabId.value))
+
+// タブを切り替える前に、いま表示中の映像を閉じておく
+watch(selectedTabId, () => showcaseVimeoListRef.value?.closeAll(), {flush: 'sync'})
 
 // methods
-const updateShowcase = (url: string, password: string) => {
-  showcaseUrl.value = url
-  showcasePassword.value = password
-}
+const createTab = (id: string, name: string): ShowcaseTab =>
+    ({id, name, rawUrl: "", password: "", playList: []})
 
-const getShowcaseVideoTitles = (isOverride: boolean, titles: any[]) => {
-  showcaseVimeoListRef.value?.getShowcaseVideoTitles(isOverride, titles)
-}
+const removeMessage = (tab: { name: string }) =>
+    `タブ「${tab.name}」を削除します。\nこのタブのショーケース設定と映像一覧も削除されます。よろしいですか？`
 </script>
-
-<style scoped>
-</style>

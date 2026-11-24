@@ -78,3 +78,10 @@ export interface Showcase {
   rawUrl: string
   password: string
 }
+
+// Vimeoショーケースのタブ（タブごとにショーケース設定と映像一覧を持つ）
+export interface ShowcaseTab extends Showcase {
+  id: string
+  name: string
+  playList: ShowcaseItem[]
+}
