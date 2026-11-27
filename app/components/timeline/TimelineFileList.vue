@@ -1,14 +1,15 @@
 <template>
   <!-- 縦積み（既定） -->
+  <!-- 縦積みは他モードと同じ1枚のリスト表示（各曲の編集は行内で開閉する） -->
   <SortableList
       v-if="layout === 'stack'"
-      :boxed="false"
       :can-drag="canDrag"
       :draggable="!playingFileExists"
       :items="files"
       @remove="removeRow">
     <template #default="{ item, index }">
       <TimelineFile
+          :card="false"
           :file="item"
           :is-last="index === files.length - 1"
           @media-start="mediaStart"

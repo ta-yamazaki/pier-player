@@ -1,7 +1,7 @@
 <template>
   <!-- ファイルが存在する-->
   <template v-if="file.exists">
-    <div :class="{'is-live': file.isPlaying}" class="box p-2 mb-1">
+    <div :class="card ? {'box p-2 mb-1': true, 'is-live': file.isPlaying} : ''">
       <nav class="level is-mobile mb-0">
         <div class="level-left is-flex-shrink-1">
           <div class="is-flex is-align-items-center is-flex-shrink-1">
@@ -20,9 +20,8 @@
             次を自動再生
           </label>
           <button
-              :class="{'is-active': isEditorOpen}"
               :title="isEditorOpen ? '編集を閉じる' : '編集を開く'"
-              class="button is-small"
+              class="button is-small is-ghost px-1"
               @click="isEditorOpen = !isEditorOpen"
           >
             <span>編集</span>
@@ -59,7 +58,7 @@
     />
   </template>
   <!-- ファイルが存在しない-->
-  <div v-else class="box p-2 is-missing">
+  <div v-else :class="card ? 'box p-2 is-missing' : ''">
     <nav class="level is-mobile mb-0">
       <div class="level-left is-flex-shrink-1">
         <NuxtIconVideo v-if="isVideo"/>
@@ -96,9 +95,11 @@ const emit = defineEmits<{
 interface Props {
   file: TimelineFileMeta,
   isLast: boolean,
+  /** false で枠なしの行表示にする（縦並びリスト用。横並びの列ではカード表示） */
+  card?: boolean,
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {card: true});
 
 // 親のリストと同一オブジェクトを共有し、変更は親のdeep watchで永続化される
 const file = toRef(props, 'file')

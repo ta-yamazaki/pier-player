@@ -263,14 +263,28 @@ table, th, td {
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.button:not(.is-primary):not(.is-danger):not(.is-link):not(.is-success):not(.is-warning):not(.is-static):not(.is-add):not(.is-secondary) {
+.button:not(.is-primary):not(.is-danger):not(.is-link):not(.is-success):not(.is-warning):not(.is-static):not(.is-add):not(.is-secondary):not(.is-ghost) {
     background-color: var(--pp-surface-2);
     border-color: var(--pp-line);
     color: var(--pp-text);
 }
 
-.button:not(.is-primary):not(.is-danger):not(.is-link):not(.is-success):not(.is-warning):not(.is-static):not(.is-add):not(.is-secondary):hover {
+.button:not(.is-primary):not(.is-danger):not(.is-link):not(.is-success):not(.is-warning):not(.is-static):not(.is-add):not(.is-secondary):not(.is-ghost):hover {
     border-color: var(--pp-fog);
+}
+
+/* 枠なしの控えめなボタン（補助的な操作用） */
+.button.is-ghost {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--pp-fog);
+    font-weight: 400;
+    text-decoration: none;
+}
+
+.button.is-ghost:hover {
+    color: var(--pp-text);
+    text-decoration: none;
 }
 
 /* 行追加ボタン（ドロップゾーンと同じ「ここに追加」の言語） */

@@ -1,6 +1,6 @@
 <template>
-  <div v-if="items.length > 0" :class="{'box py-1 px-2': boxed}">
-    <table :class="{'is-plain': !boxed}" class="table my-2 is-fullwidth sortable-list">
+  <div v-if="items.length > 0" class="box py-1 px-2">
+    <table class="table my-2 is-fullwidth sortable-list">
       <thead v-if="$slots.head">
       <slot name="head"/>
       </thead>
@@ -49,8 +49,6 @@ import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 interface Props {
   /** 表示するリスト（並べ替えで直接変更される。各要素に安定した id が必要） */
   items: any[];
-  /** false でボックス・罫線なしの素のテーブルにする（行自体がカードのタイムライン用） */
-  boxed?: boolean;
   /** ドラッグ並べ替えの許可 */
   draggable?: boolean;
   /** falseを返すと並べ替えを禁止する（省略時は常に許可） */
@@ -58,7 +56,6 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  boxed: true,
   draggable: true,
   canDrag: undefined,
 });
@@ -97,9 +94,5 @@ td :deep(svg) {
 
 .cell-delete {
   padding-right: 0.5rem;
-}
-
-.sortable-list.is-plain td {
-  border: none;
 }
 </style>
