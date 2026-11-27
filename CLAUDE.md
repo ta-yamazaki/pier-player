@@ -39,6 +39,8 @@ npm run release
 npm run release:force
 ```
 
+**Claude Code のクラウド環境ではタグのpushが403で拒否されるため `npm run release` は使えない。** バージョンを上げて `master` にpushした後、GitHub MCP の `actions_run_trigger` で `release.yml` を `ref: master`, `inputs: {"publish": "true"}` で手動実行してリリースする（詳細は `docs/release.md`）。
+
 テストは `tests/` にあるユーティリティ・composableの単体テストのみ（vitest）。Electron側やコンポーネントのテストはない。
 
 ESLintは `@nuxt/eslint-config` を直接使うスタンドアロン構成（Nuxt 3.6.5 では `@nuxt/eslint` モジュールが設定ファイルを生成しないため）。`no-explicit-any` は warn 扱いで段階的に解消中。

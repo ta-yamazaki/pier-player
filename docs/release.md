@@ -41,6 +41,22 @@ git push origin v3.1.10
 
 タグのpushがGitHub Releasesのワークフローをトリガーし、インストーラー（`.exe`）が自動生成・公開される。
 
+## Claude Code（クラウド環境）からリリースする場合
+
+クラウド環境のgitプロキシはタグのpushを許可していないため、`npm run release` は
+`git push origin v<バージョン>` が **HTTP 403** で失敗する（リトライしても通らない。ローカルにタグだけ残る）。
+代わりに以下の手順で、`release.yml` を手動実行（`workflow_dispatch`）して公開する。
+
+1. `package.json` の `version` を上げてコミット（`npm version <x.y.z> --no-git-tag-version` で package-lock.json も更新される）
+2. `master` にpush（ブランチのpushは通る。ユーザーの許可を得てから）
+3. GitHub MCP の `actions_run_trigger` で `release.yml` を実行する
+   - `method: run_workflow` / `ref: master` / `inputs: {"publish": "true"}`
+   - `publish` を付けないとビルドのみで公開されない
+   - タグ（`v<バージョン>`）は electron-builder がリリース作成時に自動で作るので、手でpushする必要はない
+4. `actions_list`（`list_workflow_runs`）で完了を確認する（所要 約2〜3分）
+
+`npm run release` を誤って実行した場合は、残ったローカルタグを `git tag -d v<バージョン>` で消しておく。
+
 ## タグの打ち直し（リリースやり直し）
 
 同バージョンのタグが既に存在する場合に使用する。
