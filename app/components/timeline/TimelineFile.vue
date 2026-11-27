@@ -20,6 +20,17 @@
             次を自動再生
           </label>
           <button
+              :class="{'is-active': isEditorOpen}"
+              :title="isEditorOpen ? '編集を閉じる' : '編集を開く'"
+              class="button is-small"
+              @click="isEditorOpen = !isEditorOpen"
+          >
+            <span>編集</span>
+            <span class="icon is-small">
+              <NuxtIcon :name="isEditorOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'"/>
+            </span>
+          </button>
+          <button
               v-if="!file.isPlaying"
               :class="{'is-loading': startLoading}"
               class="button is-small is-primary"
@@ -35,8 +46,8 @@
           </button>
         </div>
       </nav>
-      <!-- 再生編集-->
-      <div class="mt-1 mb-0 is-size-7 editor">
+      <!-- 再生編集（普段は閉じておき、必要な時に開く）-->
+      <div v-if="isEditorOpen" class="mt-1 mb-0 is-size-7 editor">
         <TimelineClipStrip :file="file"/>
       </div>
       <!-- 再生編集ここまで -->
@@ -67,6 +78,7 @@ import {ref, toRaw, toRef, watch} from 'vue'
 import NuxtIconVideo from "~/components/icon/NuxtIconVideo.vue";
 import NuxtIconAudio from "~/components/icon/NuxtIconAudio.vue";
 import NuxtIconFolder from "~/components/icon/NuxtIconFolder.vue";
+import NuxtIcon from "~/components/icon/NuxtIcon.vue";
 import TimelineClipStrip from "~/components/timeline/TimelineClipStrip.vue";
 import type {TimelineFileMeta} from "~/types/models";
 
@@ -91,6 +103,8 @@ const props = defineProps<Props>();
 // 親のリストと同一オブジェクトを共有し、変更は親のdeep watchで永続化される
 const file = toRef(props, 'file')
 const startLoading = ref(false)
+// 再生編集部分の開閉（表示上の状態なので永続化しない）
+const isEditorOpen = ref(false)
 
 const timelineApi = window.timelineApi
 const commonApi = window.commonApi
